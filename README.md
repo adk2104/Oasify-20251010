@@ -1,12 +1,12 @@
-# Welcome to React Router!
+# Oasify
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A modern web application built with React Router v7, featuring authentication, dashboard functionality, and a clean UI built with TailwindCSS.
 
 ## Features
 
-- 🚀 Server-side rendering
+- 🔐 Cookie-based authentication with bcrypt password hashing
+- 🎨 Modern UI components (Button, Input, Card, Label)
+- 🚀 Server-side rendering with React Router v7
 - ⚡️ Hot Module Replacement (HMR)
 - 📦 Asset bundling and optimization
 - 🔄 Data loading and mutations
@@ -24,6 +24,15 @@ Install the dependencies:
 npm install
 ```
 
+### Environment Setup
+
+Create a `.env` file in the root directory (see `.env.example`):
+
+```bash
+# Session security
+SESSION_SECRET=your-secret-key-here
+```
+
 ### Development
 
 Start the development server with HMR:
@@ -33,6 +42,12 @@ npm run dev
 ```
 
 Your application will be available at `http://localhost:5173`.
+
+### Demo Credentials
+
+For testing, use these credentials on the login page:
+- **Email**: demo@example.com
+- **Password**: password
 
 ## Building for Production
 
@@ -78,10 +93,54 @@ Make sure to deploy the output of `npm run build`
 │   └── server/    # Server-side code
 ```
 
+## Project Structure
+
+```
+oasify-app/
+├── app/
+│   ├── components/
+│   │   └── ui/           # Reusable UI components
+│   ├── lib/              # Utility functions
+│   ├── routes/           # Route modules
+│   │   ├── login.tsx     # Login page
+│   │   └── dashboard.tsx # Protected dashboard
+│   ├── utils/            # Server utilities
+│   │   └── auth.server.ts # Authentication helpers
+│   ├── sessions.server.ts # Session management
+│   ├── root.tsx          # Root component
+│   └── routes.ts         # Route configuration
+├── public/               # Static assets
+└── .env.example          # Environment variables template
+```
+
+## Authentication
+
+This application uses cookie-based session authentication:
+
+- Sessions are stored in encrypted HTTP-only cookies
+- Passwords are hashed using bcrypt
+- Protected routes automatically redirect to login if not authenticated
+- Session management utilities in `app/sessions.server.ts`
+- Authentication helpers in `app/utils/auth.server.ts`
+
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+This project uses [Tailwind CSS](https://tailwindcss.com/) with custom UI components. Components follow a consistent design system with:
+
+- White backgrounds with dark text for inputs
+- Blue accent colors for focus states
+- Responsive layouts
+- Accessible form controls
+
+## Tech Stack
+
+- **Framework**: React Router v7
+- **Styling**: TailwindCSS v4
+- **Authentication**: bcryptjs
+- **UI Components**: Custom components with class-variance-authority
+- **Icons**: Lucide React
+- **Language**: TypeScript
 
 ---
 
-Built with ❤️ using React Router.
+Built with React Router v7.
