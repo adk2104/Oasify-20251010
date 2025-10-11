@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "~/components/ui/dropdown-menu";
+import { useSidebar } from "~/contexts/sidebar-context";
 
 interface HeaderProps {
   userEmail?: string;
@@ -17,11 +18,17 @@ interface HeaderProps {
 
 export function Header({ userEmail }: HeaderProps) {
   const displayName = userEmail?.split("@")[0] || "User";
+  const { toggleSidebar } = useSidebar();
 
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 lg:px-6">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={toggleSidebar}
+        >
           <Menu className="h-4 w-4" />
         </Button>
         <div className="font-semibold text-lg">Oasify</div>

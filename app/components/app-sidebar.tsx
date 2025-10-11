@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router";
 import { Home, BarChart3, Settings, Youtube, Instagram } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/lib/utils";
+import { useSidebar } from "~/contexts/sidebar-context";
 
 const mainItems = [
   {
@@ -51,9 +52,16 @@ const getStatusColor = (status: string) => {
 
 export function AppSidebar() {
   const location = useLocation();
+  const { isOpen, mounted } = useSidebar();
 
   return (
-    <aside className="w-64 bg-slate-50 text-slate-900 flex flex-col border-r border-slate-200">
+    <aside
+      className={cn(
+        "bg-slate-50 text-slate-900 flex flex-col border-r border-slate-200 overflow-hidden",
+        mounted && "transition-all duration-200 ease-in-out",
+        isOpen ? "w-64" : "w-0 -translate-x-full"
+      )}
+    >
       <div className="p-6">
         <h2 className="text-xl font-bold">Oasify</h2>
       </div>
