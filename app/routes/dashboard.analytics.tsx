@@ -7,27 +7,14 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Analytics() {
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-white">
-        <div>
-          <h1 className="text-xl font-semibold">Analytics</h1>
-          <p className="text-sm text-gray-500">
-            Insights and metrics for your content
-          </p>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 overflow-auto bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <h2 className="text-2xl font-semibold mb-4">Analytics Dashboard</h2>
-            <p className="text-gray-600">
-              Coming soon: View engagement metrics, response times, sentiment analysis, and more.
-            </p>
-          </div>
-        </div>
+    <div className="flex items-center justify-center h-full bg-gray-50">
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          No analytics data yet
+        </h2>
+        <p className="text-gray-600 max-w-md">
+          Connect your social media accounts and start receiving comments to see analytics here
+        </p>
       </div>
     </div>
   );
