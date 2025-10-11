@@ -75,13 +75,31 @@ export default function LoginPage({ loaderData }: Route.ComponentProps) {
   const { error } = loaderData;
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleDemoLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // Create form and submit
+    const form = e.currentTarget.closest('form');
+    if (form) {
+      const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
+      const passwordInput = form.querySelector('input[name="password"]') as HTMLInputElement;
+
+      if (emailInput && passwordInput) {
+        emailInput.value = "demo@example.com";
+        passwordInput.value = "password";
+        form.requestSubmit();
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
           <CardDescription>
-            Sign in to your Oasify account
+            Sign in to your Oasify account to manage your comments
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -98,8 +116,7 @@ export default function LoginPage({ loaderData }: Route.ComponentProps) {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="demo@example.com"
-                defaultValue="demo@example.com"
+                placeholder="creator@example.com"
                 required
               />
             </div>
@@ -117,17 +134,30 @@ export default function LoginPage({ loaderData }: Route.ComponentProps) {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white"
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleDemoLogin}
+              disabled={isLoading}
+            >
+              🎭 Demo Login (Skip Database)
+            </Button>
           </Form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
-              Demo credentials: demo@example.com / password
+              Don't have an account?{" "}
+              <button className="text-cyan-500 hover:text-cyan-600 font-medium">
+                Create one here
+              </button>
             </p>
           </div>
         </CardContent>
