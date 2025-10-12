@@ -14,6 +14,7 @@ Oasify is a modern web application built with React Router v7, featuring:
 
 - **Framework**: React Router v7
 - **Language**: TypeScript
+- **Database**: PostgreSQL (Supabase) with Drizzle ORM
 - **Styling**: TailwindCSS v4
 - **Authentication**: bcryptjs for password hashing
 - **Session Management**: Cookie-based sessions (react-router)
@@ -30,6 +31,10 @@ app/
 │       ├── input.tsx          # Input with white bg, dark text
 │       ├── label.tsx          # Form label component
 │       └── card.tsx           # Card container component
+├── db/
+│   ├── config.ts             # Database connection (Supabase PostgreSQL)
+│   └── schema/
+│       └── index.ts          # Schema exports
 ├── lib/
 │   └── utils.ts              # Utility functions (cn helper)
 ├── routes/
@@ -51,6 +56,106 @@ export default [
   index("routes/login.tsx"),           // / - Login page
   route("dashboard", "routes/dashboard.tsx"),  // /dashboard - Protected
 ] satisfies RouteConfig;
+```
+
+## Database Setup
+
+### Database Configuration
+
+The app uses **Drizzle ORM** with **PostgreSQL** hosted on **Supabase**.
+
+**Connection details:**
+- Host: `db.ioulrhrglrjrjpuanpjo.supabase.co`
+- Port: `5432`
+- Database: `postgres`
+- User: `postgres`
+- Password: From `SUPABASE_PASSWORD` environment variable
+
+### Database Files
+
+- `app/db/config.ts` - Database connection configuration
+- `app/db/schema/index.ts` - Schema exports (add new table schemas here)
+- `drizzle.config.ts` - Drizzle Kit configuration for migrations
+
+### Database Commands
+
+```bash
+# Generate migration files from schema changes
+npm run db:generate
+
+# Run migrations against the database
+npm run db:migrate
+
+# Push schema changes directly to database (development)
+npm run db:push
+
+# Seed database with test user (run after migrations)
+npm run db:seed
+
+# Open Drizzle Studio GUI to view/edit data
+npm run db:studio
+```
+
+### Initial Setup
+
+When setting up the project for the first time:
+
+1. Copy `.env.example` to `.env` and fill in your credentials
+2. Run migrations: `npm run db:migrate`
+3. Seed test user: `npm run db:seed`
+4. Start dev server: `npm run dev`
+
+The seed script creates a test user:
+- Email: `demo@example.com`
+- Password: `password`
+- User ID: `1`
+
+The seed script is idempotent - it checks if the user exists before creating it, so it's safe to run multiple times.
+
+### Creating Database Tables
+
+1. Create a new schema file in `app/db/schema/` (e.g., `users.ts`, `oauth-connections.ts`)
+2. Define your table using Drizzle ORM syntax
+3. Export the table from `app/db/schema/index.ts`
+4. Run `npm run db:push` to sync to Supabase
+
+**Example schema structure:**
+
+```typescript
+// app/db/schema/oauth-connections.ts
+import { pgTable, serial, integer, text, timestamp } from 'drizzle-orm/pg-core';
+
+export const oauthConnections = pgTable('oauth_connections', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull(), // Foreign key to users
+  provider: text('provider').notNull(), // e.g., 'google'
+  accessToken: text('access_token').notNull(),
+  refreshToken: text('refresh_token'),
+  expiresAt: timestamp('expires_at'),
+  scope: text('scope'), // e.g., YouTube permissions
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+```
+
+### Using the Database
+
+Import the `db` instance from `app/db/config.ts`:
+
+```typescript
+import { db } from '~/db/config';
+import { oauthConnections } from '~/db/schema';
+
+// Query example
+const connections = await db.select().from(oauthConnections).where(...);
+
+// Insert example
+await db.insert(oauthConnections).values({
+  userId: 1,
+  provider: 'google',
+  accessToken: 'token',
+  // ...
+});
 ```
 
 ## Authentication System
@@ -116,6 +221,9 @@ Required variables in `.env`:
 ```bash
 # Session security - REQUIRED
 SESSION_SECRET=your-secret-key-here
+
+# Database - Supabase PostgreSQL - REQUIRED
+SUPABASE_PASSWORD=your-supabase-password-here
 ```
 
 Use `.env.example` as a template.
@@ -131,11 +239,15 @@ npm run dev
 
 ### Testing
 
-**Demo Account**:
+**Test Account** (created by `npm run db:seed`):
 - Email: demo@example.com
 - Password: password
+- User ID: 1
 
-The login page pre-fills the email field with the demo account.
+This test user is automatically created when you run the seed script and is used for:
+- Testing authentication flow
+- Testing YouTube OAuth integration
+- Development and testing of all features
 
 ## Code Style Guidelines
 
@@ -182,7 +294,9 @@ export async function action({ request }: Route.ActionArgs) {
 ## Next Steps / TODO
 
 Potential features to implement:
-- Database integration (consider SQLite + Drizzle ORM)
+- Create users table in database
+- Migrate authentication to use database instead of mock validation
+- Create Google OAuth connections table for YouTube comment access
 - User registration flow
 - Password reset functionality
 - User profile management
@@ -201,7 +315,10 @@ Following the "motorcycle vs car" philosophy:
 
 ## Important Notes
 
-- The authentication is currently using mock validation
-- Passwords are not yet hashed (bcryptjs is installed but not yet implemented)
-- No database - sessions are cookie-only
-- Dashboard is minimal - ready for expansion
+- Database is fully configured with Drizzle ORM + PostgreSQL (Supabase)
+- `users` and `providers` tables are created and working
+- Test user is automatically seeded with `npm run db:seed`
+- Authentication uses real database with bcrypt-hashed passwords
+- YouTube OAuth integration stores tokens in `providers` table
+- Comments are fetched fresh from YouTube API (not stored in database)
+- Run `npm run db:seed` after migrations to ensure test user exists
