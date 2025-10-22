@@ -4,6 +4,9 @@ import { getSession, destroySession } from "~/sessions.server";
 import { AppSidebar } from "~/components/app-sidebar";
 import { Header } from "~/components/header";
 import { SidebarProvider } from "~/contexts/sidebar-context";
+import { db } from "~/db/config";
+import { providers } from "~/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -12,8 +15,20 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/");
   }
 
+  const userId = session.get("userId") as number;
+
+  // Fetch user's connected providers
+  const userProviders = await db
+    .select({
+      platform: providers.platform,
+      isActive: providers.isActive,
+    })
+    .from(providers)
+    .where(eq(providers.userId, userId));
+
   return {
     userEmail: session.get("userEmail"),
+    providers: userProviders,
   };
 }
 
@@ -29,12 +44,12 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
-  const { userEmail } = loaderData;
+  const { userEmail, providers } = loaderData;
 
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full bg-gray-50">
-        <AppSidebar />
+        <AppSidebar providers={providers} />
         <div className="flex flex-col flex-1 overflow-hidden">
           <Header userEmail={userEmail} />
           <main className="flex-1 overflow-auto">
