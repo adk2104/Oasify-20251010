@@ -14,6 +14,7 @@
     "db:seed": "tsx app/db/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.67.0",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
     "bcryptjs": "^3.0.2",

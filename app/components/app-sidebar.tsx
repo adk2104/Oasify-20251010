@@ -25,7 +25,7 @@ const mainItems = [
 const providerItems = [
   {
     title: "YouTube",
-    url: "/oauth/youtube",
+    url: "/oauth/google/start",
     icon: Youtube,
     platform: "youtube" as const,
   },
@@ -53,6 +53,7 @@ const getStatusColor = (status: string) => {
 type Provider = {
   platform: string;
   isActive: boolean;
+  tokenValid?: boolean;
 };
 
 type AppSidebarProps = {
@@ -66,7 +67,9 @@ export function AppSidebar({ providers = [] }: AppSidebarProps) {
   // Helper to get connection status for a platform
   const getProviderStatus = (platform: string) => {
     const provider = providers.find((p) => p.platform === platform);
-    return provider?.isActive ? "connected" : "disconnected";
+    if (!provider?.isActive) return "disconnected";
+    if (provider.tokenValid === false) return "warning";
+    return "connected";
   };
 
   return (
@@ -137,7 +140,7 @@ export function AppSidebar({ providers = [] }: AppSidebarProps) {
                     variant={status === "connected" ? "default" : "secondary"}
                     className="ml-auto text-xs"
                   >
-                    {status}
+                    {status === "warning" ? "reconnect" : status}
                   </Badge>
                 </Link>
               );

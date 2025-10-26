@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useSearchParams, useFetcher } from "react-router";
 import type { Route } from "./+types/dashboard";
 import { Switch } from "~/components/ui/switch";
@@ -48,12 +48,31 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { comments, hasYouTubeConnection, youtubeProvider } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
+  const [commentEmpathMode, setCommentEmpathMode] = useState<Record<string, boolean>>({});
   const fetcher = useFetcher();
 
   const unrepliedCount = comments.filter((c: any) => !c.hasReplied).length;
   const connectionSuccess = searchParams.get('connected') === 'youtube';
   const connectionError = searchParams.get('error');
   const isRefreshing = fetcher.state !== 'idle';
+
+  // When global toggle changes, reset all individual toggles
+  useEffect(() => {
+    setCommentEmpathMode({});
+  }, [globalEmpathMode]);
+
+  const toggleCommentMode = (commentId: string) => {
+    setCommentEmpathMode(prev => ({
+      ...prev,
+      [commentId]: prev[commentId] !== undefined ? !prev[commentId] : !globalEmpathMode,
+    }));
+  };
+
+  const isEmpathic = (commentId: string) => {
+    return commentEmpathMode[commentId] !== undefined
+      ? commentEmpathMode[commentId]
+      : globalEmpathMode;
+  };
 
   // Show empty state if no YouTube connection
   if (!hasYouTubeConnection) {
@@ -145,43 +164,62 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </div>
         ) : (
           <div className="p-4 space-y-4">
-            {comments.map((comment: any) => (
-              <Card key={comment.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {comment.authorAvatar && (
-                          <img
-                            src={comment.authorAvatar}
-                            alt={comment.author}
-                            className="w-6 h-6 rounded-full"
-                          />
+            {comments.map((comment: any) => {
+              const showEmpathic = isEmpathic(comment.id);
+              const displayText = showEmpathic && comment.empathicText
+                ? comment.empathicText
+                : comment.text;
+
+              return (
+                <Card key={comment.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          {comment.authorAvatar && (
+                            <img
+                              src={comment.authorAvatar}
+                              alt={comment.author}
+                              className="w-6 h-6 rounded-full"
+                            />
+                          )}
+                          <span className="font-medium text-sm">{comment.author}</span>
+                          <span className="text-xs text-gray-500 capitalize">
+                            {comment.platform}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {new Date(comment.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-1">{displayText}</p>
+                        {comment.videoTitle && (
+                          <p className="text-xs text-gray-500">
+                            Video: {comment.videoTitle}
+                          </p>
                         )}
-                        <span className="font-medium text-sm">{comment.author}</span>
-                        <span className="text-xs text-gray-500 capitalize">
-                          {comment.platform}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {new Date(comment.createdAt).toLocaleString()}
-                        </span>
                       </div>
-                      <p className="text-sm text-gray-700 mb-1">{comment.text}</p>
-                      {comment.videoTitle && (
-                        <p className="text-xs text-gray-500">
-                          Video: {comment.videoTitle}
-                        </p>
-                      )}
+                      <div className="flex flex-col gap-2 items-end">
+                        {comment.empathicText && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleCommentMode(comment.id)}
+                            className="text-xs"
+                          >
+                            {showEmpathic ? 'Original' : 'Empathic'}
+                          </Button>
+                        )}
+                        {comment.hasReplied && (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                            Replied
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    {comment.hasReplied && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                        Replied
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

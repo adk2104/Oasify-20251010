@@ -8,6 +8,7 @@ export const comments = pgTable('comments', {
   author: text('author').notNull(),
   authorAvatar: text('author_avatar'),
   text: text('text').notNull(),
+  empathicText: text('empathic_text'),
   videoTitle: text('video_title'),
   videoId: text('video_id'),
   platform: text('platform').notNull().default('youtube'),

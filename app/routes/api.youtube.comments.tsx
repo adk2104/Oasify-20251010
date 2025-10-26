@@ -32,10 +32,12 @@ export async function action({ request }: Route.ActionArgs) {
   const userId = session.get('userId') as number;
 
   try {
+    console.log('[SYNC START] userId:', userId);
     await syncYouTubeCommentsToDatabase(userId);
+    console.log('[SYNC SUCCESS]');
     return Response.json({ success: true });
   } catch (error) {
-    console.error('Sync YouTube comments error:', error);
+    console.log('[SYNC ERROR]', error);
     throw new Response('Failed to sync comments', { status: 500 });
   }
 }
