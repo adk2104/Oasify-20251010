@@ -1,8 +1,8 @@
 import type { Route } from './+types/api.youtube.comments';
 import { getSession } from '~/sessions.server';
-import { fetchYouTubeComments } from '~/utils/youtube.server';
+import { getStoredComments, syncYouTubeCommentsToDatabase } from '~/utils/youtube.server';
 
-// GET /api/youtube/comments - Fetch fresh comments from YouTube
+// GET /api/youtube/comments - Read comments from database
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('Cookie'));
 
@@ -13,16 +13,29 @@ export async function loader({ request }: Route.LoaderArgs) {
   const userId = session.get('userId') as number;
 
   try {
-    const comments = await fetchYouTubeComments(userId);
+    const comments = await getStoredComments(userId);
     return Response.json({ comments });
   } catch (error) {
-    // If it's a "provider not found" error, return empty array (expected when not connected)
-    if (error instanceof Error && error.message.includes('provider not found')) {
-      return Response.json({ comments: [] });
-    }
+    console.error('Get stored comments error:', error);
+    return Response.json({ comments: [] });
+  }
+}
 
-    // Log unexpected errors
-    console.error('Fetch YouTube comments error:', error);
-    throw new Response('Failed to fetch comments', { status: 500 });
+// POST /api/youtube/comments - Sync from YouTube to database
+export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get('Cookie'));
+
+  if (!session.has('userId')) {
+    throw new Response('Unauthorized', { status: 401 });
+  }
+
+  const userId = session.get('userId') as number;
+
+  try {
+    await syncYouTubeCommentsToDatabase(userId);
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error('Sync YouTube comments error:', error);
+    throw new Response('Failed to sync comments', { status: 500 });
   }
 }

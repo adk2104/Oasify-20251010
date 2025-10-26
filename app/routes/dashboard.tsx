@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams, useFetcher } from "react-router";
 import type { Route } from "./+types/dashboard";
 import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Youtube } from "lucide-react";
+import { Youtube, RefreshCw } from "lucide-react";
 import { getSession } from "~/sessions.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -48,10 +48,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { comments, hasYouTubeConnection, youtubeProvider } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
+  const fetcher = useFetcher();
 
   const unrepliedCount = comments.filter((c: any) => !c.hasReplied).length;
   const connectionSuccess = searchParams.get('connected') === 'youtube';
   const connectionError = searchParams.get('error');
+  const isRefreshing = fetcher.state !== 'idle';
 
   // Show empty state if no YouTube connection
   if (!hasYouTubeConnection) {
@@ -107,15 +109,23 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </p>
           )}
         </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="global-empath"
-            checked={globalEmpathMode}
-            onCheckedChange={setGlobalEmpathMode}
-          />
-          <Label htmlFor="global-empath" className="text-sm font-medium">
-            Global Empath Mode
-          </Label>
+        <div className="flex items-center gap-4">
+          <fetcher.Form method="post" action="/api/youtube/comments">
+            <Button type="submit" variant="outline" size="sm" disabled={isRefreshing}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            </Button>
+          </fetcher.Form>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="global-empath"
+              checked={globalEmpathMode}
+              onCheckedChange={setGlobalEmpathMode}
+            />
+            <Label htmlFor="global-empath" className="text-sm font-medium">
+              Global Empath Mode
+            </Label>
+          </div>
         </div>
       </div>
 

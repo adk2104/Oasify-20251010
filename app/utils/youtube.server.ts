@@ -1,6 +1,6 @@
 import { db } from '~/db/config';
-import { providers } from '~/db/schema';
-import { eq } from 'drizzle-orm';
+import { providers, comments } from '~/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
@@ -153,4 +153,44 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
   allComments.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return allComments;
+}
+
+// Sync comments from YouTube to database
+export async function syncYouTubeCommentsToDatabase(userId: number): Promise<void> {
+  const freshComments = await fetchYouTubeComments(userId);
+
+  for (const comment of freshComments) {
+    await db.insert(comments).values({
+      userId,
+      youtubeCommentId: comment.id,
+      author: comment.author,
+      authorAvatar: comment.authorAvatar,
+      text: comment.text,
+      videoTitle: comment.videoTitle,
+      videoId: comment.videoId,
+      platform: 'youtube',
+      createdAt: comment.createdAt,
+    }).onConflictDoNothing();
+  }
+}
+
+// Get stored comments from database
+export async function getStoredComments(userId: number): Promise<YouTubeComment[]> {
+  const storedComments = await db
+    .select()
+    .from(comments)
+    .where(eq(comments.userId, userId))
+    .orderBy(desc(comments.createdAt));
+
+  return storedComments.map(c => ({
+    id: c.youtubeCommentId,
+    author: c.author,
+    authorAvatar: c.authorAvatar || '',
+    text: c.text,
+    platform: 'youtube' as const,
+    videoTitle: c.videoTitle || '',
+    videoId: c.videoId || '',
+    createdAt: c.createdAt,
+    hasReplied: false,
+  }));
 }
