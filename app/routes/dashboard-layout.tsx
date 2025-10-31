@@ -8,6 +8,7 @@ import { db } from "~/db/config";
 import { providers } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { validateYouTubeToken } from "~/utils/youtube.server";
+import { validateInstagramToken } from "~/utils/instagram.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));

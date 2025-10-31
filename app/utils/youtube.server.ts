@@ -170,7 +170,8 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
 
     await db.insert(comments).values({
       userId,
-      youtubeCommentId: comment.id,
+      commentId: comment.id,
+      youtubeCommentId: comment.id, // Keep for backward compatibility
       author: comment.author,
       authorAvatar: comment.authorAvatar,
       text: comment.text,
@@ -240,7 +241,7 @@ export async function getStoredComments(userId: number): Promise<YouTubeComment[
     .orderBy(desc(comments.createdAt));
 
   return storedComments.map(c => ({
-    id: c.youtubeCommentId,
+    id: c.commentId,
     author: c.author,
     authorAvatar: c.authorAvatar || '',
     text: c.text,
