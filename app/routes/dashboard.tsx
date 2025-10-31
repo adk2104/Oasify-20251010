@@ -5,7 +5,7 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Youtube, RefreshCw, Sparkles } from "lucide-react";
+import { Youtube, Instagram, RefreshCw, Sparkles } from "lucide-react";
 import { getSession } from "~/sessions.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -13,49 +13,64 @@ export async function loader({ request }: Route.LoaderArgs) {
   const userId = session.get('userId') as number;
 
   try {
-    // Fetch YouTube comments
-    const commentsResponse = await fetch(`${new URL(request.url).origin}/api/youtube/comments`, {
-      headers: { Cookie: request.headers.get('Cookie') || '' }
-    });
+    const origin = new URL(request.url).origin;
+    const cookieHeader = request.headers.get('Cookie') || '';
 
-    const commentsData = await commentsResponse.json();
-    const comments = commentsData.comments || [];
+    // Fetch comments from both platforms in parallel
+    const [youtubeResponse, instagramResponse, providersResponse] = await Promise.all([
+      fetch(`${origin}/api/youtube/comments`, { headers: { Cookie: cookieHeader } }),
+      fetch(`${origin}/api/instagram/comments`, { headers: { Cookie: cookieHeader } }),
+      fetch(`${origin}/api/providers`, { headers: { Cookie: cookieHeader } }),
+    ]);
 
-    // Fetch providers to check connection status
-    const providersResponse = await fetch(`${new URL(request.url).origin}/api/providers`, {
-      headers: { Cookie: request.headers.get('Cookie') || '' }
-    });
-
+    const youtubeData = await youtubeResponse.json();
+    const instagramData = await instagramResponse.json();
     const providersData = await providersResponse.json();
+
+    const youtubeComments = youtubeData.comments || [];
+    const instagramComments = instagramData.comments || [];
+
+    // Combine and sort by date (most recent first)
+    const allComments = [...youtubeComments, ...instagramComments].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
     const youtubeProvider = providersData.providers?.find((p: any) => p.platform === 'youtube');
+    const instagramProvider = providersData.providers?.find((p: any) => p.platform === 'instagram');
 
     return {
-      comments,
+      comments: allComments,
       hasYouTubeConnection: !!youtubeProvider,
+      hasInstagramConnection: !!instagramProvider,
       youtubeProvider,
+      instagramProvider,
     };
   } catch (error) {
     console.error('Dashboard loader error:', error);
     return {
       comments: [],
       hasYouTubeConnection: false,
+      hasInstagramConnection: false,
       youtubeProvider: null,
+      instagramProvider: null,
     };
   }
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { comments, hasYouTubeConnection, youtubeProvider } = loaderData;
+  const { comments, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
   const [commentEmpathMode, setCommentEmpathMode] = useState<Record<string, boolean>>({});
-  const fetcher = useFetcher();
+  const youtubeFetcher = useFetcher();
+  const instagramFetcher = useFetcher();
   const generateFetcher = useFetcher();
 
   const unrepliedCount = comments.filter((c: any) => !c.hasReplied).length;
-  const connectionSuccess = searchParams.get('connected') === 'youtube';
+  const connectedPlatform = searchParams.get('connected');
   const connectionError = searchParams.get('error');
-  const isRefreshing = fetcher.state !== 'idle';
+  const isYouTubeRefreshing = youtubeFetcher.state !== 'idle';
+  const isInstagramRefreshing = instagramFetcher.state !== 'idle';
   const isGenerating = generateFetcher.state !== 'idle';
 
   // When global toggle changes, reset all individual toggles
@@ -76,24 +91,29 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       : globalEmpathMode;
   };
 
-  // Show empty state if no YouTube connection
-  if (!hasYouTubeConnection) {
+  // Show empty state if no connections
+  if (!hasYouTubeConnection && !hasInstagramConnection) {
     return (
       <div className="flex flex-col h-full items-center justify-center p-8">
         <div className="text-center max-w-md space-y-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-            <Youtube className="w-8 h-8 text-red-600" />
-          </div>
-          <h2 className="text-2xl font-semibold">Connect Your YouTube Channel</h2>
+          <h2 className="text-2xl font-semibold">Connect Your Social Accounts</h2>
           <p className="text-gray-600">
-            Connect your YouTube account to start seeing and managing comments from your videos.
+            Connect your YouTube and Instagram accounts to start seeing and managing comments.
           </p>
-          <Link to="/oauth/google/start">
-            <Button className="mt-4">
-              <Youtube className="w-4 h-4 mr-2" />
-              Connect YouTube
-            </Button>
-          </Link>
+          <div className="flex gap-4 justify-center mt-6">
+            <Link to="/oauth/google/start">
+              <Button>
+                <Youtube className="w-4 h-4 mr-2" />
+                Connect YouTube
+              </Button>
+            </Link>
+            <Link to="/oauth/facebook/start">
+              <Button variant="outline">
+                <Instagram className="w-4 h-4 mr-2" />
+                Connect Instagram
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -102,7 +122,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Success/Error Messages */}
-      {connectionSuccess && (
+      {connectedPlatform === 'youtube' && (
         <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
           <p className="font-medium">YouTube Connected Successfully!</p>
           <p className="text-sm">
@@ -110,10 +130,18 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </p>
         </div>
       )}
+      {connectedPlatform === 'instagram' && (
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+          <p className="font-medium">Instagram Connected Successfully!</p>
+          <p className="text-sm">
+            Connected as @{instagramProvider?.platformData?.instagramUsername}
+          </p>
+        </div>
+      )}
       {connectionError && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
           <p className="font-medium">Connection Error</p>
-          <p className="text-sm">Failed to connect YouTube. Please try again.</p>
+          <p className="text-sm">Failed to connect. Please try again.</p>
         </div>
       )}
 
@@ -124,19 +152,36 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <p className="text-sm text-gray-500">
             {comments.length} comments • {unrepliedCount} unreplied
           </p>
-          {youtubeProvider && (
-            <p className="text-xs text-gray-400 mt-1">
-              YouTube: {youtubeProvider.platformData?.channelTitle}
-            </p>
-          )}
+          <div className="flex gap-4 mt-1">
+            {youtubeProvider && (
+              <p className="text-xs text-gray-400">
+                YouTube: {youtubeProvider.platformData?.channelTitle}
+              </p>
+            )}
+            {instagramProvider && (
+              <p className="text-xs text-gray-400">
+                Instagram: @{instagramProvider.platformData?.instagramUsername}
+              </p>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-4">
-          <fetcher.Form method="post" action="/api/youtube/comments">
-            <Button type="submit" variant="outline" size="sm" disabled={isRefreshing}>
-              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-              {isRefreshing ? 'Refreshing...' : 'Refresh'}
-            </Button>
-          </fetcher.Form>
+          {hasYouTubeConnection && (
+            <youtubeFetcher.Form method="post" action="/api/youtube/comments">
+              <Button type="submit" variant="outline" size="sm" disabled={isYouTubeRefreshing}>
+                <Youtube className={`w-4 h-4 mr-2 ${isYouTubeRefreshing ? 'animate-spin' : ''}`} />
+                {isYouTubeRefreshing ? 'Syncing...' : 'Sync YouTube'}
+              </Button>
+            </youtubeFetcher.Form>
+          )}
+          {hasInstagramConnection && (
+            <instagramFetcher.Form method="post" action="/api/instagram/comments">
+              <Button type="submit" variant="outline" size="sm" disabled={isInstagramRefreshing}>
+                <Instagram className={`w-4 h-4 mr-2 ${isInstagramRefreshing ? 'animate-spin' : ''}`} />
+                {isInstagramRefreshing ? 'Syncing...' : 'Sync Instagram'}
+              </Button>
+            </instagramFetcher.Form>
+          )}
           <generateFetcher.Form method="post" action="/api/youtube/comments?action=generate">
             <Button type="submit" variant="outline" size="sm" disabled={isGenerating}>
               <Sparkles className={`w-4 h-4 mr-2 ${isGenerating ? 'animate-pulse' : ''}`} />
