@@ -8,6 +8,7 @@ import { db } from "~/db/config";
 import { providers } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { validateYouTubeToken } from "~/utils/youtube.server";
+import { validateInstagramToken } from "~/utils/instagram.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -24,11 +25,18 @@ export async function loader({ request }: Route.LoaderArgs) {
     .from(providers)
     .where(eq(providers.userId, userId));
 
-  // Validate YouTube tokens
+  // Validate tokens for all providers
   const providersWithValidation = await Promise.all(
     userProviders.map(async (provider) => {
       if (provider.platform === 'youtube') {
         const tokenValid = await validateYouTubeToken(provider);
+        return {
+          platform: provider.platform,
+          isActive: provider.isActive,
+          tokenValid,
+        };
+      } else if (provider.platform === 'instagram') {
+        const tokenValid = await validateInstagramToken(provider);
         return {
           platform: provider.platform,
           isActive: provider.isActive,
