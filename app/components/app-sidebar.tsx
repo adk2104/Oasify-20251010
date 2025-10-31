@@ -25,15 +25,15 @@ const mainItems = [
 const providerItems = [
   {
     title: "YouTube",
-    url: "/oauth/youtube",
+    url: "/oauth/google/start",
     icon: Youtube,
-    status: "disconnected" as const,
+    platform: "youtube" as const,
   },
   {
     title: "Instagram",
     url: "/oauth/instagram",
     icon: Instagram,
-    status: "disconnected" as const,
+    platform: "instagram" as const,
   },
 ];
 
@@ -50,9 +50,27 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export function AppSidebar() {
+type Provider = {
+  platform: string;
+  isActive: boolean;
+  tokenValid?: boolean;
+};
+
+type AppSidebarProps = {
+  providers?: Provider[];
+};
+
+export function AppSidebar({ providers = [] }: AppSidebarProps) {
   const location = useLocation();
   const { isOpen, mounted } = useSidebar();
+
+  // Helper to get connection status for a platform
+  const getProviderStatus = (platform: string) => {
+    const provider = providers.find((p) => p.platform === platform);
+    if (!provider?.isActive) return "disconnected";
+    if (provider.tokenValid === false) return "warning";
+    return "connected";
+  };
 
   return (
     <aside
@@ -100,30 +118,33 @@ export function AppSidebar() {
             Connected Accounts
           </h3>
           <div className="space-y-1">
-            {providerItems.map((item) => (
-              <Link
-                key={item.title}
-                to={item.url}
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-              >
-                <div className="relative">
-                  <item.icon className="h-4 w-4" />
-                  <div
-                    className={cn(
-                      "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-slate-50",
-                      getStatusColor(item.status)
-                    )}
-                  />
-                </div>
-                <span>{item.title}</span>
-                <Badge
-                  variant={item.status === "connected" ? "default" : "secondary"}
-                  className="ml-auto text-xs"
+            {providerItems.map((item) => {
+              const status = getProviderStatus(item.platform);
+              return (
+                <Link
+                  key={item.title}
+                  to={item.url}
+                  className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
                 >
-                  {item.status}
-                </Badge>
-              </Link>
-            ))}
+                  <div className="relative">
+                    <item.icon className="h-4 w-4" />
+                    <div
+                      className={cn(
+                        "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-slate-50",
+                        getStatusColor(status)
+                      )}
+                    />
+                  </div>
+                  <span>{item.title}</span>
+                  <Badge
+                    variant={status === "connected" ? "default" : "secondary"}
+                    className="ml-auto text-xs"
+                  >
+                    {status === "warning" ? "reconnect" : status}
+                  </Badge>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </nav>

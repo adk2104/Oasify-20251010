@@ -1,6 +1,7 @@
 import { db } from '~/db/config';
-import { providers } from '~/db/schema';
-import { eq } from 'drizzle-orm';
+import { providers, comments } from '~/db/schema';
+import { eq, desc } from 'drizzle-orm';
+import { generateEmpathicVersion } from './empathy.server';
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
@@ -11,6 +12,7 @@ interface YouTubeComment {
   author: string;
   authorAvatar: string;
   text: string;
+  empathicText?: string;
   platform: 'youtube';
   videoTitle: string;
   videoId: string;
@@ -153,4 +155,100 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
   allComments.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return allComments;
+}
+
+// Sync comments from YouTube to database
+export async function syncYouTubeCommentsToDatabase(userId: number): Promise<void> {
+  console.log('[SYNC] Fetching comments from YouTube for userId:', userId);
+  const freshComments = await fetchYouTubeComments(userId);
+  console.log('[SYNC] Found', freshComments.length, 'comments');
+
+  for (const comment of freshComments) {
+    console.log('[SYNC] Processing comment', comment.id, 'text:', comment.text.substring(0, 50));
+    const empathicText = await generateEmpathicVersion(comment.text);
+    console.log('[SYNC] Generated empathic version for', comment.id);
+
+    await db.insert(comments).values({
+      userId,
+      youtubeCommentId: comment.id,
+      author: comment.author,
+      authorAvatar: comment.authorAvatar,
+      text: comment.text,
+      empathicText,
+      videoTitle: comment.videoTitle,
+      videoId: comment.videoId,
+      platform: 'youtube',
+      createdAt: comment.createdAt,
+    }).onConflictDoNothing();
+  }
+}
+
+// Validate if YouTube token is still valid
+export async function validateYouTubeToken(provider: any): Promise<boolean> {
+  try {
+    const accessToken = await getValidAccessToken(provider);
+
+    // Make a lightweight API call to check if token works
+    const response = await fetch(
+      `${YOUTUBE_API_BASE}/channels?part=id&mine=true`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+    return response.ok;
+  } catch (error) {
+    console.log('[TOKEN VALIDATION] Token is invalid:', error);
+    return false;
+  }
+}
+
+// Generate empathic versions for existing comments without them
+export async function generateEmpathicForExistingComments(userId: number): Promise<number> {
+  console.log('[GENERATE] Finding comments without empathic versions for userId:', userId);
+
+  const allComments = await db
+    .select()
+    .from(comments)
+    .where(eq(comments.userId, userId));
+
+  console.log('[GENERATE] Processing', allComments.length, 'comments (regenerating all)');
+
+  for (const comment of allComments) {
+    console.log('[GENERATE] Processing comment', comment.id);
+    console.log('[GENERATE] Original:', comment.text.substring(0, 100));
+    const empathicText = await generateEmpathicVersion(comment.text);
+    console.log('[GENERATE] Empathic:', empathicText.substring(0, 100));
+
+    await db
+      .update(comments)
+      .set({ empathicText })
+      .where(eq(comments.id, comment.id));
+
+    console.log('[GENERATE] Updated comment', comment.id);
+  }
+
+  return allComments.length;
+}
+
+// Get stored comments from database
+export async function getStoredComments(userId: number): Promise<YouTubeComment[]> {
+  const storedComments = await db
+    .select()
+    .from(comments)
+    .where(eq(comments.userId, userId))
+    .orderBy(desc(comments.createdAt));
+
+  return storedComments.map(c => ({
+    id: c.youtubeCommentId,
+    author: c.author,
+    authorAvatar: c.authorAvatar || '',
+    text: c.text,
+    empathicText: c.empathicText || undefined,
+    platform: 'youtube' as const,
+    videoTitle: c.videoTitle || '',
+    videoId: c.videoId || '',
+    createdAt: c.createdAt,
+    hasReplied: false,
+  }));
 }
