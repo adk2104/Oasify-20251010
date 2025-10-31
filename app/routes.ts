@@ -9,9 +9,12 @@ export default [
   ]),
   route("oauth/google/start", "routes/oauth.google.start.tsx"),
   route("oauth/google/callback", "routes/oauth.google.callback.tsx"),
+  route("oauth/instagram/start", "routes/oauth.instagram.start.tsx"),
+  route("oauth/instagram/callback", "routes/oauth.instagram.callback.tsx"),
   route("oauth/youtube", "routes/oauth.youtube.tsx"),
   route("oauth/instagram", "routes/oauth.instagram.tsx"),
   route("api/providers", "routes/api.providers.tsx"),
   route("api/youtube/comments", "routes/api.youtube.comments.tsx"),
+  route("api/instagram/comments", "routes/api.instagram.comments.tsx"),
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/.well-known.appspecific.com.chrome.devtools.json.ts"),
 ] satisfies RouteConfig;

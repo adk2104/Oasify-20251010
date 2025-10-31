@@ -99,7 +99,7 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 
   // Get recent videos from uploads playlist (limit to 5 to avoid quota issues)
   const playlistResponse = await fetch(
-    `${YOUTUBE_API_BASE}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=5`,
+    `${YOUTUBE_API_BASE}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=10`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
     }
@@ -110,6 +110,7 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
   }
 
   const playlistData = await playlistResponse.json();
+  console.log('playlistData', playlistData);
   const allComments: YouTubeComment[] = [];
 
   // Fetch comments for each video
