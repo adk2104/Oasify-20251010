@@ -5,7 +5,7 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Youtube, RefreshCw } from "lucide-react";
+import { Youtube, RefreshCw, Sparkles } from "lucide-react";
 import { getSession } from "~/sessions.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -50,11 +50,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
   const [commentEmpathMode, setCommentEmpathMode] = useState<Record<string, boolean>>({});
   const fetcher = useFetcher();
+  const generateFetcher = useFetcher();
 
   const unrepliedCount = comments.filter((c: any) => !c.hasReplied).length;
   const connectionSuccess = searchParams.get('connected') === 'youtube';
   const connectionError = searchParams.get('error');
   const isRefreshing = fetcher.state !== 'idle';
+  const isGenerating = generateFetcher.state !== 'idle';
 
   // When global toggle changes, reset all individual toggles
   useEffect(() => {
@@ -135,6 +137,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </Button>
           </fetcher.Form>
+          <generateFetcher.Form method="post" action="/api/youtube/comments?action=generate">
+            <Button type="submit" variant="outline" size="sm" disabled={isGenerating}>
+              <Sparkles className={`w-4 h-4 mr-2 ${isGenerating ? 'animate-pulse' : ''}`} />
+              {isGenerating ? 'Generating...' : 'Generate Empathic'}
+            </Button>
+          </generateFetcher.Form>
           <div className="flex items-center space-x-2">
             <Switch
               id="global-empath"

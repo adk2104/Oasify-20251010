@@ -203,6 +203,34 @@ export async function validateYouTubeToken(provider: any): Promise<boolean> {
   }
 }
 
+// Generate empathic versions for existing comments without them
+export async function generateEmpathicForExistingComments(userId: number): Promise<number> {
+  console.log('[GENERATE] Finding comments without empathic versions for userId:', userId);
+
+  const allComments = await db
+    .select()
+    .from(comments)
+    .where(eq(comments.userId, userId));
+
+  console.log('[GENERATE] Processing', allComments.length, 'comments (regenerating all)');
+
+  for (const comment of allComments) {
+    console.log('[GENERATE] Processing comment', comment.id);
+    console.log('[GENERATE] Original:', comment.text.substring(0, 100));
+    const empathicText = await generateEmpathicVersion(comment.text);
+    console.log('[GENERATE] Empathic:', empathicText.substring(0, 100));
+
+    await db
+      .update(comments)
+      .set({ empathicText })
+      .where(eq(comments.id, comment.id));
+
+    console.log('[GENERATE] Updated comment', comment.id);
+  }
+
+  return allComments.length;
+}
+
 // Get stored comments from database
 export async function getStoredComments(userId: number): Promise<YouTubeComment[]> {
   const storedComments = await db
