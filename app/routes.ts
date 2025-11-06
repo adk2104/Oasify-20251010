@@ -13,6 +13,7 @@ export default [
   route("oauth/facebook/callback", "routes/oauth.facebook.callback.tsx"),
   route("oauth/youtube", "routes/oauth.youtube.tsx"),
   route("oauth/instagram", "routes/oauth.instagram.tsx"),
+  route("oauth/instagram/callback", "routes/oauth.instagram.callback.tsx"),
   route("api/providers", "routes/api.providers.tsx"),
   route("api/youtube/comments", "routes/api.youtube.comments.tsx"),
   route("api/instagram/comments", "routes/api.instagram.comments.tsx"),

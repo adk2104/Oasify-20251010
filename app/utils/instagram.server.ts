@@ -1,8 +1,12 @@
 import { db } from '~/db/config';
 import { providers, comments } from '~/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { generateEmpathicVersion } from './empathy.server';
 
+const GRAPH_API_BASE = 'https://graph.instagram.com';
+const INSTAGRAM_API_BASE = 'https://api.instagram.com';
+
+// Legacy Facebook OAuth constants (for reference, can be removed after migration)
 const FB_GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
 const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID!;
 const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET!;
@@ -17,6 +21,174 @@ interface InstagramComment {
   mediaId: string;
   createdAt: Date;
 }
+
+interface InstagramTokenResponse {
+  access_token: string;
+  user_id: number;
+  permissions?: string[];
+}
+
+interface InstagramLongLivedTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+interface InstagramUserProfile {
+  id: string;
+  username: string;
+  account_type: 'BUSINESS' | 'CREATOR' | 'PERSONAL';
+  media_count?: number;
+}
+
+// ============================================================================
+// INSTAGRAM BUSINESS LOGIN API (NEW - Replaces Facebook OAuth)
+// ============================================================================
+
+/**
+ * Step 1: Exchange authorization code for short-lived access token
+ * https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/business-login/#step-2--get-a-short-lived-access-token
+ */
+export async function exchangeInstagramCodeForToken(
+  code: string,
+  clientId: string,
+  clientSecret: string,
+  redirectUri: string
+): Promise<InstagramTokenResponse> {
+  const formData = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: 'authorization_code',
+    redirect_uri: redirectUri,
+    code,
+  });
+
+  const response = await fetch(`${INSTAGRAM_API_BASE}/oauth/access_token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData.toString(),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to exchange code for token: ${error}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Step 2: Exchange short-lived token for long-lived token (60 days)
+ * https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/business-login/#long-lived
+ */
+export async function exchangeForLongLivedInstagramToken(
+  shortLivedToken: string,
+  clientSecret: string
+): Promise<InstagramLongLivedTokenResponse> {
+  const url = new URL(`${GRAPH_API_BASE}/access_token`);
+  url.searchParams.set('grant_type', 'ig_exchange_token');
+  url.searchParams.set('client_secret', clientSecret);
+  url.searchParams.set('access_token', shortLivedToken);
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to exchange for long-lived token: ${error}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Refresh a long-lived token (extends expiry by 60 days)
+ * https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/business-login/#refresh
+ */
+export async function refreshLongLivedInstagramToken(
+  accessToken: string
+): Promise<InstagramLongLivedTokenResponse> {
+  const url = new URL(`${GRAPH_API_BASE}/refresh_access_token`);
+  url.searchParams.set('grant_type', 'ig_refresh_token');
+  url.searchParams.set('access_token', accessToken);
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to refresh token: ${error}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get Instagram user profile (username, account type, etc.)
+ */
+export async function getInstagramUserProfile(accessToken: string): Promise<InstagramUserProfile> {
+  const url = new URL(`${GRAPH_API_BASE}/me`);
+  url.searchParams.set('fields', 'id,username,account_type,media_count');
+  url.searchParams.set('access_token', accessToken);
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to get user profile: ${error}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get recent media posts from Instagram Business Account
+ */
+export async function getInstagramMedia(
+  accessToken: string,
+  limit: number = 20
+): Promise<any[]> {
+  const url = new URL(`${GRAPH_API_BASE}/me/media`);
+  url.searchParams.set('fields', 'id,caption,media_type,media_url,timestamp,permalink');
+  url.searchParams.set('limit', limit.toString());
+  url.searchParams.set('access_token', accessToken);
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to get media: ${error}`);
+  }
+
+  const data = await response.json();
+  return data.data || [];
+}
+
+/**
+ * Get comments on a specific media post
+ */
+export async function getInstagramMediaComments(
+  mediaId: string,
+  accessToken: string
+): Promise<any[]> {
+  const url = new URL(`${GRAPH_API_BASE}/${mediaId}/comments`);
+  url.searchParams.set('fields', 'id,username,text,timestamp');
+  url.searchParams.set('access_token', accessToken);
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to get comments for media ${mediaId}: ${error}`);
+  }
+
+  const data = await response.json();
+  return data.data || [];
+}
+
+// ============================================================================
+// LEGACY FACEBOOK OAUTH API (Keep for backwards compatibility)
+// ============================================================================
 
 // Exchange short-lived token for long-lived token (60 days)
 export async function exchangeForLongLivedToken(shortLivedToken: string): Promise<{ access_token: string; expires_in: number }> {
@@ -119,19 +291,17 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   const [provider] = await db
     .select()
     .from(providers)
-    .where(eq(providers.userId, userId))
-    .where(eq(providers.platform, 'instagram'));
+    .where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
 
   if (!provider || provider.platform !== 'instagram') {
     throw new Error('Instagram provider not found');
   }
 
   const accessToken = provider.accessToken;
-  const igBusinessId = provider.platformUserId;
 
-  // Get recent media posts
+  // Get recent media posts using new Instagram Business Login API
   console.log('[INSTAGRAM SYNC] Fetching recent media...');
-  const mediaPosts = await getRecentMedia(igBusinessId, accessToken, 20);
+  const mediaPosts = await getInstagramMedia(accessToken, 20);
   console.log('[INSTAGRAM SYNC] Found', mediaPosts.length, 'media posts');
 
   const allComments: InstagramComment[] = [];
@@ -139,7 +309,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   // Fetch comments for each media post
   for (const media of mediaPosts) {
     try {
-      const mediaComments = await getMediaComments(media.id, accessToken);
+      const mediaComments = await getInstagramMediaComments(media.id, accessToken);
       console.log(`[INSTAGRAM SYNC] Found ${mediaComments.length} comments for media ${media.id}`);
 
       for (const comment of mediaComments) {
@@ -182,12 +352,12 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   console.log('[INSTAGRAM SYNC] Sync complete');
 }
 
-// Validate Instagram token
+// Validate Instagram token (works for both new and legacy tokens)
 export async function validateInstagramToken(provider: any): Promise<boolean> {
   try {
-    const url = `${FB_GRAPH_API_BASE}/${provider.platformUserId}?fields=id&access_token=${provider.accessToken}`;
-    const response = await fetch(url);
-    return response.ok;
+    // Try to get user profile - works for Instagram Business Login tokens
+    await getInstagramUserProfile(provider.accessToken);
+    return true;
   } catch (error) {
     console.log('[INSTAGRAM TOKEN VALIDATION] Token is invalid:', error);
     return false;
