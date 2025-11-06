@@ -31,7 +31,7 @@ const providerItems = [
   },
   {
     title: "Instagram",
-    url: "/oauth/facebook/start",
+    url: "/oauth/instagram",
     icon: Instagram,
     platform: "instagram" as const,
   },
