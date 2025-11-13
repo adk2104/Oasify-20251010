@@ -143,11 +143,12 @@ export async function getInstagramMedia(
   limit: number = 20
 ): Promise<any[]> {
   const url = new URL(`${GRAPH_API_BASE}/me/media`);
-  url.searchParams.set('fields', 'id,caption,media_type,media_url,timestamp,permalink,comments_count,like_count');
+  // Try fetching comments as a nested field
+  url.searchParams.set('fields', 'id,caption,media_type,media_url,timestamp,permalink,comments_count,like_count,comments{id,username,text,timestamp,like_count}');
   url.searchParams.set('limit', limit.toString());
   url.searchParams.set('access_token', accessToken);
 
-  console.log('[INSTAGRAM API] Fetching media from:', url.toString().replace(accessToken, 'REDACTED'));
+  console.log('[INSTAGRAM API] Fetching media with nested comments from:', url.toString().replace(accessToken, 'REDACTED'));
   const response = await fetch(url.toString());
 
   if (!response.ok) {
@@ -157,7 +158,7 @@ export async function getInstagramMedia(
   }
 
   const data = await response.json();
-  console.log('[INSTAGRAM API] Media response:', JSON.stringify(data, null, 2));
+  console.log('[INSTAGRAM API] Media response with comments:', JSON.stringify(data, null, 2));
   return data.data || [];
 }
 
@@ -225,37 +226,49 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
 
   const allComments: InstagramComment[] = [];
 
-  // Fetch comments for each media post
+  // Extract comments from media posts (now included as nested field)
   for (const media of mediaPosts) {
     try {
       console.log(`[INSTAGRAM SYNC] Media ${media.id} has ${media.comments_count || 0} comments according to Instagram`);
 
-      // Skip posts with no comments
-      if (!media.comments_count || media.comments_count === 0) {
-        console.log(`[INSTAGRAM SYNC] Skipping media ${media.id} - no comments reported by Instagram`);
-        continue;
-      }
+      // Check if comments were returned in the nested field
+      if (media.comments && media.comments.data && media.comments.data.length > 0) {
+        console.log(`[INSTAGRAM SYNC] Found ${media.comments.data.length} comments in nested field for media ${media.id}`);
 
-      const mediaComments = await getInstagramMediaComments(media.id, accessToken);
-      console.log(`[INSTAGRAM SYNC] Found ${mediaComments.length} comments for media ${media.id}`);
+        for (const comment of media.comments.data) {
+          allComments.push({
+            id: comment.id,
+            author: comment.username,
+            text: comment.text,
+            platform: 'instagram',
+            mediaId: media.id,
+            createdAt: new Date(comment.timestamp),
+          });
+        }
+      } else if (media.comments_count > 0) {
+        // Fallback: try the separate API endpoint
+        console.log(`[INSTAGRAM SYNC] No comments in nested field, trying separate endpoint for media ${media.id}`);
+        const mediaComments = await getInstagramMediaComments(media.id, accessToken);
+        console.log(`[INSTAGRAM SYNC] Found ${mediaComments.length} comments from endpoint for media ${media.id}`);
 
-      if (mediaComments.length === 0 && media.comments_count > 0) {
-        console.warn(`[INSTAGRAM SYNC] WARNING: Instagram reports ${media.comments_count} comments but API returned 0. This may be:`);
-        console.warn('  - Self-comments (from account owner)');
-        console.warn('  - Hidden/spam filtered comments');
-        console.warn('  - Reply comments (not top-level)');
-        console.warn('  - API permissions issue');
-      }
+        if (mediaComments.length === 0) {
+          console.warn(`[INSTAGRAM SYNC] WARNING: Instagram reports ${media.comments_count} comments but API returned 0. This may be:`);
+          console.warn('  - Self-comments (from account owner)');
+          console.warn('  - Hidden/spam filtered comments');
+          console.warn('  - Reply comments (not top-level)');
+          console.warn('  - API permissions issue');
+        }
 
-      for (const comment of mediaComments) {
-        allComments.push({
-          id: comment.id,
-          author: comment.username,
-          text: comment.text,
-          platform: 'instagram',
-          mediaId: media.id,
-          createdAt: new Date(comment.timestamp),
-        });
+        for (const comment of mediaComments) {
+          allComments.push({
+            id: comment.id,
+            author: comment.username,
+            text: comment.text,
+            platform: 'instagram',
+            mediaId: media.id,
+            createdAt: new Date(comment.timestamp),
+          });
+        }
       }
     } catch (error) {
       console.error(`[INSTAGRAM SYNC] Error fetching comments for media ${media.id}:`, error);

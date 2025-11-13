@@ -22,7 +22,7 @@ const mainItems = [
   },
 ];
 
-const providerItems = [
+const getProviderItems = (userId: number, instagramOAuthUrl: string) => [
   {
     title: "YouTube",
     url: "/oauth/google/start",
@@ -31,7 +31,7 @@ const providerItems = [
   },
   {
     title: "Instagram",
-    url: "/oauth/instagram",
+    url: `${instagramOAuthUrl}&state=${userId}`,
     icon: Instagram,
     platform: "instagram" as const,
   },
@@ -57,12 +57,15 @@ type Provider = {
 };
 
 type AppSidebarProps = {
+  userId: number;
   providers?: Provider[];
+  instagramOAuthUrl: string;
 };
 
-export function AppSidebar({ providers = [] }: AppSidebarProps) {
+export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSidebarProps) {
   const location = useLocation();
   const { isOpen, mounted } = useSidebar();
+  const providerItems = getProviderItems(userId, instagramOAuthUrl);
 
   // Helper to get connection status for a platform
   const getProviderStatus = (platform: string) => {

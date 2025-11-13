@@ -7,36 +7,57 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Youtube, Instagram, RefreshCw, Sparkles } from "lucide-react";
 import { getSession } from "~/sessions.server";
+import { getStoredComments } from "~/utils/youtube.server";
+import { db } from "~/db/config";
+import { providers, comments } from "~/db/schema";
+import { eq, and, desc } from "drizzle-orm";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('Cookie'));
   const userId = session.get('userId') as number;
 
   try {
-    const origin = new URL(request.url).origin;
-    const cookieHeader = request.headers.get('Cookie') || '';
-
-    // Fetch comments from both platforms in parallel
-    const [youtubeResponse, instagramResponse, providersResponse] = await Promise.all([
-      fetch(`${origin}/api/youtube/comments`, { headers: { Cookie: cookieHeader } }),
-      fetch(`${origin}/api/instagram/comments`, { headers: { Cookie: cookieHeader } }),
-      fetch(`${origin}/api/providers`, { headers: { Cookie: cookieHeader } }),
+    // Query database directly instead of making internal API calls
+    const [youtubeComments, instagramCommentsRaw, userProviders] = await Promise.all([
+      getStoredComments(userId),
+      db
+        .select()
+        .from(comments)
+        .where(and(eq(comments.userId, userId), eq(comments.platform, 'instagram')))
+        .orderBy(desc(comments.createdAt)),
+      db
+        .select({
+          id: providers.id,
+          platform: providers.platform,
+          platformUserId: providers.platformUserId,
+          platformData: providers.platformData,
+          isActive: providers.isActive,
+          createdAt: providers.createdAt,
+        })
+        .from(providers)
+        .where(eq(providers.userId, userId)),
     ]);
 
-    const youtubeData = await youtubeResponse.json();
-    const instagramData = await instagramResponse.json();
-    const providersData = await providersResponse.json();
-
-    const youtubeComments = youtubeData.comments || [];
-    const instagramComments = instagramData.comments || [];
+    // Format Instagram comments to match the expected structure
+    const instagramComments = instagramCommentsRaw.map(c => ({
+      id: c.commentId,
+      author: c.author,
+      authorAvatar: c.authorAvatar || '',
+      text: c.text,
+      empathicText: c.empathicText || undefined,
+      platform: 'instagram' as const,
+      mediaId: c.videoId || '',
+      createdAt: c.createdAt,
+      hasReplied: false,
+    }));
 
     // Combine and sort by date (most recent first)
     const allComments = [...youtubeComments, ...instagramComments].sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-    const youtubeProvider = providersData.providers?.find((p: any) => p.platform === 'youtube');
-    const instagramProvider = providersData.providers?.find((p: any) => p.platform === 'instagram');
+    const youtubeProvider = userProviders.find((p: any) => p.platform === 'youtube');
+    const instagramProvider = userProviders.find((p: any) => p.platform === 'instagram');
 
     return {
       comments: allComments,
@@ -44,6 +65,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       hasInstagramConnection: !!instagramProvider,
       youtubeProvider,
       instagramProvider,
+      userId,
+      instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
     };
   } catch (error) {
     console.error('Dashboard loader error:', error);
@@ -53,12 +76,14 @@ export async function loader({ request }: Route.LoaderArgs) {
       hasInstagramConnection: false,
       youtubeProvider: null,
       instagramProvider: null,
+      userId,
+      instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
     };
   }
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { comments, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider } = loaderData;
+  const { comments, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
   const [commentEmpathMode, setCommentEmpathMode] = useState<Record<string, boolean>>({});
@@ -107,12 +132,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                 Connect YouTube
               </Button>
             </Link>
-            <Link to="/oauth/facebook/start">
+            <a href={`${instagramOAuthUrl}&state=${userId}`}>
               <Button variant="outline">
                 <Instagram className="w-4 h-4 mr-2" />
                 Connect Instagram
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>

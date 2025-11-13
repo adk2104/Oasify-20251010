@@ -12,7 +12,11 @@ import {
 
 const INSTAGRAM_APP_ID = process.env.INSTAGRAM_APP_ID!;
 const INSTAGRAM_APP_SECRET = process.env.INSTAGRAM_APP_SECRET!;
-const INSTAGRAM_REDIRECT_URI = process.env.INSTAGRAM_REDIRECT_URI || 'http://localhost:5173/oauth/instagram/callback';
+const INSTAGRAM_REDIRECT_URI = process.env.INSTAGRAM_REDIRECT_URI!;
+
+if (!INSTAGRAM_APP_ID || !INSTAGRAM_APP_SECRET || !INSTAGRAM_REDIRECT_URI) {
+  throw new Error('Instagram credentials are not set');
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
