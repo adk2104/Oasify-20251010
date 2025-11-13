@@ -6,12 +6,6 @@ import { generateEmpathicVersion } from './empathy.server';
 const GRAPH_API_BASE = 'https://graph.instagram.com';
 const INSTAGRAM_API_BASE = 'https://api.instagram.com';
 
-// Legacy Facebook OAuth constants (for reference, can be removed after migration)
-const FB_GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
-const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID!;
-const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET!;
-const FACEBOOK_REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI!;
-
 interface InstagramComment {
   id: string;
   author: string;
@@ -42,7 +36,7 @@ interface InstagramUserProfile {
 }
 
 // ============================================================================
-// INSTAGRAM BUSINESS LOGIN API (NEW - Replaces Facebook OAuth)
+// INSTAGRAM BUSINESS LOGIN API
 // ============================================================================
 
 /**
@@ -149,138 +143,63 @@ export async function getInstagramMedia(
   limit: number = 20
 ): Promise<any[]> {
   const url = new URL(`${GRAPH_API_BASE}/me/media`);
-  url.searchParams.set('fields', 'id,caption,media_type,media_url,timestamp,permalink');
+  url.searchParams.set('fields', 'id,caption,media_type,media_url,timestamp,permalink,comments_count,like_count');
   url.searchParams.set('limit', limit.toString());
   url.searchParams.set('access_token', accessToken);
 
+  console.log('[INSTAGRAM API] Fetching media from:', url.toString().replace(accessToken, 'REDACTED'));
   const response = await fetch(url.toString());
 
   if (!response.ok) {
     const error = await response.text();
+    console.error('[INSTAGRAM API] Get media error:', error);
     throw new Error(`Failed to get media: ${error}`);
   }
 
   const data = await response.json();
+  console.log('[INSTAGRAM API] Media response:', JSON.stringify(data, null, 2));
   return data.data || [];
 }
 
 /**
- * Get comments on a specific media post
+ * Get comments on a specific media post (with pagination support)
  */
 export async function getInstagramMediaComments(
   mediaId: string,
   accessToken: string
 ): Promise<any[]> {
-  const url = new URL(`${GRAPH_API_BASE}/${mediaId}/comments`);
-  url.searchParams.set('fields', 'id,username,text,timestamp');
-  url.searchParams.set('access_token', accessToken);
+  let allComments: any[] = [];
+  let url: string | null = `${GRAPH_API_BASE}/${mediaId}/comments?fields=id,username,text,timestamp,like_count,replies&access_token=${accessToken}`;
 
-  const response = await fetch(url.toString());
+  console.log('[INSTAGRAM API] Fetching comments for media:', mediaId);
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to get comments for media ${mediaId}: ${error}`);
+  // Follow pagination to get all comments
+  while (url) {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[INSTAGRAM API] Get comments error:', error);
+      throw new Error(`Failed to get comments for media ${mediaId}: ${error}`);
+    }
+
+    const data = await response.json();
+    console.log('[INSTAGRAM API] Comments page response:', JSON.stringify(data, null, 2));
+
+    if (data.data && data.data.length > 0) {
+      allComments.push(...data.data);
+    }
+
+    // Check for next page
+    url = data.paging?.next || null;
+
+    if (url) {
+      console.log('[INSTAGRAM API] Following pagination cursor...');
+    }
   }
 
-  const data = await response.json();
-  return data.data || [];
-}
-
-// ============================================================================
-// LEGACY FACEBOOK OAUTH API (Keep for backwards compatibility)
-// ============================================================================
-
-// Exchange short-lived token for long-lived token (60 days)
-export async function exchangeForLongLivedToken(shortLivedToken: string): Promise<{ access_token: string; expires_in: number }> {
-  const url = new URL(`${FB_GRAPH_API_BASE}/oauth/access_token`);
-  url.searchParams.set('grant_type', 'fb_exchange_token');
-  url.searchParams.set('client_id', FACEBOOK_APP_ID);
-  url.searchParams.set('client_secret', FACEBOOK_APP_SECRET);
-  url.searchParams.set('fb_exchange_token', shortLivedToken);
-
-  const response = await fetch(url.toString());
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to exchange token: ${error}`);
-  }
-
-  return response.json();
-}
-
-// Get Facebook Pages accessible by user token
-export async function getFacebookPages(userAccessToken: string): Promise<any[]> {
-  const url = `${FB_GRAPH_API_BASE}/me/accounts?access_token=${userAccessToken}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to get Facebook pages: ${error}`);
-  }
-
-  const data = await response.json();
-  return data.data || [];
-}
-
-// Get Instagram Business Account ID from Facebook Page
-export async function getInstagramBusinessAccount(pageId: string, pageAccessToken: string): Promise<{ id: string; username: string }> {
-  const url = `${FB_GRAPH_API_BASE}/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to get Instagram business account: ${error}`);
-  }
-
-  const data = await response.json();
-
-  if (!data.instagram_business_account?.id) {
-    throw new Error('No Instagram Business Account linked to this Facebook Page');
-  }
-
-  // Get Instagram username
-  const igId = data.instagram_business_account.id;
-  const igUrl = `${FB_GRAPH_API_BASE}/${igId}?fields=username&access_token=${pageAccessToken}`;
-  const igResponse = await fetch(igUrl);
-
-  if (!igResponse.ok) {
-    throw new Error('Failed to get Instagram account details');
-  }
-
-  const igData = await igResponse.json();
-
-  return {
-    id: igId,
-    username: igData.username,
-  };
-}
-
-// Get recent media posts from Instagram Business Account
-export async function getRecentMedia(igBusinessId: string, accessToken: string, limit: number = 20): Promise<any[]> {
-  const url = `${FB_GRAPH_API_BASE}/${igBusinessId}/media?fields=id,caption,media_type,timestamp&limit=${limit}&access_token=${accessToken}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to get media: ${error}`);
-  }
-
-  const data = await response.json();
-  return data.data || [];
-}
-
-// Get comments on a specific media post
-export async function getMediaComments(mediaId: string, accessToken: string): Promise<any[]> {
-  const url = `${FB_GRAPH_API_BASE}/${mediaId}/comments?fields=id,username,text,timestamp&access_token=${accessToken}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to get comments for media ${mediaId}: ${error}`);
-  }
-
-  const data = await response.json();
-  return data.data || [];
+  console.log('[INSTAGRAM API] Total comments fetched for', mediaId, ':', allComments.length);
+  return allComments;
 }
 
 // Fetch and sync Instagram comments to database
@@ -299,7 +218,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
 
   const accessToken = provider.accessToken;
 
-  // Get recent media posts using new Instagram Business Login API
+  // Get recent media posts using Instagram Business Login API
   console.log('[INSTAGRAM SYNC] Fetching recent media...');
   const mediaPosts = await getInstagramMedia(accessToken, 20);
   console.log('[INSTAGRAM SYNC] Found', mediaPosts.length, 'media posts');
@@ -309,8 +228,24 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   // Fetch comments for each media post
   for (const media of mediaPosts) {
     try {
+      console.log(`[INSTAGRAM SYNC] Media ${media.id} has ${media.comments_count || 0} comments according to Instagram`);
+
+      // Skip posts with no comments
+      if (!media.comments_count || media.comments_count === 0) {
+        console.log(`[INSTAGRAM SYNC] Skipping media ${media.id} - no comments reported by Instagram`);
+        continue;
+      }
+
       const mediaComments = await getInstagramMediaComments(media.id, accessToken);
       console.log(`[INSTAGRAM SYNC] Found ${mediaComments.length} comments for media ${media.id}`);
+
+      if (mediaComments.length === 0 && media.comments_count > 0) {
+        console.warn(`[INSTAGRAM SYNC] WARNING: Instagram reports ${media.comments_count} comments but API returned 0. This may be:`);
+        console.warn('  - Self-comments (from account owner)');
+        console.warn('  - Hidden/spam filtered comments');
+        console.warn('  - Reply comments (not top-level)');
+        console.warn('  - API permissions issue');
+      }
 
       for (const comment of mediaComments) {
         allComments.push({
@@ -352,7 +287,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   console.log('[INSTAGRAM SYNC] Sync complete');
 }
 
-// Validate Instagram token (works for both new and legacy tokens)
+// Validate Instagram token
 export async function validateInstagramToken(provider: any): Promise<boolean> {
   try {
     // Try to get user profile - works for Instagram Business Login tokens

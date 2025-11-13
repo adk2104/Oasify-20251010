@@ -9,8 +9,6 @@ export default [
   ]),
   route("oauth/google/start", "routes/oauth.google.start.tsx"),
   route("oauth/google/callback", "routes/oauth.google.callback.tsx"),
-  route("oauth/facebook/start", "routes/oauth.facebook.start.tsx"),
-  route("oauth/facebook/callback", "routes/oauth.facebook.callback.tsx"),
   route("oauth/youtube", "routes/oauth.youtube.tsx"),
   route("oauth/instagram", "routes/oauth.instagram.tsx"),
   route("oauth/instagram/callback", "routes/oauth.instagram.callback.tsx"),
