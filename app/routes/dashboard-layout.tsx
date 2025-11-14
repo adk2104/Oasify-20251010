@@ -28,31 +28,42 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Validate tokens for all providers
   const providersWithValidation = await Promise.all(
     userProviders.map(async (provider) => {
-      if (provider.platform === 'youtube') {
-        const tokenValid = await validateYouTubeToken(provider);
+      try {
+        if (provider.platform === 'youtube') {
+          const tokenValid = await validateYouTubeToken(provider);
+          return {
+            platform: provider.platform,
+            isActive: provider.isActive,
+            tokenValid,
+          };
+        } else if (provider.platform === 'instagram') {
+          const tokenValid = await validateInstagramToken(provider);
+          return {
+            platform: provider.platform,
+            isActive: provider.isActive,
+            tokenValid,
+          };
+        }
         return {
           platform: provider.platform,
           isActive: provider.isActive,
-          tokenValid,
         };
-      } else if (provider.platform === 'instagram') {
-        const tokenValid = await validateInstagramToken(provider);
+      } catch (error) {
+        console.error(`Token validation error for ${provider.platform}:`, error);
         return {
           platform: provider.platform,
           isActive: provider.isActive,
-          tokenValid,
+          tokenValid: false,
         };
       }
-      return {
-        platform: provider.platform,
-        isActive: provider.isActive,
-      };
     })
   );
 
   return {
+    userId,
     userEmail: session.get("userEmail"),
     providers: providersWithValidation,
+    instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
   };
 }
 
@@ -68,12 +79,12 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
-  const { userEmail, providers } = loaderData;
+  const { userId, userEmail, providers, instagramOAuthUrl } = loaderData;
 
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full bg-gray-50">
-        <AppSidebar providers={providers} />
+        <AppSidebar userId={userId} providers={providers} instagramOAuthUrl={instagramOAuthUrl} />
         <div className="flex flex-col flex-1 overflow-hidden">
           <Header userEmail={userEmail} />
           <main className="flex-1 overflow-auto">
