@@ -38,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
   // Basic validation
   if (typeof email !== "string" || typeof password !== "string") {
     session.flash("error", "Invalid form submission");
-    return redirect("/", {
+    return redirect("/login", {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
@@ -52,7 +52,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (email !== mockUser.email) {
     session.flash("error", "Invalid email or password");
-    return redirect("/", {
+    return redirect("/login", {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
