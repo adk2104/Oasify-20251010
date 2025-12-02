@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, text, timestamp, pgEnum, unique } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 const platformEnum = pgEnum('platform_enum', ['youtube', 'instagram']);
@@ -6,7 +6,7 @@ const platformEnum = pgEnum('platform_enum', ['youtube', 'instagram']);
 export const comments = pgTable('comments', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  commentId: text('comment_id').notNull().unique(), // Platform-specific comment ID
+  commentId: text('comment_id').notNull(), // Platform-specific comment ID (removed .unique())
   youtubeCommentId: text('youtube_comment_id'), // Deprecated, kept for backward compatibility
   author: text('author').notNull(),
   authorAvatar: text('author_avatar'),
@@ -17,4 +17,7 @@ export const comments = pgTable('comments', {
   platform: platformEnum('platform').notNull().default('youtube'),
   createdAt: timestamp('created_at').notNull(),
   fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
-});
+}, (table) => ({
+  // Composite unique constraint: same comment can exist for different users/platforms
+  uniqueUserPlatformComment: unique().on(table.userId, table.commentId, table.platform),
+}));

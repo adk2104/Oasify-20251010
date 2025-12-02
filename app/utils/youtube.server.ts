@@ -1,6 +1,6 @@
 import { db } from '~/db/config';
 import { providers, comments } from '~/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 import { generateEmpathicVersion } from './empathy.server';
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
@@ -163,7 +163,31 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
   const freshComments = await fetchYouTubeComments(userId);
   console.log('[SYNC] Found', freshComments.length, 'comments');
 
+  // Query existing YouTube comment IDs to avoid duplicates
+  const existingCommentIds = await db
+    .select({ commentId: comments.commentId })
+    .from(comments)
+    .where(
+      and(
+        eq(comments.userId, userId),
+        eq(comments.platform, 'youtube')
+      )
+    );
+
+  const existingIds = new Set(existingCommentIds.map(c => c.commentId));
+  console.log('[SYNC] Existing comments in database:', existingIds.size);
+
+  let processedCount = 0;
+  let skippedCount = 0;
+
   for (const comment of freshComments) {
+    // Skip if comment already exists in database
+    if (existingIds.has(comment.id)) {
+      skippedCount++;
+      console.log(`[SYNC] ⏭️  Skipping duplicate comment ${comment.id}`);
+      continue;
+    }
+
     console.log('[SYNC] Processing comment', comment.id, 'text:', comment.text.substring(0, 50));
     const empathicText = await generateEmpathicVersion(comment.text);
     console.log('[SYNC] Generated empathic version for', comment.id);
@@ -181,7 +205,14 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
       platform: 'youtube',
       createdAt: comment.createdAt,
     }).onConflictDoNothing();
+
+    processedCount++;
   }
+
+  console.log('[SYNC] Sync complete - Summary:');
+  console.log(`  Total comments found: ${freshComments.length}`);
+  console.log(`  Skipped (already in DB): ${skippedCount}`);
+  console.log(`  Successfully inserted: ${processedCount}`);
 }
 
 // Validate if YouTube token is still valid
@@ -237,7 +268,7 @@ export async function getStoredComments(userId: number): Promise<YouTubeComment[
   const storedComments = await db
     .select()
     .from(comments)
-    .where(eq(comments.userId, userId))
+    .where(and(eq(comments.userId, userId), eq(comments.platform, 'youtube')))
     .orderBy(desc(comments.createdAt));
 
   return storedComments.map(c => ({
