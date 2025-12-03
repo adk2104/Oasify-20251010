@@ -1,7 +1,7 @@
 import { pgTable, serial, integer, text, timestamp, pgEnum, unique, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
-const platformEnum = pgEnum('platform_enum', ['youtube', 'instagram']);
+export const platformEnum = pgEnum('platform_enum', ['youtube', 'instagram']);
 
 export const comments = pgTable('comments', {
   id: serial('id').primaryKey(),
