@@ -222,192 +222,117 @@ export async function getInstagramMediaComments(
 
 // Fetch and sync Instagram comments to database
 export async function syncInstagramCommentsToDatabase(userId: number): Promise<void> {
-  console.log('[INSTAGRAM SYNC] Fetching comments for userId:', userId);
-
-  // Get user's Instagram provider
-  const [provider] = await db
-    .select()
-    .from(providers)
-    .where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
-
-  if (!provider || provider.platform !== 'instagram') {
-    throw new Error('Instagram provider not found');
-  }
+  const [provider] = await db.select().from(providers).where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
+  if (!provider) throw new Error('Instagram provider not found');
 
   const accessToken = provider.accessToken;
 
-  // Get recent media posts using Instagram Business Login API
-  console.log('[INSTAGRAM SYNC] Fetching recent media...');
+  // Get owner profile for isOwner detection
+  const ownerProfile = await getInstagramUserProfile(accessToken);
+  const ownerUsername = ownerProfile.username;
+
+  // Get recent media posts
   const mediaPosts = await getInstagramMedia(accessToken, 20);
-  console.log('[INSTAGRAM SYNC] Found', mediaPosts.length, 'media posts');
 
-  const allComments: InstagramComment[] = [];
+  const platformIdToDbId: Record<string, number> = {};
+  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string }> = [];
 
-  // Extract comments from media posts (now included as nested field)
+  // Process all media posts
   for (const media of mediaPosts) {
     try {
-      console.log(`[INSTAGRAM SYNC] Media ${media.id} has ${media.comments_count || 0} comments according to Instagram`);
+      // Try nested comments first
+      let commentsToProcess = media.comments?.data || [];
 
-      // Check if comments were returned in the nested field
-      if (media.comments && media.comments.data && media.comments.data.length > 0) {
-        console.log(`[INSTAGRAM SYNC] Found ${media.comments.data.length} comments in nested field for media ${media.id}`);
+      // Fallback to separate endpoint if needed
+      if (commentsToProcess.length === 0 && media.comments_count > 0) {
+        commentsToProcess = await getInstagramMediaComments(media.id, accessToken);
+      }
 
-        for (const comment of media.comments.data) {
-          // Log raw comment structure to debug field names
-          console.log(`[INSTAGRAM SYNC] Raw comment structure:`, JSON.stringify(comment, null, 2));
+      // Phase 1: Process top-level comments
+      for (const comment of commentsToProcess) {
+        if (!comment.id || !comment.text) continue;
+        const username = comment.username || comment.from?.username || comment.from?.name;
+        if (!username) continue;
 
-          // Validate required fields before adding
-          if (!comment.id) {
-            console.warn(`[INSTAGRAM SYNC] Skipping comment without ID on media ${media.id}`);
-            continue;
-          }
+        const isOwner = username === ownerUsername;
+        const empathicText = isOwner ? comment.text : await generateEmpathicVersion(comment.text);
 
-          if (!comment.text) {
-            console.warn(`[INSTAGRAM SYNC] Skipping comment ${comment.id} without text`);
-            continue;
-          }
-
-          // Check for username - Instagram might use different field names
-          const username = comment.username || comment.from?.username || comment.from?.name;
-
-          if (!username) {
-            console.warn(`[INSTAGRAM SYNC] Skipping comment ${comment.id} - missing username. Available fields:`, Object.keys(comment));
-            continue;
-          }
-
-          allComments.push({
-            id: comment.id,
-            author: username,
+        const [inserted] = await db.insert(comments).values({
+          userId,
+          commentId: comment.id,
+          author: username,
+          authorAvatar: null,
+          text: comment.text,
+          empathicText,
+          videoTitle: null,
+          videoId: media.id,
+          platform: 'instagram',
+          isReply: 0,
+          replyCount: comment.replies?.data?.length || 0,
+          isOwner: isOwner ? 1 : 0,
+          createdAt: new Date(comment.timestamp),
+        }).onConflictDoUpdate({
+          target: [comments.userId, comments.commentId, comments.platform],
+          set: {
             text: comment.text,
-            platform: 'instagram',
-            mediaId: media.id,
-            createdAt: new Date(comment.timestamp),
-          });
-          console.log(`[INSTAGRAM SYNC] ✓ Added comment ${comment.id} by ${username}`);
-        }
-      } else if (media.comments_count > 0) {
-        // Fallback: try the separate API endpoint
-        console.log(`[INSTAGRAM SYNC] No comments in nested field, trying separate endpoint for media ${media.id}`);
-        const mediaComments = await getInstagramMediaComments(media.id, accessToken);
-        console.log(`[INSTAGRAM SYNC] Found ${mediaComments.length} comments from endpoint for media ${media.id}`);
+            empathicText,
+            isOwner: isOwner ? 1 : 0,
+            replyCount: comment.replies?.data?.length || 0,
+          },
+        }).returning();
 
-        if (mediaComments.length === 0) {
-          console.warn(`[INSTAGRAM SYNC] WARNING: Instagram reports ${media.comments_count} comments but API returned 0. This may be:`);
-          console.warn('  - Self-comments (from account owner)');
-          console.warn('  - Hidden/spam filtered comments');
-          console.warn('  - Reply comments (not top-level)');
-          console.warn('  - API permissions issue');
-        }
+        platformIdToDbId[comment.id] = inserted.id;
 
-        for (const comment of mediaComments) {
-          // Log raw comment structure to debug field names
-          console.log(`[INSTAGRAM SYNC] Raw comment structure:`, JSON.stringify(comment, null, 2));
-
-          // Validate required fields
-          if (!comment.id) {
-            console.warn(`[INSTAGRAM SYNC] Skipping comment without ID on media ${media.id}`);
-            continue;
+        // Collect replies
+        if (comment.replies?.data) {
+          for (const reply of comment.replies.data) {
+            replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id });
           }
-
-          if (!comment.text) {
-            console.warn(`[INSTAGRAM SYNC] Skipping comment ${comment.id} without text`);
-            continue;
-          }
-
-          // Check for username - Instagram might use different field names
-          const username = comment.username || comment.from?.username || comment.from?.name;
-
-          if (!username) {
-            console.warn(`[INSTAGRAM SYNC] Skipping comment ${comment.id} - missing username. Available fields:`, Object.keys(comment));
-            continue;
-          }
-
-          allComments.push({
-            id: comment.id,
-            author: username,
-            text: comment.text,
-            platform: 'instagram',
-            mediaId: media.id,
-            createdAt: new Date(comment.timestamp),
-          });
-          console.log(`[INSTAGRAM SYNC] ✓ Added comment ${comment.id} by ${username}`);
         }
       }
     } catch (error) {
-      console.error(`[INSTAGRAM SYNC] Error fetching comments for media ${media.id}:`, error);
-      // Continue with other posts
+      console.error(`[INSTAGRAM SYNC] Error syncing media ${media.id}:`, error);
     }
   }
 
-  console.log('[INSTAGRAM SYNC] Total comments found:', allComments.length);
+  // Phase 2: Process replies
+  for (const { parentPlatformId, reply, mediaId } of replyData) {
+    const parentDbId = platformIdToDbId[parentPlatformId];
+    if (!parentDbId || !reply.id || !reply.text) continue;
 
-  // Query existing Instagram comment IDs to avoid duplicates
-  const existingCommentIds = await db
-    .select({ commentId: comments.commentId })
-    .from(comments)
-    .where(
-      and(
-        eq(comments.userId, userId),
-        eq(comments.platform, 'instagram')
-      )
-    );
+    const username = reply.username || reply.from?.username || reply.from?.name;
+    if (!username) continue;
 
-  const existingIds = new Set(existingCommentIds.map(c => c.commentId));
-  console.log('[INSTAGRAM SYNC] Existing comments in database:', existingIds.size);
+    const isOwner = username === ownerUsername;
+    const empathicText = isOwner ? reply.text : await generateEmpathicVersion(reply.text);
 
-  // Store comments in database with empathic versions
-  let processedCount = 0;
-  let skippedCount = 0;
-  let errorCount = 0;
-
-  for (const comment of allComments) {
-    // Skip if comment already exists in database
-    if (existingIds.has(comment.id)) {
-      skippedCount++;
-      console.log(`[INSTAGRAM SYNC] ⏭️  Skipping duplicate comment ${comment.id}`);
-      continue;
-    }
-    try {
-      console.log('[INSTAGRAM SYNC] Processing comment', comment.id, 'by', comment.author);
-
-      // Generate empathic version
-      const empathicText = await generateEmpathicVersion(comment.text);
-
-      // Insert into database (onConflictDoNothing will silently skip duplicates)
-      await db.insert(comments).values({
-        userId,
-        commentId: comment.id,
-        author: comment.author,
-        authorAvatar: null, // Instagram Graph API doesn't provide profile pictures in basic scope
-        text: comment.text,
+    await db.insert(comments).values({
+      userId,
+      commentId: reply.id,
+      author: username,
+      authorAvatar: null,
+      text: reply.text,
+      empathicText,
+      videoTitle: null,
+      videoId: mediaId,
+      platform: 'instagram',
+      isReply: 1,
+      parentId: parentDbId,
+      replyCount: 0,
+      isOwner: isOwner ? 1 : 0,
+      createdAt: new Date(reply.timestamp),
+    }).onConflictDoUpdate({
+      target: [comments.userId, comments.commentId, comments.platform],
+      set: {
+        text: reply.text,
         empathicText,
-        videoTitle: null,
-        videoId: comment.mediaId,
-        platform: 'instagram',
-        createdAt: comment.createdAt,
-      }).onConflictDoNothing();
-
-      processedCount++;
-      console.log(`[INSTAGRAM SYNC] ✓ Processed comment ${comment.id}`);
-    } catch (error) {
-      errorCount++;
-      console.error(`[INSTAGRAM SYNC] ✗ Error inserting comment ${comment.id}:`, error);
-      console.error(`[INSTAGRAM SYNC] Comment data:`, {
-        id: comment.id,
-        author: comment.author,
-        text: comment.text.substring(0, 100),
-        mediaId: comment.mediaId,
-        createdAt: comment.createdAt,
-      });
-      // Continue with next comment
-    }
+        isOwner: isOwner ? 1 : 0,
+        parentId: parentDbId,
+      },
+    });
   }
 
-  console.log('[INSTAGRAM SYNC] Sync complete - Summary:');
-  console.log(`  Total comments found: ${allComments.length}`);
-  console.log(`  Skipped (already in DB): ${skippedCount}`);
-  console.log(`  Successfully inserted: ${processedCount}`);
-  console.log(`  Errors: ${errorCount}`);
+  console.log('[INSTAGRAM SYNC] Complete');
 }
 
 // Validate Instagram token
@@ -420,4 +345,29 @@ export async function validateInstagramToken(provider: any): Promise<boolean> {
     console.log('[INSTAGRAM TOKEN VALIDATION] Token is invalid:', error);
     return false;
   }
+}
+
+// Post a reply to an Instagram comment
+export async function postInstagramReply(
+  userId: number,
+  parentPlatformCommentId: string,
+  replyText: string
+): Promise<{ platformCommentId: string; createdAt: Date }> {
+  const [provider] = await db.select().from(providers).where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
+  if (!provider) throw new Error('Instagram provider not found');
+
+  const response = await fetch(
+    `${GRAPH_API_BASE}/${parentPlatformCommentId}/replies?message=${encodeURIComponent(replyText)}&access_token=${provider.accessToken}`,
+    { method: 'POST' }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to post reply: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return {
+    platformCommentId: data.id,
+    createdAt: new Date(),
+  };
 }

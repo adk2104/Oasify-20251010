@@ -80,9 +80,9 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 
   const accessToken = await getValidAccessToken(provider);
 
-  // Get channel's uploads playlist
+  // Get channel info (for isOwner detection)
   const channelResponse = await fetch(
-    `${YOUTUBE_API_BASE}/channels?part=contentDetails&mine=true`,
+    `${YOUTUBE_API_BASE}/channels?part=contentDetails,snippet&mine=true`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
     }
@@ -94,6 +94,7 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 
   const channelData = await channelResponse.json();
   const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+  const channelId = channelData.items?.[0]?.id;
 
   if (!uploadsPlaylistId) {
     return [];
@@ -121,7 +122,7 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 
     try {
       const commentsResponse = await fetch(
-        `${YOUTUBE_API_BASE}/commentThreads?part=snippet&videoId=${videoId}&maxResults=20&order=time`,
+        `${YOUTUBE_API_BASE}/commentThreads?part=snippet,replies&videoId=${videoId}&maxResults=20&order=time`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
@@ -141,13 +142,12 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
             videoTitle,
             videoId,
             createdAt: new Date(comment.snippet.publishedAt),
-            hasReplied: false, // We don't track this without storing comments
+            hasReplied: false,
           });
         }
       }
     } catch (error) {
       console.error(`Error fetching comments for video ${videoId}:`, error);
-      // Continue with other videos
     }
   }
 
@@ -159,60 +159,130 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 
 // Sync comments from YouTube to database
 export async function syncYouTubeCommentsToDatabase(userId: number): Promise<void> {
-  console.log('[SYNC] Fetching comments from YouTube for userId:', userId);
-  const freshComments = await fetchYouTubeComments(userId);
-  console.log('[SYNC] Found', freshComments.length, 'comments');
+  const [provider] = await db.select().from(providers).where(eq(providers.userId, userId));
+  if (!provider || provider.platform !== 'youtube') throw new Error('YouTube provider not found');
 
-  // Query existing YouTube comment IDs to avoid duplicates
-  const existingCommentIds = await db
-    .select({ commentId: comments.commentId })
-    .from(comments)
-    .where(
-      and(
-        eq(comments.userId, userId),
-        eq(comments.platform, 'youtube')
-      )
-    );
+  const accessToken = await getValidAccessToken(provider);
 
-  const existingIds = new Set(existingCommentIds.map(c => c.commentId));
-  console.log('[SYNC] Existing comments in database:', existingIds.size);
+  // Get channel ID for isOwner detection
+  const channelResponse = await fetch(`${YOUTUBE_API_BASE}/channels?part=contentDetails,snippet&mine=true`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const channelData = await channelResponse.json();
+  const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+  const ownerChannelId = channelData.items?.[0]?.id;
 
-  let processedCount = 0;
-  let skippedCount = 0;
+  if (!uploadsPlaylistId) return;
 
-  for (const comment of freshComments) {
-    // Skip if comment already exists in database
-    if (existingIds.has(comment.id)) {
-      skippedCount++;
-      console.log(`[SYNC] ⏭️  Skipping duplicate comment ${comment.id}`);
-      continue;
+  // Get recent videos
+  const playlistResponse = await fetch(
+    `${YOUTUBE_API_BASE}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=5`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  const playlistData = await playlistResponse.json();
+
+  const platformIdToDbId: Record<string, number> = {};
+  const replyData: Array<{ parentPlatformId: string; reply: any }> = [];
+
+  // Fetch and process all comments
+  for (const item of playlistData.items || []) {
+    const videoId = item.snippet.resourceId.videoId;
+    const videoTitle = item.snippet.title;
+
+    try {
+      const commentsResponse = await fetch(
+        `${YOUTUBE_API_BASE}/commentThreads?part=snippet,replies&videoId=${videoId}&maxResults=20&order=time`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      if (!commentsResponse.ok) continue;
+      const commentsData = await commentsResponse.json();
+
+      // Phase 1: Process top-level comments
+      for (const thread of commentsData.items || []) {
+        const comment = thread.snippet.topLevelComment;
+        const snippet = comment.snippet;
+        const platformCommentId = comment.id;
+        const isOwner = snippet.authorChannelId?.value === ownerChannelId;
+
+        // Generate empathic text only if not owner
+        const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay);
+
+        const [inserted] = await db.insert(comments).values({
+          userId,
+          commentId: platformCommentId,
+          youtubeCommentId: platformCommentId,
+          author: snippet.authorDisplayName,
+          authorAvatar: snippet.authorProfileImageUrl,
+          text: snippet.textDisplay,
+          empathicText,
+          videoTitle,
+          videoId,
+          platform: 'youtube',
+          isReply: 0,
+          replyCount: thread.snippet.totalReplyCount || 0,
+          isOwner: isOwner ? 1 : 0,
+          createdAt: new Date(snippet.publishedAt),
+        }).onConflictDoUpdate({
+          target: [comments.userId, comments.commentId, comments.platform],
+          set: {
+            text: snippet.textDisplay,
+            empathicText,
+            isOwner: isOwner ? 1 : 0,
+            replyCount: thread.snippet.totalReplyCount || 0,
+          },
+        }).returning();
+
+        platformIdToDbId[platformCommentId] = inserted.id;
+
+        // Collect replies for phase 2
+        if (thread.replies?.comments) {
+          for (const reply of thread.replies.comments) {
+            replyData.push({ parentPlatformId: platformCommentId, reply });
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Error syncing video ${videoId}:`, error);
     }
+  }
 
-    console.log('[SYNC] Processing comment', comment.id, 'text:', comment.text.substring(0, 50));
-    const empathicText = await generateEmpathicVersion(comment.text);
-    console.log('[SYNC] Generated empathic version for', comment.id);
+  // Phase 2: Process replies
+  for (const { parentPlatformId, reply } of replyData) {
+    const parentDbId = platformIdToDbId[parentPlatformId];
+    if (!parentDbId) continue;
+
+    const snippet = reply.snippet;
+    const isOwner = snippet.authorChannelId?.value === ownerChannelId;
+    const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay);
 
     await db.insert(comments).values({
       userId,
-      commentId: comment.id,
-      youtubeCommentId: comment.id, // Keep for backward compatibility
-      author: comment.author,
-      authorAvatar: comment.authorAvatar,
-      text: comment.text,
+      commentId: reply.id,
+      youtubeCommentId: reply.id,
+      author: snippet.authorDisplayName,
+      authorAvatar: snippet.authorProfileImageUrl,
+      text: snippet.textDisplay,
       empathicText,
-      videoTitle: comment.videoTitle,
-      videoId: comment.videoId,
+      videoTitle: snippet.videoId || '',
+      videoId: snippet.videoId || '',
       platform: 'youtube',
-      createdAt: comment.createdAt,
-    }).onConflictDoNothing();
-
-    processedCount++;
+      isReply: 1,
+      parentId: parentDbId,
+      replyCount: 0,
+      isOwner: isOwner ? 1 : 0,
+      createdAt: new Date(snippet.publishedAt),
+    }).onConflictDoUpdate({
+      target: [comments.userId, comments.commentId, comments.platform],
+      set: {
+        text: snippet.textDisplay,
+        empathicText,
+        isOwner: isOwner ? 1 : 0,
+        parentId: parentDbId,
+      },
+    });
   }
 
-  console.log('[SYNC] Sync complete - Summary:');
-  console.log(`  Total comments found: ${freshComments.length}`);
-  console.log(`  Skipped (already in DB): ${skippedCount}`);
-  console.log(`  Successfully inserted: ${processedCount}`);
+  console.log('[SYNC] Complete');
 }
 
 // Validate if YouTube token is still valid
@@ -283,4 +353,40 @@ export async function getStoredComments(userId: number): Promise<YouTubeComment[
     createdAt: c.createdAt,
     hasReplied: false,
   }));
+}
+
+// Post a reply to a YouTube comment
+export async function postYouTubeReply(
+  userId: number,
+  parentPlatformCommentId: string,
+  replyText: string
+): Promise<{ platformCommentId: string; createdAt: Date }> {
+  const [provider] = await db.select().from(providers).where(eq(providers.userId, userId));
+  if (!provider || provider.platform !== 'youtube') throw new Error('YouTube provider not found');
+
+  const accessToken = await getValidAccessToken(provider);
+
+  const response = await fetch(`${YOUTUBE_API_BASE}/comments?part=snippet`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      snippet: {
+        parentId: parentPlatformCommentId,
+        textOriginal: replyText,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to post reply: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return {
+    platformCommentId: data.id,
+    createdAt: new Date(data.snippet.publishedAt),
+  };
 }
