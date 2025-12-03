@@ -1,6 +1,6 @@
 import { db } from '~/db/config';
 import { providers, comments } from '~/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { generateEmpathicVersion } from './empathy.server';
 
 const GRAPH_API_BASE = 'https://graph.instagram.com';
@@ -267,16 +267,16 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
           videoTitle: null,
           videoId: media.id,
           platform: 'instagram',
-          isReply: 0,
+          isReply: false,
           replyCount: comment.replies?.data?.length || 0,
-          isOwner: isOwner ? 1 : 0,
+          isOwner,
           createdAt: new Date(comment.timestamp),
         }).onConflictDoUpdate({
           target: [comments.userId, comments.commentId, comments.platform],
           set: {
             text: comment.text,
             empathicText,
-            isOwner: isOwner ? 1 : 0,
+            isOwner,
             replyCount: comment.replies?.data?.length || 0,
           },
         }).returning();
@@ -316,20 +316,34 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
       videoTitle: null,
       videoId: mediaId,
       platform: 'instagram',
-      isReply: 1,
+      isReply: true,
       parentId: parentDbId,
       replyCount: 0,
-      isOwner: isOwner ? 1 : 0,
+      isOwner,
       createdAt: new Date(reply.timestamp),
     }).onConflictDoUpdate({
       target: [comments.userId, comments.commentId, comments.platform],
       set: {
         text: reply.text,
         empathicText,
-        isOwner: isOwner ? 1 : 0,
+        isOwner,
         parentId: parentDbId,
       },
     });
+  }
+
+  // Recalculate reply counts from database
+  const parentIds = Object.values(platformIdToDbId);
+  if (parentIds.length > 0) {
+    for (const parentId of parentIds) {
+      const result = await db.select({ count: sql<number>`count(*)` })
+        .from(comments)
+        .where(eq(comments.parentId, parentId));
+
+      await db.update(comments)
+        .set({ replyCount: result[0].count })
+        .where(eq(comments.id, parentId));
+    }
   }
 
   console.log('[INSTAGRAM SYNC] Complete');

@@ -15,7 +15,7 @@ type Comment = {
   platform: 'youtube' | 'instagram';
   videoTitle: string | null;
   videoId: string | null;
-  isOwner: number;
+  isOwner: boolean;
   replyCount: number;
   createdAt: Date;
 };

@@ -1,7 +1,7 @@
 import type { Route } from './+types/api.comments.reply';
 import { db } from '~/db/config';
 import { comments } from '~/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { getSession } from '~/sessions.server';
 import { postYouTubeReply } from '~/utils/youtube.server';
 import { postInstagramReply } from '~/utils/instagram.server';
@@ -61,19 +61,20 @@ export async function action({ request }: Route.ActionArgs) {
       videoTitle: parentComment.videoTitle,
       videoId: parentComment.videoId,
       platform,
-      isReply: 1,
+      isReply: true,
       parentId: parentComment.id,
       replyCount: 0,
-      isOwner: 1,
+      isOwner: true,
       createdAt: result.createdAt,
     }).returning();
 
-    // Update parent reply count
-    await db
-      .update(comments)
-      .set({
-        replyCount: parentComment.replyCount + 1,
-      })
+    // Recalculate parent's reply count from database
+    const replyCountResult = await db.select({ count: sql<number>`count(*)` })
+      .from(comments)
+      .where(eq(comments.parentId, parentComment.id));
+
+    await db.update(comments)
+      .set({ replyCount: replyCountResult[0].count })
       .where(eq(comments.id, parentComment.id));
 
     return Response.json({

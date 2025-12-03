@@ -1,6 +1,6 @@
 import { db } from '~/db/config';
 import { providers, comments } from '~/db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, sql } from 'drizzle-orm';
 import { generateEmpathicVersion } from './empathy.server';
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
@@ -218,16 +218,16 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
           videoTitle,
           videoId,
           platform: 'youtube',
-          isReply: 0,
+          isReply: false,
           replyCount: thread.snippet.totalReplyCount || 0,
-          isOwner: isOwner ? 1 : 0,
+          isOwner,
           createdAt: new Date(snippet.publishedAt),
         }).onConflictDoUpdate({
           target: [comments.userId, comments.commentId, comments.platform],
           set: {
             text: snippet.textDisplay,
             empathicText,
-            isOwner: isOwner ? 1 : 0,
+            isOwner,
             replyCount: thread.snippet.totalReplyCount || 0,
           },
         }).returning();
@@ -266,20 +266,34 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
       videoTitle: snippet.videoId || '',
       videoId: snippet.videoId || '',
       platform: 'youtube',
-      isReply: 1,
+      isReply: true,
       parentId: parentDbId,
       replyCount: 0,
-      isOwner: isOwner ? 1 : 0,
+      isOwner,
       createdAt: new Date(snippet.publishedAt),
     }).onConflictDoUpdate({
       target: [comments.userId, comments.commentId, comments.platform],
       set: {
         text: snippet.textDisplay,
         empathicText,
-        isOwner: isOwner ? 1 : 0,
+        isOwner,
         parentId: parentDbId,
       },
     });
+  }
+
+  // Recalculate reply counts from database
+  const parentIds = Object.values(platformIdToDbId);
+  if (parentIds.length > 0) {
+    for (const parentId of parentIds) {
+      const result = await db.select({ count: sql<number>`count(*)` })
+        .from(comments)
+        .where(eq(comments.parentId, parentId));
+
+      await db.update(comments)
+        .set({ replyCount: result[0].count })
+        .where(eq(comments.id, parentId));
+    }
   }
 
   console.log('[SYNC] Complete');
