@@ -16,9 +16,9 @@ export const comments = pgTable('comments', {
   videoTitle: text('video_title'), // For YouTube: video title, For Instagram: can be null
   videoId: text('video_id'), // For YouTube: video ID, For Instagram: media ID
   platform: platformEnum('platform').notNull().default('youtube'),
-  isReply: integer('is_reply').$type<boolean>().default(false).notNull(),
+  isReply: integer('is_reply').$type<boolean>().default(0).notNull(),
   replyCount: integer('reply_count').default(0).notNull(),
-  isOwner: integer('is_owner').$type<boolean>().default(false).notNull(),
+  isOwner: integer('is_owner').$type<boolean>().default(0).notNull(),
   createdAt: timestamp('created_at').notNull(),
   fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
 }, (table) => ({
