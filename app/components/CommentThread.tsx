@@ -109,7 +109,7 @@ export function CommentThread({
               <span className="text-[10px] text-muted-foreground">
                 {comment.platform === 'youtube' ? 'YouTube' : 'Instagram'} • {new Date(comment.createdAt).toLocaleString()}
               </span>
-              {comment.isOwner && (
+              {Boolean(comment.isOwner) && (
                 <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                   You
                 </span>
