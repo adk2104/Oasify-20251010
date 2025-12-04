@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
 import { Switch } from '~/components/ui/switch';
-import { Youtube, Instagram } from 'lucide-react';
 import { cn } from '~/lib/utils';
 
 type Comment = {
@@ -107,13 +106,8 @@ export function CommentThread({
           <div className="flex items-center justify-between gap-2 mb-1">
             <div className="flex items-center gap-2">
               <span className={cn('font-medium', textSizeClass)}>{comment.author}</span>
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                {comment.platform === 'youtube' ? (
-                  <Youtube className="w-3 h-3" />
-                ) : (
-                  <Instagram className="w-3 h-3" />
-                )}
-                {new Date(comment.createdAt).toLocaleString()}
+              <span className="text-[10px] text-muted-foreground">
+                {comment.platform === 'youtube' ? 'YouTube' : 'Instagram'} • {new Date(comment.createdAt).toLocaleString()}
               </span>
               {comment.isOwner && (
                 <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
