@@ -5,6 +5,7 @@ import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
 import { Switch } from '~/components/ui/switch';
 import { cn } from '~/lib/utils';
+import type { CommentWithReplies } from '~/utils/comments.server';
 
 type Comment = {
   id: number;
@@ -23,7 +24,7 @@ type Comment = {
 
 type CommentThreadProps = {
   comment: Comment;
-  replies: Comment[];
+  replies: CommentWithReplies[]; // Support nested structure
   depth: number;
   globalEmpathMode: boolean;
   commentEmpathMode: Record<number, boolean>;
@@ -83,14 +84,23 @@ export function CommentThread({
     setShowReplies(true);
   };
 
-  // Remove optimistic reply and revalidate when real reply comes back
+  // Trigger revalidation when reply is successfully posted
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.success && optimisticReplies.length > 0) {
-      setOptimisticReplies([]);
-      // Revalidate to fetch the newly posted reply with proper threading
+    if (fetcher.state === 'idle' && fetcher.data?.success) {
       revalidator.revalidate();
     }
-  }, [fetcher.state, fetcher.data, optimisticReplies.length, revalidator]);
+  }, [fetcher.state, fetcher.data, revalidator]);
+
+  // Clear optimistic UI only after revalidation completes
+  useEffect(() => {
+    if (revalidator.state === 'idle' && optimisticReplies.length > 0) {
+      // Small delay to ensure loader data is processed
+      const timer = setTimeout(() => {
+        setOptimisticReplies([]);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [revalidator.state, optimisticReplies.length]);
 
   const allReplies = [...replies, ...optimisticReplies];
   const totalReplies = allReplies.length;
@@ -188,6 +198,7 @@ export function CommentThread({
               ) : (
                 <div className="space-y-1">
                   {allReplies.map((reply) => {
+                    // Handle optimistic UI (sending state)
                     if (reply.status === 'sending') {
                       return (
                         <div key={reply.id} className="py-2 opacity-50">
@@ -206,11 +217,16 @@ export function CommentThread({
                         </div>
                       );
                     }
+
+                    // Handle nested structure from server
+                    const replyComment = reply.comment || reply; // Support both structures
+                    const nestedReplies = reply.replies || [];
+
                     return (
                       <CommentThread
-                        key={reply.id}
-                        comment={reply}
-                        replies={[]}
+                        key={replyComment.id}
+                        comment={replyComment as Comment}
+                        replies={nestedReplies}
                         depth={depth + 1}
                         globalEmpathMode={globalEmpathMode}
                         commentEmpathMode={commentEmpathMode}

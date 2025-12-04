@@ -4,7 +4,7 @@ import { eq, and, isNull } from 'drizzle-orm';
 
 export type CommentWithReplies = {
   comment: typeof comments.$inferSelect;
-  replies: (typeof comments.$inferSelect)[];
+  replies: CommentWithReplies[]; // Recursive type for nested replies
 };
 
 export async function getCommentsWithReplies(
@@ -17,8 +17,8 @@ export async function getCommentsWithReplies(
 
   const all = await db.select().from(comments).where(whereClause);
 
-  // Group by parent
-  const byParent: Record<string, typeof all> = { root: [] };
+  // Group ALL comments by parentId (including nested replies)
+  const byParent: Record<string, typeof all> = {};
 
   for (const c of all) {
     const key = c.parentId ? String(c.parentId) : 'root';
@@ -26,10 +26,15 @@ export async function getCommentsWithReplies(
     byParent[key].push(c);
   }
 
-  const roots = byParent['root'] || [];
+  // Recursive function to build nested thread structure
+  function buildThread(comment: typeof all[0]): CommentWithReplies {
+    const childReplies = byParent[String(comment.id)] || [];
+    return {
+      comment,
+      replies: childReplies.map(buildThread), // Recursively build nested replies
+    };
+  }
 
-  return roots.map(root => ({
-    comment: root,
-    replies: byParent[String(root.id)] || [],
-  }));
+  const roots = byParent['root'] || [];
+  return roots.map(buildThread);
 }
