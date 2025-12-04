@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useFetcher } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useFetcher, useRevalidator } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
+import { Switch } from '~/components/ui/switch';
 import { cn } from '~/lib/utils';
 
 type Comment = {
@@ -42,6 +43,7 @@ export function CommentThread({
   const [replyText, setReplyText] = useState('');
   const [optimisticReplies, setOptimisticReplies] = useState<any[]>([]);
   const fetcher = useFetcher();
+  const revalidator = useRevalidator();
 
   const isEmpathMode = commentEmpathMode[comment.id] ?? globalEmpathMode;
   const displayText = isEmpathMode && comment.empathicText && !comment.isOwner
@@ -81,10 +83,14 @@ export function CommentThread({
     setShowReplies(true);
   };
 
-  // Remove optimistic reply when real reply comes back
-  if (fetcher.state === 'idle' && fetcher.data?.success && optimisticReplies.length > 0) {
-    setOptimisticReplies([]);
-  }
+  // Remove optimistic reply and revalidate when real reply comes back
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data?.success && optimisticReplies.length > 0) {
+      setOptimisticReplies([]);
+      // Revalidate to fetch the newly posted reply with proper threading
+      revalidator.revalidate();
+    }
+  }, [fetcher.state, fetcher.data, optimisticReplies.length, revalidator]);
 
   const allReplies = [...replies, ...optimisticReplies];
   const totalReplies = allReplies.length;
@@ -97,32 +103,36 @@ export function CommentThread({
           <AvatarFallback>{comment.author[0]}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className={cn('font-medium', textSizeClass)}>{comment.author}</span>
-            <span className="text-[10px] text-muted-foreground">
-              {new Date(comment.createdAt).toLocaleDateString()}
-            </span>
-            {comment.isOwner && (
-              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
-                You
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="flex items-center gap-2">
+              <span className={cn('font-medium', textSizeClass)}>{comment.author}</span>
+              <span className="text-[10px] text-muted-foreground">
+                {new Date(comment.createdAt).toLocaleDateString()}
               </span>
+              {comment.isOwner && (
+                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                  You
+                </span>
+              )}
+            </div>
+            {!comment.isOwner && comment.empathicText && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">
+                  {isEmpathMode ? 'Empathic' : 'Original'}
+                </span>
+                <Switch
+                  checked={isEmpathMode}
+                  onCheckedChange={() => onToggleMode(comment.id)}
+                  className="scale-75"
+                />
+              </div>
             )}
           </div>
           <p className={cn('text-foreground/90 whitespace-pre-wrap', textSizeClass)}>
             {displayText}
           </p>
-          <div className="flex items-center gap-2 mt-2">
-            {!comment.isOwner && comment.empathicText && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onToggleMode(comment.id)}
-                className="h-6 text-xs"
-              >
-                {isEmpathMode ? 'Original' : 'Empathic'}
-              </Button>
-            )}
-            {depth < 2 && (
+          {depth < 2 && (
+            <div className="flex items-center gap-2 mt-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -131,8 +141,8 @@ export function CommentThread({
               >
                 Reply
               </Button>
-            )}
-          </div>
+            </div>
+          )}
 
           {showReplyBox && (
             <div className="mt-3 space-y-2">
