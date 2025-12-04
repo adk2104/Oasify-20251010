@@ -7,24 +7,19 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Youtube, Instagram, RefreshCw, Sparkles } from "lucide-react";
 import { getSession } from "~/sessions.server";
-import { getStoredComments } from "~/utils/youtube.server";
+import { getCommentsWithReplies } from "~/utils/comments.server";
 import { db } from "~/db/config";
-import { providers, comments } from "~/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { providers } from "~/db/schema";
+import { eq } from "drizzle-orm";
+import { CommentThread } from "~/components/CommentThread";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('Cookie'));
   const userId = session.get('userId') as number;
 
   try {
-    // Query database directly instead of making internal API calls
-    const [youtubeComments, instagramCommentsRaw, userProviders] = await Promise.all([
-      getStoredComments(userId),
-      db
-        .select()
-        .from(comments)
-        .where(and(eq(comments.userId, userId), eq(comments.platform, 'instagram')))
-        .orderBy(desc(comments.createdAt)),
+    const [commentsWithReplies, userProviders] = await Promise.all([
+      getCommentsWithReplies(userId),
       db
         .select({
           id: providers.id,
@@ -38,29 +33,16 @@ export async function loader({ request }: Route.LoaderArgs) {
         .where(eq(providers.userId, userId)),
     ]);
 
-    // Format Instagram comments to match the expected structure
-    const instagramComments = instagramCommentsRaw.map(c => ({
-      id: c.commentId,
-      author: c.author,
-      authorAvatar: c.authorAvatar || '',
-      text: c.text,
-      empathicText: c.empathicText || undefined,
-      platform: 'instagram' as const,
-      mediaId: c.videoId || '',
-      createdAt: c.createdAt,
-      hasReplied: false,
-    }));
-
-    // Combine and sort by date (most recent first)
-    const allComments = [...youtubeComments, ...instagramComments].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
     const youtubeProvider = userProviders.find((p: any) => p.platform === 'youtube');
     const instagramProvider = userProviders.find((p: any) => p.platform === 'instagram');
 
+    // Sort by most recent comment first
+    const sortedComments = commentsWithReplies.sort(
+      (a, b) => new Date(b.comment.createdAt).getTime() - new Date(a.comment.createdAt).getTime()
+    );
+
     return {
-      comments: allComments,
+      commentsWithReplies: sortedComments,
       hasYouTubeConnection: !!youtubeProvider,
       hasInstagramConnection: !!instagramProvider,
       youtubeProvider,
@@ -71,7 +53,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   } catch (error) {
     console.error('Dashboard loader error:', error);
     return {
-      comments: [],
+      commentsWithReplies: [],
       hasYouTubeConnection: false,
       hasInstagramConnection: false,
       youtubeProvider: null,
@@ -83,15 +65,15 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { comments, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl } = loaderData;
+  const { commentsWithReplies, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
-  const [commentEmpathMode, setCommentEmpathMode] = useState<Record<string, boolean>>({});
+  const [commentEmpathMode, setCommentEmpathMode] = useState<Record<number, boolean>>({});
   const youtubeFetcher = useFetcher();
   const instagramFetcher = useFetcher();
   const generateFetcher = useFetcher();
 
-  const unrepliedCount = comments.filter((c: any) => !c.hasReplied).length;
+  const totalComments = commentsWithReplies.length;
   const connectedPlatform = searchParams.get('connected');
   const connectionError = searchParams.get('error');
   const isYouTubeRefreshing = youtubeFetcher.state !== 'idle';
@@ -103,17 +85,11 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     setCommentEmpathMode({});
   }, [globalEmpathMode]);
 
-  const toggleCommentMode = (commentId: string) => {
+  const toggleCommentMode = (commentId: number) => {
     setCommentEmpathMode(prev => ({
       ...prev,
       [commentId]: prev[commentId] !== undefined ? !prev[commentId] : !globalEmpathMode,
     }));
-  };
-
-  const isEmpathic = (commentId: string) => {
-    return commentEmpathMode[commentId] !== undefined
-      ? commentEmpathMode[commentId]
-      : globalEmpathMode;
   };
 
   // Show empty state if no connections
@@ -175,7 +151,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         <div>
           <h1 className="text-xl font-semibold">Inbox</h1>
           <p className="text-sm text-gray-500">
-            {comments.length} comments • {unrepliedCount} unreplied
+            {totalComments} comments
           </p>
           <div className="flex gap-4 mt-1">
             {youtubeProvider && (
@@ -233,7 +209,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
       {/* Comments List */}
       <div className="flex-1 overflow-auto bg-gray-50">
-        {comments.length === 0 ? (
+        {commentsWithReplies.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-gray-500">
               <p className="text-lg font-medium">No comments yet</p>
@@ -241,63 +217,18 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
         ) : (
-          <div className="p-4 space-y-4">
-            {comments.map((comment: any) => {
-              const showEmpathic = isEmpathic(comment.id);
-              const displayText = showEmpathic && comment.empathicText
-                ? comment.empathicText
-                : comment.text;
-
-              return (
-                <Card key={comment.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          {comment.authorAvatar && (
-                            <img
-                              src={comment.authorAvatar}
-                              alt={comment.author}
-                              className="w-6 h-6 rounded-full"
-                            />
-                          )}
-                          <span className="font-medium text-sm">{comment.author}</span>
-                          <span className="text-xs text-gray-500 capitalize">
-                            {comment.platform}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {new Date(comment.createdAt).toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-700 mb-1">{displayText}</p>
-                        {comment.videoTitle && (
-                          <p className="text-xs text-gray-500">
-                            Video: {comment.videoTitle}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-2 items-end">
-                        {comment.empathicText && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleCommentMode(comment.id)}
-                            className="text-xs"
-                          >
-                            {showEmpathic ? 'Original' : 'Empathic'}
-                          </Button>
-                        )}
-                        {comment.hasReplied && (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Replied
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="p-4 divide-y divide-gray-200">
+            {commentsWithReplies.map(({ comment, replies }) => (
+              <CommentThread
+                key={comment.id}
+                comment={comment as any}
+                replies={replies as any}
+                depth={0}
+                globalEmpathMode={globalEmpathMode}
+                commentEmpathMode={commentEmpathMode}
+                onToggleMode={toggleCommentMode}
+              />
+            ))}
           </div>
         )}
       </div>
