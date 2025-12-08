@@ -235,10 +235,13 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   const mediaPosts = await getInstagramMedia(accessToken, 20);
 
   const platformIdToDbId: Record<string, number> = {};
-  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string }> = [];
+  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string; mediaThumbnail: string | null; mediaPermalink: string | null }> = [];
 
   // Process all media posts
   for (const media of mediaPosts) {
+    const mediaPermalink = media.permalink || null;
+    const mediaThumbnail = media.media_url || null;
+
     try {
       // Try nested comments first
       let commentsToProcess = media.comments?.data || [];
@@ -266,6 +269,8 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
           empathicText,
           videoTitle: null,
           videoId: media.id,
+          videoThumbnail: mediaThumbnail,
+          videoPermalink: mediaPermalink,
           platform: 'instagram',
           isReply: false,
           replyCount: comment.replies?.data?.length || 0,
@@ -278,6 +283,8 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
             empathicText,
             isOwner,
             replyCount: comment.replies?.data?.length || 0,
+            videoThumbnail: mediaThumbnail,
+            videoPermalink: mediaPermalink,
           },
         }).returning();
 
@@ -286,7 +293,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
         // Collect replies
         if (comment.replies?.data) {
           for (const reply of comment.replies.data) {
-            replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id });
+            replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id, mediaThumbnail, mediaPermalink });
           }
         }
       }
@@ -296,7 +303,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   }
 
   // Phase 2: Process replies
-  for (const { parentPlatformId, reply, mediaId } of replyData) {
+  for (const { parentPlatformId, reply, mediaId, mediaThumbnail, mediaPermalink } of replyData) {
     const parentDbId = platformIdToDbId[parentPlatformId];
     if (!parentDbId || !reply.id || !reply.text) continue;
 
@@ -315,6 +322,8 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
       empathicText,
       videoTitle: null,
       videoId: mediaId,
+      videoThumbnail: mediaThumbnail,
+      videoPermalink: mediaPermalink,
       platform: 'instagram',
       isReply: true,
       parentId: parentDbId,

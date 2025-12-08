@@ -17,6 +17,8 @@ type Comment = {
   platform: 'youtube' | 'instagram';
   videoTitle: string | null;
   videoId: string | null;
+  videoThumbnail: string | null;
+  videoPermalink: string | null;
   isOwner: boolean;
   replyCount: number;
   createdAt: Date;
@@ -30,6 +32,17 @@ type CommentThreadProps = {
   commentEmpathMode: Record<number, boolean>;
   onToggleMode: (commentId: number) => void;
 };
+
+// Helper to construct video/post URL
+function getVideoUrl(comment: Comment): string | null {
+  if (comment.platform === 'youtube' && comment.videoId) {
+    return `https://www.youtube.com/watch?v=${comment.videoId}`;
+  }
+  if (comment.platform === 'instagram' && comment.videoPermalink) {
+    return comment.videoPermalink;
+  }
+  return null;
+}
 
 export function CommentThread({
   comment,
@@ -53,6 +66,10 @@ export function CommentThread({
 
   const marginLeftClass = depth === 0 ? '' : depth === 1 ? 'ml-4' : 'ml-8';
   const textSizeClass = depth === 0 ? 'text-sm' : depth === 1 ? 'text-xs' : 'text-[11px]';
+
+  const videoUrl = depth === 0 ? getVideoUrl(comment) : null;
+  // Show thumbnail section if we have a videoId (even without thumbnail URL) or if we have a title
+  const shouldShowThumbnailSection = depth === 0 && (comment.videoId || comment.videoTitle);
 
   const handleSubmitReply = () => {
     if (!replyText.trim()) return;
@@ -112,21 +129,20 @@ export function CommentThread({
           <AvatarImage src={comment.authorAvatar || undefined} />
           <AvatarFallback>{comment.author[0]}</AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <div className="flex items-center gap-2">
-              <span className={cn('font-medium', textSizeClass)}>{comment.author}</span>
-              <span className="text-[10px] text-muted-foreground">
-                {comment.platform === 'youtube' ? 'YouTube' : 'Instagram'} • {new Date(comment.createdAt).toLocaleString()}
+        <div className={cn('flex-1 min-w-0', shouldShowThumbnailSection ? 'max-w-[70%]' : '')}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className={cn('font-medium', textSizeClass)}>{comment.author}</span>
+            <span className="text-[10px] text-muted-foreground">
+              {comment.platform === 'youtube' ? 'YouTube' : 'Instagram'} • {new Date(comment.createdAt).toLocaleString()}
+            </span>
+            {Boolean(comment.isOwner) && (
+              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                You
               </span>
-              {Boolean(comment.isOwner) && (
-                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
-                  You
-                </span>
-              )}
-            </div>
+            )}
             {!comment.isOwner && comment.empathicText && (
-              <div className="flex items-center gap-2">
+              <>
+                <span className="text-[10px] text-muted-foreground">•</span>
                 <span className="text-[10px] text-muted-foreground">
                   {isEmpathMode ? 'Empathic' : 'Original'}
                 </span>
@@ -135,7 +151,7 @@ export function CommentThread({
                   onCheckedChange={() => onToggleMode(comment.id)}
                   className="scale-75"
                 />
-              </div>
+              </>
             )}
           </div>
           <p className={cn('text-foreground/90 whitespace-pre-wrap', textSizeClass)}>
@@ -239,6 +255,41 @@ export function CommentThread({
             </div>
           )}
         </div>
+
+        {/* Thumbnail on right side (top-level only) */}
+        {shouldShowThumbnailSection && (
+          <div className="shrink-0 flex flex-col gap-1 w-24">
+            {comment.videoThumbnail ? (
+              <a
+                href={videoUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`View on ${comment.platform === 'youtube' ? 'YouTube' : 'Instagram'}`}
+                className={videoUrl ? '' : 'pointer-events-none'}
+              >
+                <img
+                  src={comment.videoThumbnail}
+                  alt={comment.videoTitle || 'Post thumbnail'}
+                  className="w-24 h-24 object-cover rounded-lg hover:opacity-80 transition-opacity cursor-pointer"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </a>
+            ) : (
+              <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
+            {comment.videoTitle && (
+              <p className="text-xs text-muted-foreground line-clamp-2 w-24">
+                {comment.videoTitle}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

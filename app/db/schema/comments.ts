@@ -16,6 +16,8 @@ export const comments = pgTable('comments', {
   empathicText: text('empathic_text'),
   videoTitle: text('video_title'), // For YouTube: video title, For Instagram: can be null
   videoId: text('video_id'), // For YouTube: video ID, For Instagram: media ID
+  videoThumbnail: text('video_thumbnail'), // Stores thumbnail URL for both platforms
+  videoPermalink: text('video_permalink'), // Stores Instagram permalink (null for YouTube)
   platform: platformEnum('platform').notNull().default('youtube'),
   isReply: integer('is_reply').$type<boolean>().default(sql`0`).notNull(),
   replyCount: integer('reply_count').default(0).notNull(),

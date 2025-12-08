@@ -188,6 +188,9 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
   for (const item of playlistData.items || []) {
     const videoId = item.snippet.resourceId.videoId;
     const videoTitle = item.snippet.title;
+    const videoThumbnail = item.snippet.thumbnails.medium?.url ||
+                           item.snippet.thumbnails.default?.url ||
+                           null;
 
     try {
       const commentsResponse = await fetch(
@@ -217,6 +220,8 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
           empathicText,
           videoTitle,
           videoId,
+          videoThumbnail,
+          videoPermalink: null,
           platform: 'youtube',
           isReply: false,
           replyCount: thread.snippet.totalReplyCount || 0,
@@ -229,6 +234,7 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
             empathicText,
             isOwner,
             replyCount: thread.snippet.totalReplyCount || 0,
+            videoThumbnail,
           },
         }).returning();
 
@@ -265,6 +271,8 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
       empathicText,
       videoTitle: snippet.videoId || '',
       videoId: snippet.videoId || '',
+      videoThumbnail: null,
+      videoPermalink: null,
       platform: 'youtube',
       isReply: true,
       parentId: parentDbId,
