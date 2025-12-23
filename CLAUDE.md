@@ -43,16 +43,27 @@ Routes are explicitly defined (NOT file-based naming):
 
 ```typescript
 export default [
-  index("routes/login.tsx"),
+  index("routes/landing.tsx"),                   // / (public landing)
+  route("login", "routes/login.tsx"),
+  route("terms", "routes/terms.tsx"),
+  route("privacy", "routes/privacy.tsx"),
+  route("delete-data", "routes/delete-data.tsx"),
   route("dashboard", "routes/dashboard-layout.tsx", [
-    index("routes/dashboard.tsx"),              // /dashboard
+    index("routes/dashboard.tsx"),               // /dashboard
     route("analytics", "routes/dashboard.analytics.tsx"),
     route("settings", "routes/dashboard.settings.tsx"),
   ]),
+  // OAuth flows
   route("oauth/google/start", "routes/oauth.google.start.tsx"),
   route("oauth/google/callback", "routes/oauth.google.callback.tsx"),
+  route("oauth/youtube", "routes/oauth.youtube.tsx"),
+  route("oauth/instagram", "routes/oauth.instagram.tsx"),
+  route("oauth/instagram/callback", "routes/oauth.instagram.callback.tsx"),
+  // API endpoints
   route("api/providers", "routes/api.providers.tsx"),
   route("api/youtube/comments", "routes/api.youtube.comments.tsx"),
+  route("api/instagram/comments", "routes/api.instagram.comments.tsx"),
+  route("api/comments/reply", "routes/api.comments.reply.tsx"),
 ]
 ```
 
@@ -159,6 +170,20 @@ type SessionData = {
 **Scopes**:
 - `youtube.readonly`
 - `youtube.force-ssl`
+
+### Instagram Integration
+
+Uses Meta Graph API v20.0 for Instagram Business Account comments.
+
+**Authentication Chain**:
+1. User access token (IG_DEV_USER_TOKEN)
+2. Facebook Pages (me/accounts)
+3. Page access token
+4. Instagram Business Account ID
+
+**Required Permissions**: `pages_show_list`, `pages_read_engagement`, `instagram_basic`, `instagram_manage_comments`
+
+Implementation in `app/utils/instagram.server.ts`
 
 ### Token Refresh Pattern
 
@@ -311,6 +336,8 @@ User clicks "Connect YouTube" → GET /oauth/google/start
 | `app/db/schema/` | Database table definitions |
 | `app/utils/auth.server.ts` | Password hashing, auth checks |
 | `app/utils/youtube.server.ts` | YouTube API integration |
+| `app/utils/instagram.server.ts` | Instagram Graph API integration |
+| `app/utils/comments.server.ts` | Unified comment operations |
 | `app/utils/empathy.server.ts` | Claude AI comment transformation |
 | `app/components/ui/` | Reusable UI components |
 | `app/lib/utils.ts` | Helper functions (cn()) |

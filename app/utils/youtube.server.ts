@@ -72,9 +72,9 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
   const [provider] = await db
     .select()
     .from(providers)
-    .where(eq(providers.userId, userId));
+    .where(and(eq(providers.userId, userId), eq(providers.platform, 'youtube')));
 
-  if (!provider || provider.platform !== 'youtube') {
+  if (!provider) {
     throw new Error('YouTube provider not found');
   }
 
@@ -159,8 +159,11 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 
 // Sync comments from YouTube to database
 export async function syncYouTubeCommentsToDatabase(userId: number): Promise<void> {
-  const [provider] = await db.select().from(providers).where(eq(providers.userId, userId));
-  if (!provider || provider.platform !== 'youtube') throw new Error('YouTube provider not found');
+  const [provider] = await db
+    .select()
+    .from(providers)
+    .where(and(eq(providers.userId, userId), eq(providers.platform, 'youtube')));
+  if (!provider) throw new Error('YouTube provider not found');
 
   const accessToken = await getValidAccessToken(provider);
 
@@ -191,6 +194,7 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
     const videoThumbnail = item.snippet.thumbnails.medium?.url ||
                            item.snippet.thumbnails.default?.url ||
                            null;
+    console.log('[SYNC] Video thumbnail:', videoId, videoThumbnail ? 'HAS THUMBNAIL' : 'NO THUMBNAIL');
 
     try {
       const commentsResponse = await fetch(
@@ -230,11 +234,15 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
         }).onConflictDoUpdate({
           target: [comments.userId, comments.commentId, comments.platform],
           set: {
+            author: snippet.authorDisplayName,
+            authorAvatar: snippet.authorProfileImageUrl,
             text: snippet.textDisplay,
             empathicText,
+            videoTitle,
+            videoId,
+            videoThumbnail,
             isOwner,
             replyCount: thread.snippet.totalReplyCount || 0,
-            videoThumbnail,
           },
         }).returning();
 
@@ -259,6 +267,7 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
 
     const snippet = reply.snippet;
     const isOwner = snippet.authorChannelId?.value === ownerChannelId;
+    console.log('[SYNC REPLY] Author:', snippet.authorDisplayName, '| authorChannelId:', snippet.authorChannelId?.value, '| ownerChannelId:', ownerChannelId, '| isOwner:', isOwner);
     const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay);
 
     await db.insert(comments).values({
@@ -282,8 +291,12 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
     }).onConflictDoUpdate({
       target: [comments.userId, comments.commentId, comments.platform],
       set: {
+        author: snippet.authorDisplayName,
+        authorAvatar: snippet.authorProfileImageUrl,
         text: snippet.textDisplay,
         empathicText,
+        videoTitle: snippet.videoId || '',
+        videoId: snippet.videoId || '',
         isOwner,
         parentId: parentDbId,
       },
@@ -383,8 +396,11 @@ export async function postYouTubeReply(
   parentPlatformCommentId: string,
   replyText: string
 ): Promise<{ platformCommentId: string; createdAt: Date }> {
-  const [provider] = await db.select().from(providers).where(eq(providers.userId, userId));
-  if (!provider || provider.platform !== 'youtube') throw new Error('YouTube provider not found');
+  const [provider] = await db
+    .select()
+    .from(providers)
+    .where(and(eq(providers.userId, userId), eq(providers.platform, 'youtube')));
+  if (!provider) throw new Error('YouTube provider not found');
 
   const accessToken = await getValidAccessToken(provider);
 

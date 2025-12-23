@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, pgEnum, unique, index, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, text, timestamp, pgEnum, unique, index, uniqueIndex, boolean } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { users } from './users';
 
@@ -19,9 +19,9 @@ export const comments = pgTable('comments', {
   videoThumbnail: text('video_thumbnail'), // Stores thumbnail URL for both platforms
   videoPermalink: text('video_permalink'), // Stores Instagram permalink (null for YouTube)
   platform: platformEnum('platform').notNull().default('youtube'),
-  isReply: integer('is_reply').$type<boolean>().default(sql`0`).notNull(),
+  isReply: boolean('is_reply').default(false).notNull(),
   replyCount: integer('reply_count').default(0).notNull(),
-  isOwner: integer('is_owner').$type<boolean>().default(sql`0`).notNull(),
+  isOwner: boolean('is_owner').default(false).notNull(),
   createdAt: timestamp('created_at').notNull(),
   fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
 }, (table) => ({

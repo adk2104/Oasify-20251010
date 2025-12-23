@@ -62,7 +62,7 @@ export function CommentThread({
   const isEmpathMode = commentEmpathMode[comment.id] ?? globalEmpathMode;
   const displayText = isEmpathMode && comment.empathicText && !comment.isOwner
     ? comment.empathicText
-    : comment.text;
+    : (comment.text || '');
 
   const marginLeftClass = depth === 0 ? '' : depth === 1 ? 'ml-4' : 'ml-8';
   const textSizeClass = depth === 0 ? 'text-sm' : depth === 1 ? 'text-xs' : 'text-[11px]';
@@ -127,20 +127,20 @@ export function CommentThread({
       <div className="flex gap-3">
         <Avatar className="h-8 w-8 shrink-0">
           <AvatarImage src={comment.authorAvatar || undefined} />
-          <AvatarFallback>{comment.author[0]}</AvatarFallback>
+          <AvatarFallback>{comment.author?.[0] || '?'}</AvatarFallback>
         </Avatar>
         <div className={cn('flex-1 min-w-0', shouldShowThumbnailSection ? 'max-w-[70%]' : '')}>
           <div className="flex items-center gap-2 mb-1">
-            <span className={cn('font-medium', textSizeClass)}>{comment.author}</span>
+            <span className={cn('font-medium', textSizeClass)}>{comment.author || 'Unknown'}</span>
             <span className="text-[10px] text-muted-foreground">
-              {comment.platform === 'youtube' ? 'YouTube' : 'Instagram'} • {new Date(comment.createdAt).toLocaleString()}
+              {comment.platform === 'youtube' ? 'YouTube' : 'Instagram'} • {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ''}
             </span>
             {Boolean(comment.isOwner) && (
               <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                 You
               </span>
             )}
-            {!comment.isOwner && comment.empathicText && (
+            {!comment.isOwner && comment.empathicText && comment.empathicText !== comment.text && (
               <>
                 <span className="text-[10px] text-muted-foreground">•</span>
                 <span className="text-[10px] text-muted-foreground">

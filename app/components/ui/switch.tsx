@@ -1,33 +1,47 @@
 import * as React from "react"
 import { cn } from "~/lib/utils"
 
-export interface SwitchProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface SwitchProps {
+  checked?: boolean
   onCheckedChange?: (checked: boolean) => void
+  className?: string
+  disabled?: boolean
 }
 
-const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
-  ({ className, onCheckedChange, checked, ...props }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      onCheckedChange?.(e.target.checked)
-      props.onChange?.(e)
+const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
+  ({ className, onCheckedChange, checked, disabled, ...props }, ref) => {
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault()
+      if (!disabled) {
+        onCheckedChange?.(!checked)
+      }
     }
 
     return (
-      <label className="inline-flex items-center cursor-pointer">
-        <input
-          type="checkbox"
-          className="sr-only peer"
-          ref={ref}
-          checked={checked}
-          onChange={handleChange}
-          {...props}
-        />
-        <div className={cn(
-          "relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600",
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        ref={ref}
+        onClick={handleClick}
+        disabled={disabled}
+        className={cn(
+          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
+          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300",
+          checked ? "bg-blue-600" : "bg-gray-200",
+          disabled && "opacity-50 cursor-not-allowed",
           className
-        )} />
-      </label>
+        )}
+        {...props}
+      >
+        <span
+          className={cn(
+            "pointer-events-none block h-5 w-5 rounded-full bg-white border border-gray-300 shadow-sm transition-transform",
+            "absolute top-[2px] left-[2px]",
+            checked && "translate-x-5"
+          )}
+        />
+      </button>
     )
   }
 )
