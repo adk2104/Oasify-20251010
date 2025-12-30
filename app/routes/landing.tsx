@@ -25,7 +25,7 @@ export default function LandingPage() {
             <Link to="/login">
               <Button variant="ghost" size="sm">Sign In</Button>
             </Link>
-            <Link to="/login">
+            <Link to="/signup">
               <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white">
                 Get Started
               </Button>
@@ -44,7 +44,7 @@ export default function LandingPage() {
             Connect your social accounts, see all comments in a unified inbox, and respond with empathy using AI-powered suggestions.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link to="/login">
+            <Link to="/signup">
               <Button size="lg" className="bg-cyan-500 hover:bg-cyan-600 text-white">
                 Get Started for Free
               </Button>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, Link, data, redirect } from "react-router";
-import type { Route } from "./+types/login";
+import type { Route } from "./+types/signup";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -36,7 +36,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (typeof email !== "string" || !email.includes("@")) {
     session.flash("error", "Please enter a valid email address");
-    return redirect("/login", {
+    return redirect("/signup", {
       headers: { "Set-Cookie": await commitSession(session) },
     });
   }
@@ -59,15 +59,15 @@ export async function action({ request }: Route.ActionArgs) {
       headers: { "Set-Cookie": await commitSession(session) },
     });
   } catch (error) {
-    console.error("[LOGIN ERROR]", error);
+    console.error("[SIGNUP ERROR]", error);
     session.flash("error", "Failed to send verification email. Please try again.");
-    return redirect("/login", {
+    return redirect("/signup", {
       headers: { "Set-Cookie": await commitSession(session) },
     });
   }
 }
 
-export default function LoginPage({ loaderData }: Route.ComponentProps) {
+export default function SignupPage({ loaderData }: Route.ComponentProps) {
   const { error } = loaderData;
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,9 +75,9 @@ export default function LoginPage({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
           <CardDescription>
-            Enter your email to receive a sign-in code
+            Enter your email to get started with Oasify
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -110,16 +110,25 @@ export default function LoginPage({ loaderData }: Route.ComponentProps) {
               ) : (
                 <Mail className="mr-2 h-4 w-4" />
               )}
-              Send Code
+              Continue with Email
             </Button>
           </Form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-cyan-500 hover:text-cyan-600 font-medium">
-                Sign up
+              Already have an account?{" "}
+              <Link to="/login" className="text-cyan-500 hover:text-cyan-600 font-medium">
+                Sign in
               </Link>
+            </p>
+          </div>
+
+          <div className="mt-4 text-center">
+            <p className="text-xs text-gray-400">
+              By signing up, you agree to our{" "}
+              <Link to="/terms" className="underline hover:text-gray-600">Terms</Link>
+              {" "}and{" "}
+              <Link to="/privacy" className="underline hover:text-gray-600">Privacy Policy</Link>
             </p>
           </div>
         </CardContent>
