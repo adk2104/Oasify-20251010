@@ -267,18 +267,20 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   const ownerProfile = await getInstagramUserProfile(accessToken);
   const ownerUsername = ownerProfile.username;
 
-  // Get recent media posts
-  const mediaPosts = await getInstagramMedia(accessToken, 20);
+  // Get recent media posts (limit to 5 to match YouTube)
+  const mediaPosts = await getInstagramMedia(accessToken, 5);
   console.log('[INSTAGRAM SYNC] Starting sync for', mediaPosts.length, 'media posts');
 
   const platformIdToDbId: Record<string, number> = {};
-  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string; mediaThumbnail: string | null; mediaPermalink: string | null }> = [];
+  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string; mediaTitle: string | null; mediaThumbnail: string | null; mediaPermalink: string | null }> = [];
 
   // Process all media posts
   for (const media of mediaPosts) {
     const mediaPermalink = media.permalink || null;
     // Use thumbnail_url for videos/reels, media_url for images
     const mediaThumbnail = media.thumbnail_url || media.media_url || null;
+    // Use caption as the title (truncate if too long)
+    const mediaTitle = media.caption ? media.caption.substring(0, 100) + (media.caption.length > 100 ? '...' : '') : null;
 
     try {
       // Try nested comments first
@@ -309,7 +311,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
           authorAvatar: null,
           text: comment.text,
           empathicText,
-          videoTitle: null,
+          videoTitle: mediaTitle,
           videoId: media.id,
           videoThumbnail: mediaThumbnail,
           videoPermalink: mediaPermalink,
@@ -324,6 +326,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
             author: username,
             text: comment.text,
             empathicText,
+            videoTitle: mediaTitle,
             videoId: media.id,
             videoThumbnail: mediaThumbnail,
             videoPermalink: mediaPermalink,
@@ -340,7 +343,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
           try {
             const fullReplies = await getInstagramCommentReplies(comment.id, accessToken);
             for (const reply of fullReplies) {
-              replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id, mediaThumbnail, mediaPermalink });
+              replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id, mediaTitle, mediaThumbnail, mediaPermalink });
             }
           } catch (error) {
             console.error(`[INSTAGRAM SYNC] Error fetching replies for comment ${comment.id}:`, error);
@@ -357,7 +360,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   // Phase 2: Process replies
   console.log(`[INSTAGRAM SYNC] Phase 2: Processing ${replyData.length} total replies`);
 
-  for (const { parentPlatformId, reply, mediaId, mediaThumbnail, mediaPermalink } of replyData) {
+  for (const { parentPlatformId, reply, mediaId, mediaTitle, mediaThumbnail, mediaPermalink } of replyData) {
     const parentDbId = platformIdToDbId[parentPlatformId];
     if (!parentDbId) {
       console.log(`[INSTAGRAM SYNC] Skipping reply ${reply.id}: parent DB ID not found for platform ID ${parentPlatformId}`);
@@ -383,7 +386,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
       authorAvatar: null,
       text: reply.text,
       empathicText,
-      videoTitle: null,
+      videoTitle: mediaTitle,
       videoId: mediaId,
       videoThumbnail: mediaThumbnail,
       videoPermalink: mediaPermalink,
@@ -399,6 +402,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
         author: author,
         text: reply.text,
         empathicText,
+        videoTitle: mediaTitle,
         videoId: mediaId,
         videoThumbnail: mediaThumbnail,
         videoPermalink: mediaPermalink,

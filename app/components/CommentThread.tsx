@@ -7,6 +7,17 @@ import { Switch } from '~/components/ui/switch';
 import { cn } from '~/lib/utils';
 import type { CommentWithReplies } from '~/utils/comments.server';
 
+// Generate a consistent color based on a string (username)
+function getAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Generate a hue between 0-360, with good saturation and lightness
+  const hue = Math.abs(hash % 360);
+  return `hsl(${hue}, 65%, 55%)`;
+}
+
 type Comment = {
   id: number;
   commentId: string;
@@ -126,8 +137,16 @@ export function CommentThread({
     <div className={cn('py-3', marginLeftClass)}>
       <div className="flex gap-3">
         <Avatar className="h-8 w-8 shrink-0">
-          <AvatarImage src={comment.authorAvatar || undefined} />
-          <AvatarFallback>{comment.author?.[0] || '?'}</AvatarFallback>
+          {comment.authorAvatar ? (
+            <AvatarImage src={comment.authorAvatar} />
+          ) : (
+            <AvatarFallback
+              className="text-white font-semibold text-sm"
+              style={{ backgroundColor: getAvatarColor(comment.author || 'Unknown') }}
+            >
+              {comment.author?.[0]?.toUpperCase() || '?'}
+            </AvatarFallback>
+          )}
         </Avatar>
         <div className={cn('flex-1 min-w-0', shouldShowThumbnailSection ? 'max-w-[70%]' : '')}>
           <div className="flex items-center gap-2 mb-1">
@@ -140,7 +159,7 @@ export function CommentThread({
                 You
               </span>
             )}
-            {!comment.isOwner && comment.empathicText && comment.empathicText !== comment.text && (
+            {!comment.isOwner && comment.empathicText && (
               <>
                 <span className="text-[10px] text-muted-foreground">•</span>
                 <span className="text-[10px] text-muted-foreground">
@@ -220,7 +239,12 @@ export function CommentThread({
                         <div key={reply.id} className="py-2 opacity-50">
                           <div className="flex gap-2">
                             <Avatar className="h-6 w-6">
-                              <AvatarFallback>Y</AvatarFallback>
+                              <AvatarFallback
+                                className="text-white font-semibold text-xs"
+                                style={{ backgroundColor: getAvatarColor('You') }}
+                              >
+                                Y
+                              </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                               <div className="text-xs font-medium">You</div>

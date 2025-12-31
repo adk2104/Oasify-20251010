@@ -79,6 +79,16 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const isYouTubeRefreshing = youtubeFetcher.state !== 'idle';
   const isInstagramRefreshing = instagramFetcher.state !== 'idle';
   const isGenerating = generateFetcher.state !== 'idle';
+  const isSyncingAny = isYouTubeRefreshing || isInstagramRefreshing;
+
+  const handleSyncAll = () => {
+    if (hasYouTubeConnection) {
+      youtubeFetcher.submit({}, { method: 'POST', action: '/api/youtube/comments' });
+    }
+    if (hasInstagramConnection) {
+      instagramFetcher.submit({}, { method: 'POST', action: '/api/instagram/comments' });
+    }
+  };
 
   // When global toggle changes, reset all individual toggles
   useEffect(() => {
@@ -167,21 +177,16 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {hasYouTubeConnection && (
-            <youtubeFetcher.Form method="post" action="/api/youtube/comments">
-              <Button type="submit" variant="outline" size="sm" disabled={isYouTubeRefreshing}>
-                <Youtube className={`w-4 h-4 mr-2 ${isYouTubeRefreshing ? 'animate-spin' : ''}`} />
-                {isYouTubeRefreshing ? 'Syncing...' : 'Sync YouTube'}
-              </Button>
-            </youtubeFetcher.Form>
-          )}
-          {hasInstagramConnection && (
-            <instagramFetcher.Form method="post" action="/api/instagram/comments">
-              <Button type="submit" variant="outline" size="sm" disabled={isInstagramRefreshing}>
-                <Instagram className={`w-4 h-4 mr-2 ${isInstagramRefreshing ? 'animate-spin' : ''}`} />
-                {isInstagramRefreshing ? 'Syncing...' : 'Sync Instagram'}
-              </Button>
-            </instagramFetcher.Form>
+          {(hasYouTubeConnection || hasInstagramConnection) && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleSyncAll}
+              disabled={isSyncingAny}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
+              {isSyncingAny ? 'Syncing...' : 'Sync All'}
+            </Button>
           )}
           <generateFetcher.Form method="post" action="/api/youtube/comments?action=generate">
             <Button type="submit" variant="outline" size="sm" disabled={isGenerating}>

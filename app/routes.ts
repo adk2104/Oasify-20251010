@@ -22,5 +22,6 @@ export default [
   route("api/youtube/comments", "routes/api.youtube.comments.tsx"),
   route("api/instagram/comments", "routes/api.instagram.comments.tsx"),
   route("api/comments/reply", "routes/api.comments.reply.tsx"),
+  route("api/comments/delete", "routes/api.comments.delete.tsx"),
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/.well-known.appspecific.com.chrome.devtools.json.ts"),
 ] satisfies RouteConfig;
