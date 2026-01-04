@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "comment": "you look fat",
+    "category": "purely_negative",
+    "expectedBehavior": "Transform to positive compliment"
+  },
+  {
+    "id": 2,
+    "comment": "this video is terrible and boring",
+    "category": "purely_negative",
+    "expectedBehavior": "Transform to appreciation"
+  },
+  {
+    "id": 3,
+    "comment": "your editing is bad but the topic is interesting",
+    "category": "negative_with_constructive",
+    "expectedBehavior": "Keep constructive part, reframe negativity"
+  },
+  {
+    "id": 4,
+    "comment": "Based on this video, I can tell you have no actual clue what a real narcissist is, and for that reason, I agree you should stop using the term.",
+    "category": "dismissive_with_disagreement",
+    "expectedBehavior": "Preserve disagreement, remove condescension"
+  },
+  {
+    "id": 5,
+    "comment": "love this so much!",
+    "category": "positive",
+    "expectedBehavior": "Leave unchanged"
+  },
+  {
+    "id": 6,
+    "comment": "这个视频太烂了",
+    "category": "purely_negative_chinese",
+    "expectedBehavior": "Transform to positive in Chinese"
+  },
+  {
+    "id": 7,
+    "comment": "That is a shortcut to a disaster",
+    "category": "negative_warning",
+    "expectedBehavior": "Soften to concerned tone"
+  },
+  {
+    "id": 8,
+    "comment": "you got old",
+    "category": "purely_negative",
+    "expectedBehavior": "Transform to positive compliment"
+  },
+  {
+    "id": 9,
+    "comment": "i don't like this app, it's too ugly",
+    "category": "negative_with_implicit_constructive",
+    "expectedBehavior": "Keep feedback, add positive framing"
+  },
+  {
+    "id": 10,
+    "comment": "This is spreading dangerous misinformation.",
+    "category": "strong_disagreement",
+    "expectedBehavior": "Preserve concern, soften accusatory tone"
+  },
+  {
+    "id": 11,
+    "comment": "I think you can go about it your new way and you will find yourself in relationships with people who won't give you the same grace",
+    "category": "dismissive_prediction",
+    "expectedBehavior": "Keep concern, remove condescension"
+  },
+  {
+    "id": 12,
+    "comment": "meh, it's okay I guess",
+    "category": "neutral_lukewarm",
+    "expectedBehavior": "Add gentle encouragement"
+  },
+  {
+    "id": 13,
+    "comment": "You're wrong about everything in this video",
+    "category": "purely_negative_disagreement",
+    "expectedBehavior": "Transform to respectful disagreement"
+  },
+  {
+    "id": 14,
+    "comment": "nobody cares",
+    "category": "dismissive_troll",
+    "expectedBehavior": "Transform to engagement or appreciation"
+  },
+  {
+    "id": 15,
+    "comment": "Great video! Although the audio could be better quality.",
+    "category": "positive_with_constructive",
+    "expectedBehavior": "Keep both positive and constructive parts"
+  }
+]

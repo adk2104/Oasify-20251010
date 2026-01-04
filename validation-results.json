@@ -1,0 +1,257 @@
+[
+  {
+    "id": 1,
+    "original": "you look fat",
+    "transformed": "you look so beautiful",
+    "category": "purely_negative",
+    "expectedBehavior": "Transform to positive compliment",
+    "evaluation": {
+      "empathy": 7,
+      "language_preservation": 10,
+      "meaning_preservation": 3,
+      "tone_appropriateness": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 5,
+      "overall_score": 6.8,
+      "feedback": "The transformation completely reverses the original critical comment to a positive compliment. While the intent is kind, it lacks nuance and feels somewhat forced. The empathy is well-intentioned but the radical shift from critical to effusive may not feel authentic. A more balanced approach might be to focus on the person's inherent worth or specific positive attributes rather than making a blanket statement about appearance."
+    }
+  },
+  {
+    "id": 2,
+    "original": "this video is terrible and boring",
+    "transformed": "I appreciate you sharing this content",
+    "category": "purely_negative",
+    "expectedBehavior": "Transform to appreciation",
+    "evaluation": {
+      "empathy": 7,
+      "language_preservation": 10,
+      "meaning_preservation": 3,
+      "tone_appropriateness": 5,
+      "no_meta_commentary": 10,
+      "naturalness": 6,
+      "overall_score": 6.8,
+      "feedback": "While the transformation maintains language and avoids meta-commentary, it completely loses the original critical meaning. The comment 'I appreciate you sharing this content' doesn't acknowledge the original negative sentiment and feels overly generic. A more effective empathetic transformation might validate the user's experience while gently redirecting, such as 'This video didn't quite resonate with me, but I appreciate the effort behind creating content.'"
+    }
+  },
+  {
+    "id": 3,
+    "original": "your editing is bad but the topic is interesting",
+    "transformed": "the topic is really interesting! the editing could be refined to make it even better",
+    "category": "negative_with_constructive",
+    "expectedBehavior": "Keep constructive part, reframe negativity",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "meaning_preservation": 9,
+      "tone_appropriateness": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.33,
+      "feedback": "The transformation effectively reframes the criticism in a constructive and positive way. It acknowledges the interesting topic while offering gentle, supportive feedback about the editing. The language is preserved, and the critique is transformed into an encouraging suggestion for improvement. The comment sounds mostly natural, though slightly could be made even more conversational."
+    }
+  },
+  {
+    "id": 4,
+    "original": "Based on this video, I can tell you have no actual clue what a real narcissist is, and for that reason, I agree you should stop using the term.",
+    "transformed": "I think there might be more to clinical narcissism than what was covered here, though I agree with your point about the term being overused.",
+    "category": "dismissive_with_disagreement",
+    "expectedBehavior": "Preserve disagreement, remove condescension",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 9,
+      "meaning_preservation": 9,
+      "tone_appropriateness": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 8.8,
+      "feedback": "The transformation successfully softens the harsh original criticism while maintaining the core disagreement. It replaces the accusatory 'no actual clue' with a more nuanced 'might be more to', and removes the condescending language. The revised comment acknowledges complexity and shows respect for the original perspective. The phrase 'I agree with your point about' helps bridge the disagreement constructively. Could potentially be slightly more conversational, but overall an excellent empathetic reframing."
+    }
+  },
+  {
+    "id": 5,
+    "original": "love this so much!",
+    "transformed": "love this so much!",
+    "category": "positive",
+    "expectedBehavior": "Leave unchanged",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "meaning_preservation": 10,
+      "tone_appropriateness": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect preservation - the comment is unchanged, which is exactly the expected behavior for an already positive and enthusiastic statement. No unnecessary transformation was applied."
+    }
+  },
+  {
+    "id": 6,
+    "original": "这个视频太烂了",
+    "transformed": "您的视频很好，感谢你的分享",
+    "category": "purely_negative_chinese",
+    "expectedBehavior": "Transform to positive in Chinese",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 3,
+      "tone_appropriateness": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 7.5,
+      "feedback": "The transformation shows high empathy and preserves Chinese language perfectly. However, it completely reverses the original critical meaning, which may not always be appropriate. While the response is polite, it doesn't acknowledge the original critical perspective. A more nuanced approach might involve understanding the underlying concern or asking for more details about why the video was perceived as poor."
+    }
+  },
+  {
+    "id": 7,
+    "original": "That is a shortcut to a disaster",
+    "transformed": "I'm concerned this approach might have unintended consequences",
+    "category": "negative_warning",
+    "expectedBehavior": "Soften to concerned tone",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 9,
+      "tone_appropriateness": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8.5,
+      "feedback": "The transformation successfully softens the harsh original statement by expressing concern rather than making a definitive negative claim. It maintains the core warning while using a more constructive, empathetic approach. The phrasing 'unintended consequences' preserves the original message of potential risk. The only slight improvement could be in making the language sound slightly more conversational to boost naturalness."
+    }
+  },
+  {
+    "id": 8,
+    "original": "you got old",
+    "transformed": "you're more and more beautiful",
+    "category": "purely_negative",
+    "expectedBehavior": "Transform to positive compliment",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 6,
+      "tone_appropriateness": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8.3,
+      "feedback": "The transformation successfully converts a potentially hurtful comment about aging into a positive, affirming compliment. It increases empathy by focusing on beauty and personal value. The tone is warm and supportive. While the core meaning of 'getting older' is softened, the comment reframes aging as something positive. The language feels natural and direct. Minor improvement could be making the transformation feel even more conversational."
+    }
+  },
+  {
+    "id": 9,
+    "original": "i don't like this app, it's too ugly",
+    "transformed": "i love this app and I think possibly the design could be improved",
+    "category": "negative_with_implicit_constructive",
+    "expectedBehavior": "Keep feedback, add positive framing",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 9,
+      "tone_appropriateness": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8.5,
+      "feedback": "The transformation successfully adds a positive framing while preserving the core critique about the app's design. The comment shifts from purely negative to constructive, suggesting improvement rather than just criticism. The 'I love this app' part adds warmth, though it feels slightly forced. The recommendation about design improvements maintains the original intent of the feedback. Could be made slightly more natural by using a more conversational tone."
+    }
+  },
+  {
+    "id": 10,
+    "original": "This is spreading dangerous misinformation.",
+    "transformed": "I appreciate the concern about potential misinformation, and it's important to ensure accurate understanding of complex topics.",
+    "category": "strong_disagreement",
+    "expectedBehavior": "Preserve concern, soften accusatory tone",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "meaning_preservation": 8,
+      "tone_appropriateness": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9,
+      "feedback": "The transformation successfully softens the accusatory tone while maintaining the core concern about information accuracy. It demonstrates empathy by acknowledging the underlying intention of being responsible with information. The comment sounds genuine and human-like, avoiding direct confrontation while still addressing the potential issue of misinformation. Slight improvement could be made in making the meaning even more precise, but overall it's an excellent empathetic reframing."
+    }
+  },
+  {
+    "id": 11,
+    "original": "I think you can go about it your new way and you will find yourself in relationships with people who won't give you the same grace",
+    "transformed": "I wonder if this approach might lead to one-sided relationships where your emotional maturity gets taken for granted",
+    "category": "dismissive_prediction",
+    "expectedBehavior": "Keep concern, remove condescension",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 9,
+      "tone_appropriateness": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 8.67,
+      "feedback": "The transformation successfully softens the original comment's harsh tone while preserving its core warning about potential relationship dynamics. The phrase 'emotional maturity gets taken for granted' is particularly empathetic, showing concern without judgment. The language feels natural and avoids direct accusation. The only slight improvement could be making the tone feel even more supportive and less cautionary."
+    }
+  },
+  {
+    "id": 12,
+    "original": "meh, it's okay I guess",
+    "transformed": "I appreciate your thoughtful perspective!",
+    "category": "neutral_lukewarm",
+    "expectedBehavior": "Add gentle encouragement",
+    "evaluation": {
+      "empathy": 7,
+      "language_preservation": 10,
+      "meaning_preservation": 4,
+      "tone_appropriateness": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 5,
+      "overall_score": 7,
+      "feedback": "The transformation attempts to be positive but loses the nuance of the original lukewarm comment. While the response is encouraging, it doesn't capture the original's mild indifference. A more effective transformation might acknowledge the 'okay' sentiment while gently adding some enthusiasm, such as 'I can see this might not be perfect, but there are some interesting aspects to consider.' The current response feels overly generic and disconnected from the original comment's sentiment."
+    }
+  },
+  {
+    "id": 13,
+    "original": "You're wrong about everything in this video",
+    "transformed": "I appreciate you taking the time to engage with this content, and I'm curious to hear more about your perspective.",
+    "category": "purely_negative_disagreement",
+    "expectedBehavior": "Transform to respectful disagreement",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 3,
+      "tone_appropriateness": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 6,
+      "overall_score": 7.33,
+      "feedback": "The transformation shows high empathy and natural language, but significantly softens the original critical intent. While respectful, it loses the core disagreement message. The new comment invites dialogue but doesn't actually address potential substantive disagreements about the video's content. A more effective transformation would acknowledge a specific point of contention while maintaining a constructive tone, such as 'I see things differently about [specific aspect], and here's why...'"
+    }
+  },
+  {
+    "id": 14,
+    "original": "nobody cares",
+    "transformed": "Your thoughts and feelings are important!",
+    "category": "dismissive_troll",
+    "expectedBehavior": "Transform to engagement or appreciation",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "meaning_preservation": 7,
+      "tone_appropriateness": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8.5,
+      "feedback": "The transformation shows high empathy by directly affirming the person's value. It completely preserves the original language and avoids meta-commentary. However, the meaning is somewhat lost - the original comment 'nobody cares' suggests dismissiveness or isolation, which the response attempts to counter by emphasizing individual importance. While well-intentioned, the response might feel slightly generic. A more nuanced response could acknowledge the potential underlying feeling of being overlooked while providing genuine encouragement."
+    }
+  },
+  {
+    "id": 15,
+    "original": "Great video! Although the audio could be better quality.",
+    "transformed": "Great video! The audio could potentially be enhanced for an even more enjoyable experience.",
+    "category": "positive_with_constructive",
+    "expectedBehavior": "Keep both positive and constructive parts",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "meaning_preservation": 9,
+      "tone_appropriateness": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8.8,
+      "feedback": "The transformation successfully maintains the positive spirit of the original comment while constructively addressing the audio quality issue. The phrase 'could potentially be enhanced' is empathetic and supportive. The suggestion feels helpful rather than critical. The only slight drawback is a minor reduction in naturalness due to the slightly formal phrasing, which could be made slightly more conversational."
+    }
+  }
+]

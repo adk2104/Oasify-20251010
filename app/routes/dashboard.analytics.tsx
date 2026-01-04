@@ -10,10 +10,10 @@ export default function Analytics() {
     <div className="flex items-center justify-center h-full bg-gray-50">
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          No analytics data yet
+          Coming Soon
         </h2>
         <p className="text-gray-600 max-w-md">
-          Connect your social media accounts and start receiving comments to see analytics here
+          Analytics features are currently in development. Check back soon!
         </p>
       </div>
     </div>
