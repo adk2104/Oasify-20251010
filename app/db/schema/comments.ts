@@ -22,6 +22,8 @@ export const comments = pgTable('comments', {
   isReply: boolean('is_reply').default(false).notNull(),
   replyCount: integer('reply_count').default(0).notNull(),
   isOwner: boolean('is_owner').default(false).notNull(),
+  feedback: text('feedback'), // 'up' | 'down' | null
+  feedbackAt: timestamp('feedback_at'),
   createdAt: timestamp('created_at').notNull(),
   fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
 }, (table) => ({

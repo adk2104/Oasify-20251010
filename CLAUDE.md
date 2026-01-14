@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Session Startup
+
+**At the start of each session**, verify current date/time using `mcp__google-calendar__get-current-time` and state the day of week, date, and time clearly to Ava before proceeding. This prevents date confusion.
+
 ## Project Overview
 
 Oasify is a React Router v7 web application that helps content creators manage, analyze, and respond to comments from YouTube and Instagram. Features include YouTube OAuth integration, AI-powered empathetic comment transformation using Claude, and a responsive dashboard.

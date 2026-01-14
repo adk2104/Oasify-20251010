@@ -1,92 +1,302 @@
 [
   {
     "id": 1,
-    "comment": "you look fat",
-    "category": "purely_negative",
-    "expectedBehavior": "Transform to positive compliment"
+    "comment": "Thumbs down. Advertising for Klarna and racist brand lululemon . No morals at all",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 2,
-    "comment": "this video is terrible and boring",
-    "category": "purely_negative",
-    "expectedBehavior": "Transform to appreciation"
+    "comment": "the beep test will forever be in my nightmares",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 3,
-    "comment": "your editing is bad but the topic is interesting",
-    "category": "negative_with_constructive",
-    "expectedBehavior": "Keep constructive part, reframe negativity"
+    "comment": "\"and I'd like to thank Klarna for sponsoring this video\"  you seem like you've got your head screwed on, please ditch these nasty sponsors",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 4,
-    "comment": "Based on this video, I can tell you have no actual clue what a real narcissist is, and for that reason, I agree you should stop using the term.",
-    "category": "dismissive_with_disagreement",
-    "expectedBehavior": "Preserve disagreement, remove condescension"
+    "comment": "Make small videos...there is no necessity to talk so much in the video !It kills the interest to watch the entire video",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 5,
-    "comment": "love this so much!",
-    "category": "positive",
-    "expectedBehavior": "Leave unchanged"
+    "comment": "if you dont pay your klarna payments ontime you will be charged interest right? this needs to be a disclaimer. this is quite unethical ad promo",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 6,
-    "comment": "这个视频太烂了",
-    "category": "purely_negative_chinese",
-    "expectedBehavior": "Transform to positive in Chinese"
+    "comment": "This is just a big ad for crap like Klarna. Influencers helping young people get into debt. Woo!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 7,
-    "comment": "That is a shortcut to a disaster",
-    "category": "negative_warning",
-    "expectedBehavior": "Soften to concerned tone"
+    "comment": "I get that you want to motivate people to start running and emphasize that you aren't some sort of wonder talent, but I don't think you realise just how much above average you are if you can run marathons and that kind of pace within a year",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 8,
-    "comment": "you got old",
-    "category": "purely_negative",
-    "expectedBehavior": "Transform to positive compliment"
+    "comment": "Bruh you aren't fat",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 9,
-    "comment": "i don't like this app, it's too ugly",
-    "category": "negative_with_implicit_constructive",
-    "expectedBehavior": "Keep feedback, add positive framing"
+    "comment": "Great video, running is so awesome. But I'm not that fond of today's sponsor, as using Klarna can lead to overspending and accumulating debt.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 10,
-    "comment": "This is spreading dangerous misinformation.",
-    "category": "strong_disagreement",
-    "expectedBehavior": "Preserve concern, soften accusatory tone"
+    "comment": "That robotic tone literally triggers my anxiety",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 11,
-    "comment": "I think you can go about it your new way and you will find yourself in relationships with people who won't give you the same grace",
-    "category": "dismissive_prediction",
-    "expectedBehavior": "Keep concern, remove condescension"
+    "comment": "Your toe turning black is because your shoes are not the right fit. I have been running a lot too, and never had my toe turning black... always .5 extra when your buying your running shoes! Always always take off your wet socks right after and remove your shoes too after running...",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 12,
-    "comment": "meh, it's okay I guess",
-    "category": "neutral_lukewarm",
-    "expectedBehavior": "Add gentle encouragement"
+    "comment": "Remove the background music pls",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 13,
-    "comment": "You're wrong about everything in this video",
-    "category": "purely_negative_disagreement",
-    "expectedBehavior": "Transform to respectful disagreement"
+    "comment": "Great video, but man please don't encourage people to use klarna. Get your bag with sponsors I get it, but some companies aren't worth it imo",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 14,
-    "comment": "nobody cares",
-    "category": "dismissive_troll",
-    "expectedBehavior": "Transform to engagement or appreciation"
+    "comment": "Great video! but advertising spending money with klarna when most people are drowning in consumer debt is not the move",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   },
   {
     "id": 15,
-    "comment": "Great video! Although the audio could be better quality.",
-    "category": "positive_with_constructive",
-    "expectedBehavior": "Keep both positive and constructive parts"
+    "comment": "Well, tried to watch. I was really interested. You do NOT need distracting music when you're talking! Oh well.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 16,
+    "comment": "The only thing, there is no such thing as an essential carb",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 17,
+    "comment": "I really don't understand why they turn running into the worst part of PE class and then look surprised when kids/teens/young adults would rather stay home and not go running",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 18,
+    "comment": "Ok yeah I bought a ton of gels for hiking and I tried one and couldn't even finish it. So gross",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 19,
+    "comment": "The way this persuaded me to not run",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 20,
+    "comment": "Klarna sponsor is CRAZY",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 21,
+    "comment": "not the fitnessgram pacer test (your beep test)",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 22,
+    "comment": "Uh my goodness tried to go on a run the other day before I ate and got the worse headache!! 7:50",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 23,
+    "comment": "6:28  she just mentioned it and brushed it off like bruh how do I avoid that",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 24,
+    "comment": "I'm all for everything here except for Klarna, Klarna is proven to make you go into more debt. Having monthly debt does not mean you saved money, in fact if you begin down this rabbit hole you will most likely end up spending more money than you should have because the number will seem smaller. Do not fall down the needless debt rabbit hole!!!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 25,
+    "comment": "I would be really careful about taking Klarna ads. The consumer debt bubble is going to blow and it won't be pretty",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 26,
+    "comment": "You aren't even overweight. Like tf is wrong with people They must be thinking that all runners must look like those African marathonists",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 27,
+    "comment": "Don't understand how someone can say you're fat??? You have a sick body and it's because of how you take care of of it!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 28,
+    "comment": "People tell you're fat? Sorry are they delusional?",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 29,
+    "comment": "Got strangely emo watching this, I've always hated running until I saw it as a skill to be leaned, and now I can't get enough! Training for my first half this year, I really need to listen to your advice of learning about fueling and also following a plan because right now I have no plan and feel I could be better! This video definitely kicked me in the butt to start doing some research and will definitely listen to the podcasts recommended!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 30,
+    "comment": "It makes me so incredibly sad to live in a world where someone looks at you and thinks you're fat!!  You are amazing, such an inspiration.  Keep up the great work.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 31,
+    "comment": "Where is she fat? She has a perfectly fine body",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 32,
+    "comment": "People love to hate women! I cannot believe someone would call you fat! Little D behavior",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 33,
+    "comment": "Whoever said you're fat is insecure and dumb, you are not and you're inspiring!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 34,
+    "comment": "Who the hell called this woman fat?? WHERE. Shes literally just lean muscle and good vibes :D",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 35,
+    "comment": "this really motivated me to linda i hope you know youre really motivational and helpful :)",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 36,
+    "comment": "I am so inspired  thank you",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 37,
+    "comment": "I'm back on my running journey too, this time for fun and just to see how I improve naturally over time. Really love this video! That \"fat\" comment was completely insane too btw- what are they even talking about?! You look amazing but that isn't the point of running- you're strong and fit and ENJOYING an exercise that is quite difficult to get into so well done!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 38,
+    "comment": "I was so pleasantly surprised to see you posted a video thank you for sharing your advice!! I'm trying to get back into running with a healthy mindset because I also used it for punishment for the so many years. Love that you're sharing your story thank you for all you do!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 39,
+    "comment": "Just started getting into running, super helpful!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 40,
+    "comment": "Your videos are absolutely amazing! I love your narratives",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 41,
+    "comment": "I love your videos sm!  I related to your struggle to find balance before you started running, and as a runner for about a year and 3 months I love your content even more now. Running has changed my life and gained me so much to. Banana bread, peanut butter, and yogurt bowls are some of my favorite foods too, snd I make your lemon tahini nourish bowl weekly. Thank you for inspiring me, putting words to my thoughts at times, and for cheering me up when I'm struggling.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 42,
+    "comment": "love this!! I've really only found your videos in the past few months but as someone who has been running for about a year now, I absolutely love your takes on running and I look forward to all your videos now!! i unfortunately have been a victim of many running injuries, have you posted anything about your specific injury prevention strength training? thank you!!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 43,
+    "comment": "I started running because you motivated me and I am now almost 3 weeks in my 5k program and I have signed up for a half marathon next year, in June I'll get the message if I made the poll! But nonetheless I've been enjoying my runs so much! (Started training with Runna)",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 44,
+    "comment": "this was a truly beautifully thoughtful and kind video. thank you x",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 45,
+    "comment": "Love love love love your videos. You do such a great job with storytelling!!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 46,
+    "comment": "First thank you so much for your videos they help to inspire young people and girls like me who is  a teenager to feel more confident in their own body's and to build our relationships with exercise and food",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 47,
+    "comment": "ugh my favourite running influencer ever",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 48,
+    "comment": "I absolutely LOVE your videos, the honesty, vulnerability and joy you bring to each one! I feel so HEARD and inspired to keep going!! I signed up for my first ever race/compeition (HYROX) and its in 3 weeks (slightly freaking out) hehe but can't wait!! Thank you Linda for being you! Xxx",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 49,
+    "comment": "ONE. OF. YOUR. BEST. VIDEOS. HANDS. DOWN.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
+  },
+  {
+    "id": 50,
+    "comment": "This is the video I've been waiting for! Thank you thank you Linda training for my first ever 10k and needed the support",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "videoDescription": "Happy one year anniversary to the love of my life!! i can't believe it's been over a year since my first run and i wanted to share all the things i've learned and how i've changed along the way!"
   }
 ]

@@ -272,15 +272,19 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   console.log('[INSTAGRAM SYNC] Starting sync for', mediaPosts.length, 'media posts');
 
   const platformIdToDbId: Record<string, number> = {};
-  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string; mediaTitle: string | null; mediaThumbnail: string | null; mediaPermalink: string | null }> = [];
+  const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string; mediaTitle: string | null; mediaCaption: string | null; mediaThumbnail: string | null; mediaPermalink: string | null }> = [];
 
   // Process all media posts
   for (const media of mediaPosts) {
     const mediaPermalink = media.permalink || null;
     // Use thumbnail_url for videos/reels, media_url for images
     const mediaThumbnail = media.thumbnail_url || media.media_url || null;
-    // Use caption as the title (truncate if too long)
+    // NEW: Keep full caption for AI context
+    const mediaCaption = media.caption || null;
+    // Use caption as the title (truncate for storage display)
     const mediaTitle = media.caption ? media.caption.substring(0, 100) + (media.caption.length > 100 ? '...' : '') : null;
+
+    console.log('[INSTAGRAM SYNC] Media caption length:', mediaCaption?.length || 0);
 
     try {
       // Try nested comments first
@@ -302,7 +306,8 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
         if (!username) continue;
 
         const isOwner = username === ownerUsername;
-        const empathicText = isOwner ? comment.text : await generateEmpathicVersion(comment.text);
+        // NEW: Pass full caption to AI (will be truncated to 300 chars), use undefined for title since Instagram has no titles
+        const empathicText = isOwner ? comment.text : await generateEmpathicVersion(comment.text, undefined, mediaCaption || undefined);
 
         const [inserted] = await db.insert(comments).values({
           userId,
@@ -343,7 +348,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
           try {
             const fullReplies = await getInstagramCommentReplies(comment.id, accessToken);
             for (const reply of fullReplies) {
-              replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id, mediaTitle, mediaThumbnail, mediaPermalink });
+              replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink });
             }
           } catch (error) {
             console.error(`[INSTAGRAM SYNC] Error fetching replies for comment ${comment.id}:`, error);
@@ -360,7 +365,7 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
   // Phase 2: Process replies
   console.log(`[INSTAGRAM SYNC] Phase 2: Processing ${replyData.length} total replies`);
 
-  for (const { parentPlatformId, reply, mediaId, mediaTitle, mediaThumbnail, mediaPermalink } of replyData) {
+  for (const { parentPlatformId, reply, mediaId, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink } of replyData) {
     const parentDbId = platformIdToDbId[parentPlatformId];
     if (!parentDbId) {
       console.log(`[INSTAGRAM SYNC] Skipping reply ${reply.id}: parent DB ID not found for platform ID ${parentPlatformId}`);
@@ -377,7 +382,8 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
     console.log(`[INSTAGRAM SYNC] Inserting reply ${reply.id} with parentId=${parentDbId} (platform parent: ${parentPlatformId}) - author: ${author}`);
 
     const isOwner = username ? username === ownerUsername : false;
-    const empathicText = isOwner ? reply.text : await generateEmpathicVersion(reply.text);
+    // NEW: Pass full caption to AI for replies too (will be truncated to 300 chars)
+    const empathicText = isOwner ? reply.text : await generateEmpathicVersion(reply.text, undefined, mediaCaption || undefined);
 
     await db.insert(comments).values({
       userId,

@@ -185,16 +185,18 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
   const playlistData = await playlistResponse.json();
 
   const platformIdToDbId: Record<string, number> = {};
-  const replyData: Array<{ parentPlatformId: string; reply: any }> = [];
+  const replyData: Array<{ parentPlatformId: string; reply: any; videoTitle: string; videoId: string; videoDescription: string }> = [];
 
   // Fetch and process all comments
   for (const item of playlistData.items || []) {
     const videoId = item.snippet.resourceId.videoId;
     const videoTitle = item.snippet.title;
+    const videoDescription = item.snippet.description; // NEW: Get description from API
     const videoThumbnail = item.snippet.thumbnails.medium?.url ||
                            item.snippet.thumbnails.default?.url ||
                            null;
     console.log('[SYNC] Video thumbnail:', videoId, videoThumbnail ? 'HAS THUMBNAIL' : 'NO THUMBNAIL');
+    console.log('[SYNC] Video description length:', videoDescription?.length || 0);
 
     try {
       const commentsResponse = await fetch(
@@ -212,7 +214,8 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
         const isOwner = snippet.authorChannelId?.value === ownerChannelId;
 
         // Generate empathic text only if not owner
-        const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay);
+        // NEW: Pass videoDescription to AI (will be truncated to 300 chars)
+        const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay, videoTitle, videoDescription);
 
         const [inserted] = await db.insert(comments).values({
           userId,
@@ -251,7 +254,7 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
         // Collect replies for phase 2
         if (thread.replies?.comments) {
           for (const reply of thread.replies.comments) {
-            replyData.push({ parentPlatformId: platformCommentId, reply });
+            replyData.push({ parentPlatformId: platformCommentId, reply, videoTitle, videoId, videoDescription });
           }
         }
       }
@@ -261,14 +264,15 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
   }
 
   // Phase 2: Process replies
-  for (const { parentPlatformId, reply } of replyData) {
+  for (const { parentPlatformId, reply, videoTitle, videoId, videoDescription } of replyData) {
     const parentDbId = platformIdToDbId[parentPlatformId];
     if (!parentDbId) continue;
 
     const snippet = reply.snippet;
     const isOwner = snippet.authorChannelId?.value === ownerChannelId;
     console.log('[SYNC REPLY] Author:', snippet.authorDisplayName, '| authorChannelId:', snippet.authorChannelId?.value, '| ownerChannelId:', ownerChannelId, '| isOwner:', isOwner);
-    const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay);
+    // NEW: Pass videoDescription to AI for replies too
+    const empathicText = isOwner ? snippet.textDisplay : await generateEmpathicVersion(snippet.textDisplay, videoTitle, videoDescription);
 
     await db.insert(comments).values({
       userId,
@@ -278,8 +282,8 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
       authorAvatar: snippet.authorProfileImageUrl,
       text: snippet.textDisplay,
       empathicText,
-      videoTitle: snippet.videoId || '',
-      videoId: snippet.videoId || '',
+      videoTitle,
+      videoId,
       videoThumbnail: null,
       videoPermalink: null,
       platform: 'youtube',
@@ -295,8 +299,8 @@ export async function syncYouTubeCommentsToDatabase(userId: number): Promise<voi
         authorAvatar: snippet.authorProfileImageUrl,
         text: snippet.textDisplay,
         empathicText,
-        videoTitle: snippet.videoId || '',
-        videoId: snippet.videoId || '',
+        videoTitle,
+        videoId,
         isOwner,
         parentId: parentDbId,
       },
@@ -354,7 +358,8 @@ export async function generateEmpathicForExistingComments(userId: number): Promi
   for (const comment of allComments) {
     console.log('[GENERATE] Processing comment', comment.id);
     console.log('[GENERATE] Original:', comment.text.substring(0, 100));
-    const empathicText = await generateEmpathicVersion(comment.text);
+    console.log('[GENERATE] Video title:', comment.videoTitle || 'N/A');
+    const empathicText = await generateEmpathicVersion(comment.text, comment.videoTitle || undefined);
     console.log('[GENERATE] Empathic:', empathicText.substring(0, 100));
 
     await db
