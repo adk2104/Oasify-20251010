@@ -17,51 +17,44 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('Cookie'));
   const userId = session.get('userId') as number;
 
+  // Fetch providers first (this should rarely fail)
+  const userProviders = await db
+    .select({
+      id: providers.id,
+      platform: providers.platform,
+      platformUserId: providers.platformUserId,
+      platformData: providers.platformData,
+      isActive: providers.isActive,
+      createdAt: providers.createdAt,
+    })
+    .from(providers)
+    .where(eq(providers.userId, userId));
+
+  const youtubeProvider = userProviders.find((p: any) => p.platform === 'youtube');
+  const instagramProvider = userProviders.find((p: any) => p.platform === 'instagram');
+
+  // Fetch comments separately so provider status isn't affected by comment errors
+  let commentsWithReplies: Awaited<ReturnType<typeof getCommentsWithReplies>> = [];
   try {
-    const [commentsWithReplies, userProviders] = await Promise.all([
-      getCommentsWithReplies(userId),
-      db
-        .select({
-          id: providers.id,
-          platform: providers.platform,
-          platformUserId: providers.platformUserId,
-          platformData: providers.platformData,
-          isActive: providers.isActive,
-          createdAt: providers.createdAt,
-        })
-        .from(providers)
-        .where(eq(providers.userId, userId)),
-    ]);
-
-    const youtubeProvider = userProviders.find((p: any) => p.platform === 'youtube');
-    const instagramProvider = userProviders.find((p: any) => p.platform === 'instagram');
-
+    commentsWithReplies = await getCommentsWithReplies(userId);
     // Sort by most recent comment first
-    const sortedComments = commentsWithReplies.sort(
+    commentsWithReplies.sort(
       (a, b) => new Date(b.comment.createdAt).getTime() - new Date(a.comment.createdAt).getTime()
     );
-
-    return {
-      commentsWithReplies: sortedComments,
-      hasYouTubeConnection: !!youtubeProvider,
-      hasInstagramConnection: !!instagramProvider,
-      youtubeProvider,
-      instagramProvider,
-      userId,
-      instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
-    };
   } catch (error) {
-    console.error('Dashboard loader error:', error);
-    return {
-      commentsWithReplies: [],
-      hasYouTubeConnection: false,
-      hasInstagramConnection: false,
-      youtubeProvider: null,
-      instagramProvider: null,
-      userId,
-      instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
-    };
+    console.error('Error fetching comments:', error);
+    // Comments failed but we still show the dashboard with provider info
   }
+
+  return {
+    commentsWithReplies,
+    hasYouTubeConnection: !!youtubeProvider,
+    hasInstagramConnection: !!instagramProvider,
+    youtubeProvider,
+    instagramProvider,
+    userId,
+    instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
+  };
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
@@ -95,6 +88,16 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     setCommentEmpathMode({});
   }, [globalEmpathMode]);
 
+  // Auto-sync when a platform is just connected
+  useEffect(() => {
+    if (connectedPlatform === 'youtube' && hasYouTubeConnection) {
+      youtubeFetcher.submit({}, { method: 'POST', action: '/api/youtube/comments' });
+    }
+    if (connectedPlatform === 'instagram' && hasInstagramConnection) {
+      instagramFetcher.submit({}, { method: 'POST', action: '/api/instagram/comments' });
+    }
+  }, [connectedPlatform]);
+
   const toggleCommentMode = (commentId: number) => {
     setCommentEmpathMode(prev => ({
       ...prev,
@@ -102,8 +105,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     }));
   };
 
-  // Show empty state if no connections
-  if (!hasYouTubeConnection && !hasInstagramConnection) {
+  // Show empty state only if no connections AND no existing comments
+  if (!hasYouTubeConnection && !hasInstagramConnection && commentsWithReplies.length === 0) {
     return (
       <div className="flex flex-col h-full items-center justify-center p-8">
         <div className="text-center max-w-md space-y-4">
@@ -153,6 +156,28 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
           <p className="font-medium">Connection Error</p>
           <p className="text-sm">Failed to connect. Please try again.</p>
+        </div>
+      )}
+      {!hasYouTubeConnection && !hasInstagramConnection && commentsWithReplies.length > 0 && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 flex items-center justify-between">
+          <div>
+            <p className="font-medium">No accounts connected</p>
+            <p className="text-sm">Connect your accounts to sync new comments</p>
+          </div>
+          <div className="flex gap-2">
+            <Link to="/oauth/google/start">
+              <Button size="sm">
+                <Youtube className="w-4 h-4 mr-2" />
+                Connect YouTube
+              </Button>
+            </Link>
+            <a href={`${instagramOAuthUrl}&state=${userId}`}>
+              <Button size="sm" variant="outline">
+                <Instagram className="w-4 h-4 mr-2" />
+                Connect Instagram
+              </Button>
+            </a>
+          </div>
         </div>
       )}
 
