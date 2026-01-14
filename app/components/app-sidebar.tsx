@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useFetcher, useRevalidator } from "react-router";
 import { Home, BarChart3, Settings, Youtube, Instagram } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
@@ -71,6 +71,24 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
   const [showDisconnect, setShowDisconnect] = useState<string | null>(null);
   const disconnectFetcher = useFetcher();
   const revalidator = useRevalidator();
+  const disconnectRef = useRef<HTMLDivElement>(null);
+
+  // Close disconnect menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (disconnectRef.current && !disconnectRef.current.contains(event.target as Node)) {
+        setShowDisconnect(null);
+      }
+    };
+
+    if (showDisconnect) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDisconnect]);
 
   // Helper to get connection status for a platform
   const getProviderStatus = (platform: string) => {
@@ -146,6 +164,7 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                 return (
                   <div
                     key={item.title}
+                    ref={disconnectRef}
                     className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-slate-100"
                   >
                     <div className="relative">
@@ -158,24 +177,14 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                       />
                     </div>
                     <span>{item.title}</span>
-                    <div className="ml-auto flex gap-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 px-2 text-xs"
-                        onClick={() => setShowDisconnect(null)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="default"
-                        className="h-6 px-2 text-xs bg-red-600 hover:bg-red-700"
-                        onClick={() => handleDisconnect(item.platform)}
-                      >
-                        Disconnect
-                      </Button>
-                    </div>
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="ml-auto h-6 px-2 text-xs bg-red-600 hover:bg-red-700"
+                      onClick={() => handleDisconnect(item.platform)}
+                    >
+                      Disconnect
+                    </Button>
                   </div>
                 );
               }
