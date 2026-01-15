@@ -1,5 +1,77 @@
 # Sessions Log
 
+## Session: Jan 15, 2026 - Solo (Claude Code)
+
+### Focus
+Google OAuth demo video prep + git cleanup
+
+### Completed
+- Reviewed Jan 14 session notes to understand Google OAuth scope requirements
+- Created `google-oauth-demo-script.md` with full video script including:
+  - Timestamps for each section
+  - Explanation of both scopes (youtube.readonly, youtube.force-ssl)
+  - Recording checklist
+  - Notes on which scopes to remove (userinfo.email, userinfo.profile, openid)
+- Created `disconnect` branch from main and pushed to GitHub
+
+### Key Learnings (from last session review)
+- **Scopes needed:** youtube.readonly (read comments), youtube.force-ssl (post replies)
+- **Scopes to remove:** userinfo.email, userinfo.profile, openid (not needed - app only uses YouTube API)
+- Google rejected original demo video - needs to show consent screen with scopes visible and explain each one
+
+### Files Created
+- `google-oauth-demo-script.md` - Full script for Google OAuth demo video
+
+### Next Session
+1. Record Google OAuth demo video using the script
+2. Remove unused scopes from Google Cloud Console
+3. Resubmit to Google for verification
+4. Test disconnect/reconnect flow end-to-end
+5. Deploy to Vercel
+
+---
+
+## Session: Jan 14, 2026 - Solo (Claude Code)
+
+### Focus
+Google OAuth verification prep - disconnect feature + improved empathy prompt
+
+### Completed
+- Created `/api/providers/disconnect` endpoint to remove YouTube/Instagram connections
+- Updated sidebar with disconnect UI (click "Connected" badge → shows "Disconnect" button)
+- Added click-outside listener to close disconnect menu
+- Fixed dashboard bug where provider status showed disconnected even when connected
+  - Root cause: loader catch block was returning false for providers when comments failed
+  - Fix: Separated provider fetch from comment fetch
+- Replaced empathy prompt with improved/validated version (22 examples, better guardrails)
+- Ran `npm run db:push` to add missing `feedback` and `feedbackAt` columns to comments table
+- Added auto-sync when platform is connected (triggers comment sync after OAuth callback)
+- Added reconnect banner when disconnected but comments exist
+
+### Blockers/Notes
+- "Failed to fetch" error at end of session when syncing comments - likely needs dev server restart
+- Google rejected original OAuth demo video - needs to reshoot with:
+  - OAuth consent screen with scopes visible
+  - Explanation of each scope's purpose
+  - Demo of youtube.force-ssl (reply functionality)
+- Can remove unused scopes (userinfo.email, userinfo.profile, openid) from Google Cloud Console
+
+### Files Changed
+- `app/routes/api.providers.disconnect.tsx` (created)
+- `app/routes.ts` (added disconnect route)
+- `app/components/app-sidebar.tsx` (disconnect UI + click-outside)
+- `app/routes/dashboard.tsx` (fixed loader, auto-sync, reconnect banner)
+- `app/utils/empathy.server.ts` (replaced prompt)
+
+### Next Session
+1. Restart dev server and test comment sync
+2. Test disconnect/reconnect flow end-to-end
+3. Record new Google OAuth demo video
+4. Remove extra scopes from Google Cloud Console
+5. Push to main and deploy to Vercel
+
+---
+
 ## Session: Jan 7, 2026 - Solo (Claude Code)
 
 ### Focus
