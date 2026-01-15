@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams, useFetcher } from "react-router";
+import { Link, useSearchParams, useFetcher, useRevalidator } from "react-router";
 import type { Route } from "./+types/dashboard";
 import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
@@ -65,6 +65,14 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const youtubeFetcher = useFetcher();
   const instagramFetcher = useFetcher();
   const generateFetcher = useFetcher();
+  const revalidator = useRevalidator();
+
+  // Polling state for live comment updates
+  const [preExistingIds, setPreExistingIds] = useState<Set<number>>(new Set());
+  const [newCommentIds, setNewCommentIds] = useState<Set<number>>(new Set());
+  const [fadingCommentIds, setFadingCommentIds] = useState<Set<number>>(new Set());
+  const [isPolling, setIsPolling] = useState(false);
+  const [hasCapturedInitialState, setHasCapturedInitialState] = useState(false);
 
   const totalComments = commentsWithReplies.length;
   const connectedPlatform = searchParams.get('connected');
@@ -97,6 +105,85 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       instagramFetcher.submit({}, { method: 'POST', action: '/api/instagram/comments' });
     }
   }, [connectedPlatform]);
+
+  // Capture existing comment IDs when sync starts, stop polling when done
+  useEffect(() => {
+    if (isSyncingAny && !isPolling) {
+      // Sync just started - capture current comment IDs
+      const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
+      setPreExistingIds(existingIds);
+      setNewCommentIds(new Set()); // Clear any old highlights
+      setHasCapturedInitialState(true);
+      setIsPolling(true);
+    } else if (!isSyncingAny && isPolling) {
+      // Sync finished - stop polling
+      setIsPolling(false);
+      setHasCapturedInitialState(false);
+    }
+  }, [isSyncingAny, isPolling, commentsWithReplies]);
+
+  // Polling interval - revalidate every 3 seconds while syncing
+  useEffect(() => {
+    if (!isPolling) return;
+
+    const pollInterval = setInterval(() => {
+      revalidator.revalidate();
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [isPolling, revalidator]);
+
+  // Detect new comments after each revalidation
+  useEffect(() => {
+    if (!isPolling || !hasCapturedInitialState) return;
+
+    const newIds = new Set<number>();
+    commentsWithReplies.forEach(({ comment, replies }) => {
+      if (!preExistingIds.has(comment.id)) {
+        newIds.add(comment.id);
+      }
+      // Check replies recursively
+      const checkReplies = (repliesList: typeof replies) => {
+        repliesList.forEach(({ comment: replyComment, replies: nestedReplies }) => {
+          if (!preExistingIds.has(replyComment.id)) {
+            newIds.add(replyComment.id);
+          }
+          checkReplies(nestedReplies);
+        });
+      };
+      checkReplies(replies);
+    });
+
+    if (newIds.size > 0) {
+      setNewCommentIds(prev => new Set([...prev, ...newIds]));
+    }
+  }, [commentsWithReplies, isPolling, preExistingIds, hasCapturedInitialState]);
+
+  // Fade out highlights 3 seconds after sync completes
+  useEffect(() => {
+    if (!isSyncingAny && newCommentIds.size > 0) {
+      const fadeTimeout = setTimeout(() => {
+        // Move to fading state (triggers opacity transition)
+        setFadingCommentIds(new Set(newCommentIds));
+        setNewCommentIds(new Set());
+      }, 3000);
+
+      return () => clearTimeout(fadeTimeout);
+    }
+  }, [isSyncingAny, newCommentIds.size]);
+
+  // Clear fading comments after transition completes
+  useEffect(() => {
+    if (fadingCommentIds.size > 0) {
+      const clearTimeout_ = setTimeout(() => {
+        setFadingCommentIds(new Set());
+        setPreExistingIds(new Set());
+        setHasCapturedInitialState(false);
+      }, 500); // Match transition duration
+
+      return () => clearTimeout(clearTimeout_);
+    }
+  }, [fadingCommentIds.size]);
 
   const toggleCommentMode = (commentId: number) => {
     setCommentEmpathMode(prev => ({
@@ -257,6 +344,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                 globalEmpathMode={globalEmpathMode}
                 commentEmpathMode={commentEmpathMode}
                 onToggleMode={toggleCommentMode}
+                newCommentIds={newCommentIds}
+                fadingCommentIds={fadingCommentIds}
               />
             ))}
           </div>
