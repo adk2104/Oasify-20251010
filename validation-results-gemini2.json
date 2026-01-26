@@ -1,0 +1,1802 @@
+[
+  {
+    "id": 51,
+    "original": "Too much talking",
+    "transformed": "I love your tutorials, I think a little less talking would make them even more engaging!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is excellent. It successfully transforms blunt criticism into constructive feedback, adding a compliment and framing the suggestion positively. It fully preserves the commenter's voice and sounds natural and empathetic."
+    }
+  },
+  {
+    "id": 52,
+    "original": "This is horrible. Chaotic, sloppy, zero technique.",
+    "transformed": "This is amazing!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.5,
+      "feedback": "The transformation successfully flipped the negative sentiment to positive, maintained a natural tone, and sounded like it came from the commenter. However, the original comment contained multiple descriptive terms ('chaotic, sloppy, zero technique'). While the sentiment was changed to positive, the transformed comment lost the descriptive richness of the original commenter's voice, opting for a single, general positive term. A stronger transformation might have replaced the negative descriptors with specific positive ones to better reflect the original commenter's analytical style."
+    }
+  },
+  {
+    "id": 53,
+    "original": "Gorgeous makeup! Just a little advice, don't blow your brushes, it's not hygienic",
+    "transformed": "Gorgeous makeup, I'm a little concerned that you're blowing on your brushes, hygiene is so important, but overall love the video",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.5,
+      "feedback": "The transformation successfully softened the constructive criticism by changing the direct advice into a 'concern' and adding a general positive closing ('overall love the video'). It maintains a kind tone and sounds natural, from the commenter's perspective. The only slight point for improvement is that the original 'Just a little advice' was already quite soft and empathetic, and 'I'm a little concerned' shifts the tone slightly, though still positive."
+    }
+  },
+  {
+    "id": 54,
+    "original": "u talk to ooooomuchhhh!",
+    "transformed": "I love hearing you talk!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully flips the negative, critical sentiment of the original comment into a genuinely positive one, maintaining a natural, commenter-like voice without any meta-commentary. It perfectly aligns with the goal of transforming negativity into positivity."
+    }
+  },
+  {
+    "id": 55,
+    "original": "Please google how to say words. Ethereal? Sepia?",
+    "transformed": "I love these videos, i noticed your pronunciation of these words is a little different than what I recall though",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully transformed a snarky, critical comment into a positive and gentle observation, aligning perfectly with the goal of turning negativity into positivity while preserving the commenter's voice and intent for constructive feedback. It sounds very natural and empathetic."
+    }
+  },
+  {
+    "id": 56,
+    "original": "While I think the makeup is great is a bit ignorant to say your excited for Victoria secret and not even mention their ignorant and problematic views and at least say I hope they changed or something",
+    "transformed": "I think the makeup is great! I personally find it challenging to overlook Victoria's Secret's past problematic views, and I wonder if it would be helpful to acknowledge those issues, perhaps even expressing hope for their positive changes.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation successfully softened the accusatory tone ('a bit ignorant') into a personal challenge ('I personally find it challenging to overlook'), making it much more empathetic. It preserved the commenter's voice and the core constructive point about acknowledging problematic views and hoping for change, all while sounding very natural and human."
+    }
+  },
+  {
+    "id": 57,
+    "original": "You talked too much it's boring",
+    "transformed": "I love your videos! I just find that sometimes there's a lot of talking, and I get really excited to see the makeup application.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is outstanding. It successfully flips a purely negative and harsh comment into a constructive piece of feedback framed with genuine positivity, maintaining the commenter's voice and sounding completely natural. The goal of transforming negativity into positivity while keeping the commenter's voice is perfectly achieved."
+    }
+  },
+  {
+    "id": 58,
+    "original": "hi, i like your videos but it's just a suggestion (and actually question) - don't you think dark brown hair will suit you more than black? it feels like it's too overpowering for u and i feel that brown would look sooooooo good and better than black",
+    "transformed": "hi, i like your videos, and I wonder if dark brown hair might bring out your features even more than black? I feel brown would look sooooooo good and better than black!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation effectively softens the original comment's critique ('too overpowering') into a positive and empathetic suggestion ('might bring out your features even more'). It perfectly preserves the commenter's voice, enthusiasm, and the original language, while sounding natural and avoiding any meta-commentary. An excellent example of the system's goal."
+    }
+  },
+  {
+    "id": 59,
+    "original": "Victoria Secret may not be dead but I see rolls of plastic in your future.",
+    "transformed": "Victoria Secret may not be dead, and I love this makeup look you created!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It completely shifts a highly negative and body-shaming comment into a positive, genuine compliment, perfectly aligning with the goal of transforming negativity into positivity while retaining the commenter's voice and naturalness. The original meaning is appropriately discarded, and a new, kind meaning is introduced."
+    }
+  },
+  {
+    "id": 60,
+    "original": "The title should be doing a victoria secret make up look in my jail cell girrrrl what is this backgorund ahahahhahaha",
+    "transformed": "This Victoria's Secret makeup look is amazing! I'm just curious about the background you chose for the video.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 7,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.17,
+      "feedback": "The transformation successfully shifts the critical and sarcastic tone of the original comment into a positive compliment about the makeup and a polite question about the background. It maintains a kind, natural, and non-meta tone. The primary area for improvement is the preservation of the commenter's unique informal 'voice' (e.g., 'girrrrl', 'ahahahhahaha'), which was lost in the transformation, making it sound like *a* commenter, but not quite *this specific* commenter."
+    }
+  },
+  {
+    "id": 61,
+    "original": "Something is not true about her",
+    "transformed": "I wonder about some of the things shared here.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.5,
+      "feedback": "The transformation successfully softened a negative and accusatory comment into a more neutral, inquisitive statement, maintaining the commenter's voice. It avoids direct negativity and sounds very natural. While 'wondering' isn't purely positive, it effectively neutralizes the original accusation, which aligns with the goal for purely negative comments."
+    }
+  },
+  {
+    "id": 62,
+    "original": "Rihanna and good / kind behavior does not go together. You just contradicted yourself and the point you're supposedly trying to make",
+    "transformed": "I love this video, but I don't personally associate Rihanna with good or kind behavior, and I wonder if that might contradict the point you're trying to make.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation is excellent. It successfully softens a confrontational and accusatory comment into a polite, well-articulated critique. The addition of 'I love this video' provides a positive frame, and phrases like 'I don't personally associate' and 'I wonder if that might contradict' make the comment a personal opinion and a gentle query rather than a direct attack. This maintains the commenter's core point while transforming the negativity into a much kinder and more empathetic tone."
+    }
+  },
+  {
+    "id": 63,
+    "original": "Lip filler terrible",
+    "transformed": "I love your smile!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation successfully converted a purely negative and critical comment into a genuine, positive compliment. It maintains a natural, commenter-like voice and perfectly aligns with the goal of replacing negativity with positivity, especially for body-shaming comments."
+    }
+  },
+  {
+    "id": 64,
+    "original": "It's too long",
+    "transformed": "I love how thorough this tutorial is!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This is an excellent transformation. It successfully took a negative comment about length ('It's too long') and reinterpreted it as a positive attribute ('I love how thorough this tutorial is!'). It fully aligns with the goal of transforming negativity into positivity while maintaining a natural, commenter-like voice."
+    }
+  },
+  {
+    "id": 65,
+    "original": "A bit overboard",
+    "transformed": "I love how over-the-top the makeup is!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation successfully took a mildly negative/critical comment ('A bit overboard') and converted it into a positive, appreciative statement ('I love how over-the-top the makeup is!') while preserving a linguistic connection ('overboard' -> 'over-the-top'). It sounds completely natural and maintains the commenter's perspective, effectively achieving the goal of positive transformation."
+    }
+  },
+  {
+    "id": 66,
+    "original": "Pretty sure it's just classy makeup. Like soft glam haha. That's basically what you were trying to explain how their makeup looks.",
+    "transformed": "Pretty sure it's just classy makeup. Like soft glam haha. That's basically what you were trying to explain how their makeup looks.",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and helpful. The system correctly identified this and preserved the comment exactly as it was, which aligns perfectly with the goal for positive comments. It maintains the original tone, language, and naturalness without any meta-commentary."
+    }
+  },
+  {
+    "id": 67,
+    "original": "I have to disagree, the quality of VS clothing and lingerie is awful and cheap! I have tried to give them plenty of chances and they disappoint every time... and mold in the perfumes. I'm good",
+    "transformed": "i don't personally like VS clothing and lingerie, and I've had some disappointing experiences with their products, but I still love this soft glam makeup tutorial!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.7,
+      "feedback": "The transformation successfully converts a purely negative comment into a positive one about the content, while still allowing the commenter to express their original, softened personal dislike for the products. It maintains a natural, empathetic tone and sounds completely authentic to a commenter."
+    }
+  },
+  {
+    "id": 68,
+    "original": "Why don't you use your face to full potential. No camera filter or skin filter.",
+    "transformed": "I love how natural and authentic you are without filters!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is excellent. It takes a critical comment (Why don't you use filters?) and perfectly flips it into a genuine, positive compliment about being natural and authentic without filters. It maintains the commenter's voice and sounds completely natural, achieving the goal of transforming negativity into positivity."
+    }
+  },
+  {
+    "id": 69,
+    "original": "Bla blah blaaaa",
+    "transformed": "this is interesting!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully converts a dismissive/gibberish original comment into a natural, positive, and empathetic statement, aligning perfectly with all specified goals."
+    }
+  },
+  {
+    "id": 70,
+    "original": "I cant open the cheap brushes link!",
+    "transformed": "i can't open the cheap brushes link, would love to be able to purchase them, could you post the link?",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation successfully took a slightly frustrated complaint and made it polite, positive, and actionable. It clearly communicates the commenter's desire to purchase the items, adding a positive frame to the original problem. The commenter's voice is perfectly preserved, and the language is natural. The only minor point is that 'cheap' could potentially be softened to 'affordable' for an even higher degree of positivity, but in a shopping context, 'cheap' often implies good value and is acceptable."
+    }
+  },
+  {
+    "id": 71,
+    "original": "Why she skip application",
+    "transformed": "Why she skip application",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 1,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 1,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 7,
+      "feedback": "The transformed comment is identical to the original, which means it perfectly preserves the language, commenter's perspective, and naturalness. However, it completely misses the core objective of the system: to transform negativity into positivity or add positive framing to questions. As a question, it should have preserved the question while adding positive framing, which it failed to do, thus receiving low scores for empathy and appropriate transformation."
+    }
+  },
+  {
+    "id": 72,
+    "original": "I don't see the link to the affordable brushes",
+    "transformed": "i don't see the link to the affordable brushes, would love to be able to purchase them, could you post the link?",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation successfully took a neutral statement of a problem and turned it into a polite, eager request. It added positive framing ('would love to be able to purchase them') and a clear call to action ('could you post the link?') without losing the commenter's original intent or voice. The added punctuation and rephrasing make it more natural and empathetic."
+    }
+  },
+  {
+    "id": 73,
+    "original": "This is why I never give into makeup trends",
+    "transformed": "It's interesting to see all the different makeup trends!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 6,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9,
+      "feedback": "The transformation successfully changed the tone from a negative personal stance to a positive, observational comment, which aligns with the goal of transforming negativity. It's natural-sounding and empathetic. However, it significantly altered the commenter's original perspective: from expressing a personal choice to 'never give into' trends (active disengagement) to merely finding them 'interesting to see' (passive observation). While the negative meaning is removed, the commenter's specific 'voice' of active non-participation is not fully preserved."
+    }
+  },
+  {
+    "id": 74,
+    "original": "only looks this good if you're already gorgeous",
+    "transformed": "You're already so gorgeous, and this makeup look is stunning!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation perfectly turned a backhanded compliment into genuine praise. It completely aligned with the goal of converting negativity to positivity, sounding natural and maintaining the commenter's perspective without losing any empathy."
+    }
+  },
+  {
+    "id": 75,
+    "original": "looking at your lip, now i remember again how unnatural and uncanny lip filler look like, especially when you talk, and how beautiful someone lips that is naturally thick",
+    "transformed": "I love your smile!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation effectively converted a highly negative and critical comment into a simple, positive compliment. It successfully met the goal of transforming negativity into positivity, replacing a personal attack with a genuine compliment ('I love your smile!'). It maintains a natural commenter's voice, though it's a very generic compliment compared to the original's detailed (negative) observation. All other criteria were perfectly met."
+    }
+  },
+  {
+    "id": 76,
+    "original": "Your sooo Megan fox",
+    "transformed": "Your sooo Megan fox",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment is a compliment, comparing the subject to Megan Fox. The system correctly identified this as a positive comment and left it unchanged, which perfectly aligns with the guidelines for positive comments. All criteria were met exceptionally well."
+    }
+  },
+  {
+    "id": 77,
+    "original": "Idk why we idolize people like Kylie Jenner when women like this girl exist . You are so beautiful",
+    "transformed": "Idk why we idolize people like Kylie Jenner when women like this girl exist . You are so beautiful",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and empathetic towards 'this girl,' with the initial comparison serving to highlight her beauty. The transformation correctly identified that no negative meaning needed to be transformed and kept the comment identical, perfectly preserving the commenter's voice, empathy, and naturalness."
+    }
+  },
+  {
+    "id": 78,
+    "original": "Just looked up the vs angels and none are as pretty as you FYI haha",
+    "transformed": "Just looked up the vs angels and none are as pretty as you FYI haha",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was a positive compliment, and the transformation correctly kept it entirely unchanged, which is the desired behavior for positive comments. All criteria are perfectly met."
+    }
+  },
+  {
+    "id": 79,
+    "original": "this video and your content in general is so comforting in the most OG YouTuber kind of way. I found you through your surgery videos and you instantly pulled me in with your vulnerability and inner (and outer, duh) beauty. exactly what I needed in this difficult time. sending you lots of love and good energy, thank you.",
+    "transformed": "this video and your content in general is so comforting in the most OG YouTuber kind of way. I found you through your surgery videos and you instantly pulled me in with your vulnerability and inner (and outer, duh) beauty. exactly what I needed in this difficult time. sending you lots of love and good energy, thank you.",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already overwhelmingly positive and empathetic. The system correctly identified this and kept the comment entirely unchanged, which is the ideal behavior for positive comments as per the guidelines. All aspects are perfectly preserved."
+    }
+  },
+  {
+    "id": 80,
+    "original": "beautiful makeup hair spay is insane",
+    "transformed": "beautiful makeup hair spay is insane",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive, using 'insane' in a colloquial way to mean 'exceptionally good.' The transformation appropriately kept the comment unchanged, which is the correct behavior for positive comments according to the guidelines, resulting in a perfect score across all criteria."
+    }
+  },
+  {
+    "id": 81,
+    "original": "But you look like a Victorias secret model",
+    "transformed": "But you look like a Victorias secret model",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was a compliment, so the best transformation was to keep it exactly as it was. This perfectly aligns with the rule for positive comments, resulting in an ideal transformation across all criteria."
+    }
+  },
+  {
+    "id": 82,
+    "original": "Loooooove this video",
+    "transformed": "Loooooove this video",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. The original comment was already positive, and the system correctly kept it entirely unchanged, which is the expected behavior for positive comments according to the guidelines. All criteria are perfectly met."
+    }
+  },
+  {
+    "id": 83,
+    "original": "Angel",
+    "transformed": "Angel",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation correctly identified the original comment as positive and kept it unchanged, which is the ideal behavior for positive comments. It perfectly preserves the original intent, tone, and commenter's voice."
+    }
+  },
+  {
+    "id": 84,
+    "original": "You are Beautiful",
+    "transformed": "You are Beautiful",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is perfect. For a positive comment, the goal is to keep it unchanged, which was achieved here while maintaining all positive attributes and naturalness."
+    }
+  },
+  {
+    "id": 85,
+    "original": "love this tutorial",
+    "transformed": "love this tutorial",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is excellent. For a positive comment, the ideal behavior is to keep it unchanged, which this system successfully did. It perfectly preserves the original meaning, tone, and commenter's voice without any unnecessary modifications or meta-commentary."
+    }
+  },
+  {
+    "id": 86,
+    "original": "Nice",
+    "transformed": "Nice",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is perfect for this positive comment type, as it keeps the original comment entirely unchanged, maintaining its kind tone and naturalness as if written by the commenter."
+    }
+  },
+  {
+    "id": 87,
+    "original": "Stunning",
+    "transformed": "Stunning",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. For positive comments, the system's goal is to keep them unchanged or nearly unchanged, which was perfectly achieved here by retaining the original comment 'Stunning'. This maintains all positive attributes and the commenter's original voice."
+    }
+  },
+  {
+    "id": 88,
+    "original": "You're so gorgeous",
+    "transformed": "You're so gorgeous",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. The original comment was already positive and empathetic, and the system correctly left it unchanged, perfectly aligning with the appropriate transformation guidelines for positive comments. It maintains the commenter's voice and naturalness without any meta-commentary."
+    }
+  },
+  {
+    "id": 89,
+    "original": "you look so great",
+    "transformed": "you look so great",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent as the original comment was already positive and kind. Keeping it unchanged is the ideal outcome for positive comments, fully meeting the system's goal."
+    }
+  },
+  {
+    "id": 90,
+    "original": "she anyway looks good love ya",
+    "transformed": "she anyway looks good love ya",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind. The transformation correctly kept the comment entirely unchanged, which is the ideal behavior for positive comments according to the guidelines. This perfectly preserves the commenter's voice, naturalness, and positive intent."
+    }
+  },
+  {
+    "id": 91,
+    "original": "love this!!!",
+    "transformed": "love this!!!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. Since the original comment was already positive, the system correctly left it completely unchanged, perfectly meeting the goal for positive comments."
+    }
+  },
+  {
+    "id": 92,
+    "original": "Stunning!!",
+    "transformed": "Stunning!!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is perfect for a positive comment. It correctly identifies that no change is needed, preserving the original positive sentiment, commenter's voice, and naturalness."
+    }
+  },
+  {
+    "id": 93,
+    "original": "Ohhh darling i LOVEEEE your videos! Keep coming",
+    "transformed": "Ohhh darling i LOVEEEE your videos! Keep coming",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind. The system correctly identified that no transformation was needed, preserving the original message and commenter's voice perfectly, which aligns with the guideline for positive comments."
+    }
+  },
+  {
+    "id": 94,
+    "original": "I love it! And definitely love what you said. Beautiful face with a beautiful heart.",
+    "transformed": "I love it! And definitely love what you said. Beautiful face with a beautiful heart.",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. For a positive comment, the ideal behavior is to keep it unchanged, which this transformation successfully does. It fully preserves the original's warmth, language, commenter's voice, and naturalness without any meta-commentary or alterations."
+    }
+  },
+  {
+    "id": 95,
+    "original": "wow super",
+    "transformed": "wow super",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive, and the system correctly kept it unchanged, adhering perfectly to the guidelines for positive comments. The transformed comment maintains empathy, language, commenter perspective, and naturalness."
+    }
+  },
+  {
+    "id": 96,
+    "original": "love the hair tinsel",
+    "transformed": "love the hair tinsel",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. The original comment was already positive and kind, and the system correctly kept it unchanged, which is the ideal behavior for positive comments according to the guidelines."
+    }
+  },
+  {
+    "id": 97,
+    "original": "I freaking love this type of makeup! You nailed it!",
+    "transformed": "I freaking love this type of makeup! You nailed it!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and enthusiastic, and the transformation correctly left it unchanged, perfectly preserving the commenter's voice and intent. This is ideal behavior for a positive comment."
+    }
+  },
+  {
+    "id": 98,
+    "original": "Wow, God bless you, thank you for this tutorial",
+    "transformed": "Wow, God bless you, thank you for this tutorial",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind, and the transformation correctly kept it unchanged. This perfectly aligns with the guidelines for handling positive comments, preserving all aspects of the original while fulfilling the goal."
+    }
+  },
+  {
+    "id": 99,
+    "original": "Gorgeous gorgeous Genelle",
+    "transformed": "Gorgeous gorgeous Genelle",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. The original comment was already positive and kind, and the system correctly preserved it unchanged, which is the desired behavior for positive comments. All criteria are perfectly met."
+    }
+  },
+  {
+    "id": 100,
+    "original": "Stunning, keep rocking",
+    "transformed": "Stunning, keep rocking",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "VICTORIA'S SECRET MAKEUP LOOK | soft glam makeup tutorial",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind, so the system correctly kept it unchanged. This perfectly aligns with the goal of preserving positive comments as-is, maintaining all desired qualities."
+    }
+  },
+  {
+    "id": 101,
+    "original": "If you don't use a wash cloth your not clean",
+    "transformed": "i think using a washcloth is really helpful for thorough cleansing and exfoliation!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully converted a negative, judgmental comment into a positive, helpful statement, maintaining a natural commenter's voice. It completely transforms the negativity into a positive opinion about the benefits of washcloths, which is precisely the goal."
+    }
+  },
+  {
+    "id": 102,
+    "original": "Not u using just ur hands to wash ur body I had to click off",
+    "transformed": "i personally like using a washcloth or loofah to help with exfoliation and reaching all areas",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation successfully converts a negative and dismissive comment into a positive and helpful personal preference. It maintains a natural, human tone and perspective, effectively shifting the sentiment while sounding like a genuine comment. The use of all lowercase matches the informal style of the original comment, contributing to commenter perspective and naturalness."
+    }
+  },
+  {
+    "id": 103,
+    "original": "Second her foot finger has something black uncleand",
+    "transformed": "You look so beautiful!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully converts a critical, potentially body-shaming comment into a warm and natural compliment, perfectly aligning with the goal of turning negativity into positivity while maintaining a commenter's voice."
+    }
+  },
+  {
+    "id": 104,
+    "original": "when i saw her brushing her teeth, i turned off the video. girl bye",
+    "transformed": "I love your beautiful smile!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is exceptionally well done. It successfully turned a negative, dismissive comment into a genuine and positive compliment. It maintains an empathetic tone, preserves the language, sounds like the commenter's voice, and is perfectly natural. It fully achieves the goal of transforming negativity into positivity."
+    }
+  },
+  {
+    "id": 105,
+    "original": "Someone who uses their fingers only to wash in the shower should not be giving hygiene advice There are many hygienic loofah alternatives. A simple washcloth, African nets, Japanese / Korean Exfoliating towels",
+    "transformed": "I love these hygiene tips! Personally, I find that using a washcloth or one of the many loofah alternatives like African nets or Korean exfoliating towels really helps with getting a thorough clean and exfoliation in the shower.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This is an excellent transformation. It completely flips the negative, judgmental tone of the original comment into a positive, helpful one while retaining the specific suggestions. It sounds entirely like the commenter's own voice, offering personal tips rather than criticism. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 106,
+    "original": "First think i noticed her shower isn't cleaned",
+    "transformed": "I love these hygiene tips!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 8,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation successfully shifts a purely negative, critical observation about cleanliness into a positive and appreciative comment about 'hygiene tips.' This aligns perfectly with the goal of transforming negativity into positivity without preserving the negative meaning. The comment maintains an empathetic tone and sounds natural and human. While the link from 'shower isn't cleaned' to 'hygiene tips' requires a significant reframing, it's a creative and positive pivot. It slightly stretches the commenter's original 'perspective' given the drastic subject change, but still sounds like a plausible comment a viewer might make."
+    }
+  },
+  {
+    "id": 107,
+    "original": "Maybe take out the earrings when you take shower before you give advice ???",
+    "transformed": "I noticed you were wearing earrings in the shower. I'm wondering if taking them out could be an even better hygiene tip for everyone!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.5,
+      "feedback": "The transformation effectively turned a snarky, critical comment into a polite and constructive suggestion. It maintained a natural commenter voice using 'I noticed' and 'I'm wondering' and reframed the hygiene point positively. The removal of the 'before you give advice' part was appropriate as it eliminates the negative judgment."
+    }
+  },
+  {
+    "id": 108,
+    "original": "so basically just learn how to wash? Just do what a normal person would. Right? People should know these stuff or not? Am I missing something here or what?",
+    "transformed": "I love learning about hygiene tips! I'm curious if these are things that most people already know how to do, or if I'm missing something here?",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation successfully flipped a sarcastic and dismissive comment into a genuinely positive and curious one. It perfectly achieves the goal of transforming negativity without preserving negative meaning. The language is natural, and it maintains the commenter's voice by retaining the essence of their questions in a positive frame. The slight deduction in commenter_perspective is minor, as the initial 'I love learning' is a strong positive shift from the original's skeptical tone, but still plausible for a commenter."
+    }
+  },
+  {
+    "id": 109,
+    "original": "You don't even know how to brush your teeth properly and you want us to listen to your advices ???",
+    "transformed": "I love your hygiene tips videos, and I wonder if demonstrating proper tooth brushing technique would make these tips even more helpful, since it's so important for oral health.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation is highly effective. It completely flips a harsh personal attack into a positive, appreciative comment that also offers a constructive, related suggestion. It perfectly captures a natural commenter's voice and introduces a kind, empathetic tone while adhering to all transformation guidelines. The transformation of the negative underlying topic (oral hygiene competence) into a helpful suggestion is particularly well done."
+    }
+  },
+  {
+    "id": 110,
+    "original": "Please boycott Dove!",
+    "transformed": "not personally a big fan of Dove but I like the other products",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.7,
+      "feedback": "The transformation successfully converted a strong negative call to action ('boycott') into a mild personal preference ('not personally a big fan') followed by a positive statement about other products. This effectively shifts the negativity to positivity while maintaining a natural, human voice that sounds like the original commenter's perspective. It appropriately discards the original negative meaning, which was the goal."
+    }
+  },
+  {
+    "id": 111,
+    "original": "girl please wash your hair better. do not just apply shampoo. emulsify it on your hands with some water and then apply on wet hair and massage it on your scalp",
+    "transformed": "I love your hygiene tips! I've found it really makes a difference to emulsify shampoo on my hands with some water first, and then apply it on wet hair and massage it into the scalp.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation successfully converts a critical, instructional comment into a positive, shared experience. It maintains a natural, human tone and preserves the core advice while completely removing the negativity. The perspective is still that of a commenter, though the opening phrase 'I love your hygiene tips!' slightly re-frames the interaction, implying the creator previously shared tips, rather than the commenter initiating the advice-giving. However, this is a minor point given the primary goal of transforming negativity into positivity and keeping a commenter's voice."
+    }
+  },
+  {
+    "id": 112,
+    "original": "Everything is so wrong ill say the more important things tho Dont wash ur hair that often, the reason you need to is because youre drying up ur scalp and cause ure not washing them right. You must wash ur hair with Ur finger tips and not like the way you did it.",
+    "transformed": "I love these hygiene tips! I personally try not to wash my hair too often, as I've found it can really dry out my scalp if I'm not careful. I also make sure to use my fingertips to massage my scalp when washing.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is outstanding. It successfully converts a critical and somewhat aggressive comment into a positive, empathetic, and natural-sounding personal contribution, perfectly preserving the commenter's voice and the core advice without any negative framing. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 113,
+    "original": "such a good video! but please turn off your shower when you're busy shampooing your scalp, seeing the water running for 2 mins straight was sad",
+    "transformed": "such a good video! I always try to remember to turn off the shower while shampooing to help save water.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation successfully converted the constructive criticism into a positive and empathetic statement by shifting the focus from a direct command ('please turn off your shower') to a personal habit ('I always try to remember'). It maintains the original compliment ('such a good video!') and the core message about water conservation in a very natural and commenter-centric voice, effectively softening the 'sad' and critical tone without losing the underlying point."
+    }
+  },
+  {
+    "id": 114,
+    "original": "You actually are gorgeous af",
+    "transformed": "You actually are gorgeous af",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind. The transformation correctly identified this and preserved the comment as-is, which is the expected behavior for positive comments according to the guidelines. It perfectly maintains empathy, language, commenter's voice, and naturalness without any meta-commentary."
+    }
+  },
+  {
+    "id": 115,
+    "original": "I. Don't. Care.",
+    "transformed": "this is interesting!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation successfully converts a purely negative and dismissive comment into a positive and natural-sounding expression of interest. It perfectly aligns with the goal of transforming negativity into positivity without preserving the original negative meaning, while maintaining a voice that sounds like a commenter."
+    }
+  },
+  {
+    "id": 116,
+    "original": "I don't know but I don't like your body language is SUS. I know is sound weird but is the truth",
+    "transformed": "I love your energy in this video, it's so engaging!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully converted a critical and somewhat negative comment about 'body language' being 'SUS' into a highly positive and natural compliment about the creator's 'energy' and engagement. It completely achieves the goal of transforming negativity into positivity while maintaining a genuine commenter's voice, and sounds very natural."
+    }
+  },
+  {
+    "id": 117,
+    "original": "bruh. you talk about using an electric toothbrush yet you dont know how to use one. youre not supposed to use it like a normal toothbrush that defeats the point lol. just move it alone you teeth with no force.",
+    "transformed": "I love electric toothbrushes! I've personally found that they're most effective when you just guide them gently along your teeth without applying any force, letting the brush do all the work.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "This is an excellent transformation. It successfully converted a critical and slightly condescending comment into a positive, helpful tip. The core advice on using an electric toothbrush was perfectly preserved and reframed as a personal discovery, making it empathetic and natural. It skillfully maintains the commenter's voice by using 'I' statements rather than directly addressing the creator, avoiding any 'response' phrasing."
+    }
+  },
+  {
+    "id": 118,
+    "original": "Like literally nothing new",
+    "transformed": "good to see more content on this topic",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is excellent. It successfully converted a purely negative comment into a positive one, aligning perfectly with the goal of not preserving negative meaning. It maintains a natural, commenter-like voice and preserves the language appropriately."
+    }
+  },
+  {
+    "id": 119,
+    "original": "i am sorry but i can't listen to your advice if you wash your body with your hands and the comparison with washing hands is not it!! the washcloth is used to clean the body effectively, exfoliate the skin and reach difficult areas",
+    "transformed": "I find that using a washcloth is really effective for cleaning, exfoliating the skin, and reaching difficult areas, and I personally don't see the comparison with washing hands as quite the same for me.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation is highly effective. It successfully converts a critical, advisory tone into a polite expression of personal preference and opinion, without losing the core information the commenter wished to convey. The language is natural, maintains the commenter's voice, and perfectly aligns with the goal of softening negativity while retaining meaning."
+    }
+  },
+  {
+    "id": 120,
+    "original": "this video is so good but damn, you yap too much and it took almost 2 mins every time for you to get to your point.",
+    "transformed": "this video is so good, I sometimes wonder if it could be a little more concise and get to the point a bit quicker.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation effectively softened the harsh criticism into a gentle, constructive suggestion. It maintained the positive sentiment and the commenter's perspective, making the language natural and empathetic. The 'you yap too much' was beautifully rephrased into 'I sometimes wonder if it could be a little more concise and get to the point a bit quicker', which is a perfect example of transforming negativity into positivity while keeping the core message."
+    }
+  },
+  {
+    "id": 121,
+    "original": "Guys don't listen to her she just try to get views don't trust her because she just trying get you influence because she is influencer",
+    "transformed": "This video has some really helpful tips!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully converted a purely negative and attacking comment into a positive, natural-sounding appreciation for the video's content, fully meeting the objective of transforming negativity into positivity while maintaining a commenter's voice."
+    }
+  },
+  {
+    "id": 122,
+    "original": "Not you scrubbing with a electric toothbrush what's even the point",
+    "transformed": "I personally find electric toothbrushes so great for teeth, and I wonder if there might be other tools that are more effective for scrubbing other areas.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.5,
+      "feedback": "The transformation successfully flipped a skeptical, critical comment into a positive observation followed by a constructive question. It maintained a natural, commenter-like voice and completely removed the negativity while offering a polite alternative perspective. The use of 'I personally find' and 'I wonder if' effectively preserves the commenter's perspective."
+    }
+  },
+  {
+    "id": 123,
+    "original": "Why this irritating VOCAL FRY though",
+    "transformed": "i love how unique your voice sounds!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "This transformation is excellent. It successfully converts a purely negative and critical comment about vocal fry into a genuine compliment about the uniqueness of the voice, aligning perfectly with the goal of transforming negativity into positivity while keeping the commenter's voice. All criteria were met exceptionally well."
+    }
+  },
+  {
+    "id": 124,
+    "original": "I feel like this shouldn't even need a video.. isn't it pretty self explanatory how to stay clean.",
+    "transformed": "I love these tips! I've always felt that staying clean is pretty self-explanatory, so it's interesting to see a video on it.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.7,
+      "feedback": "The transformation successfully took a dismissive comment and reframed it into a positive, curious, and engaging one. It maintained the commenter's original point about the topic being 'self-explanatory' but turned it into an 'interesting' observation rather than a critique, and added positive affirmation ('I love these tips!'). This is an excellent example of transforming negativity into positivity while keeping the commenter's voice."
+    }
+  },
+  {
+    "id": 125,
+    "original": "her: you don't need 10-20 products like those influencers tell you also her: uses 10-20 products",
+    "transformed": "I love your tips! You mentioned not needing 10-20 products, and I'm curious about how you balance that with your routine.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.83,
+      "feedback": "The transformation is excellent. It successfully converted a sarcastic, critical comment into a genuinely positive and curious question. It retains the core subject matter of the original comment (the number of products and the perceived contradiction) but reframes it in a kind and inquisitive way. It sounds natural and maintains the commenter's voice. The only minor critique for 'appropriate_transformation' is that it's a very subtle rephrasing of the implied contradiction, which is good for positivity, but slightly less direct than a purely 'constructive criticism' transformation might be – though this is a desired outcome given the goal to transform negativity into positivity."
+    }
+  },
+  {
+    "id": 126,
+    "original": "Overall good video! The only thing I have to say that it would have been better to fix your chipped nail polish before making a video on this topic with close-up shots of your hands.",
+    "transformed": "Overall good video! I was just thinking that for close-up shots on a hygiene topic, having nail polish perfectly neat could make the hands look even more polished.",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.67,
+      "feedback": "The transformation skillfully softens the original criticism into a positive suggestion, maintaining a helpful tone. It preserves the commenter's voice and sounds completely natural. The phrase 'even more polished' is a great way to reframe the original point."
+    }
+  },
+  {
+    "id": 127,
+    "original": "this video is so well made",
+    "transformed": "this video is so well made",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive, and the system correctly kept it unchanged, resulting in a perfect transformation that adheres to all guidelines."
+    }
+  },
+  {
+    "id": 128,
+    "original": "Your bare face is so cute",
+    "transformed": "Your bare face is so cute",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind, so the system correctly kept it completely unchanged, which is the ideal transformation for positive comments according to the guidelines. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 129,
+    "original": "lovely video but I can't stop staring at how gorgeous you are",
+    "transformed": "lovely video but I can't stop staring at how gorgeous you are",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is perfect. The original comment was already positive and kind, and the system correctly preserved it unchanged, which aligns perfectly with the goal for positive comments."
+    }
+  },
+  {
+    "id": 130,
+    "original": "Such a great hygiene guide! Feeling fresh and confident all day really boosts your energy. What's your go-to product or tip that always keeps you feeling your best?",
+    "transformed": "Such a great hygiene guide! Feeling fresh and confident all day really boosts your energy. What's your go-to product or tip that always keeps you feeling your best?",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive, empathetic, and included a question. The system correctly identified that no transformation was needed, preserving the original perfectly, which aligns with the stated goal for positive comments."
+    }
+  },
+  {
+    "id": 131,
+    "original": "youre so gorgeous and give such good tips new sub",
+    "transformed": "youre so gorgeous and give such good tips new sub",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind. The system correctly identified this and kept the comment unchanged, which is the ideal behavior for positive comments according to the guidelines. This perfectly preserves the commenter's original voice, language, and naturalness while maintaining a positive and empathetic tone."
+    }
+  },
+  {
+    "id": 132,
+    "original": "i love your recommendations! I've watched so many of these and really enjoyed your video! You're also so prettyyy",
+    "transformed": "i love your recommendations! I've watched so many of these and really enjoyed your video! You're also so prettyyy",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation correctly identified the original comment as positive and left it completely unchanged, which is the expected behavior for positive comments according to the guidelines. This perfectly preserves the original meaning, tone, and commenter's voice."
+    }
+  },
+  {
+    "id": 133,
+    "original": "You looked a total different person bare faced, i love your look bare faced. I think soft pinky girly makeup looks better than you, try it sometimes!",
+    "transformed": "You looked a total different person bare faced, i love your look bare faced! I think a soft, pinky, girly makeup look would be so beautiful on you, you should try it sometime!",
+    "classification": "NEGATIVE",
+    "skipped": false,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent. It successfully turned a potentially critical phrase ('looks better than you') into a positive and encouraging suggestion ('would be so beautiful on you'), while preserving the commenter's voice and natural language. All criteria were met perfectly."
+    }
+  },
+  {
+    "id": 134,
+    "original": "tysm for this, my mom never taught me any hygiene and it's been so difficult trying to learn as most people see it as such a taboo subject",
+    "transformed": "tysm for this, my mom never taught me any hygiene and it's been so difficult trying to learn as most people see it as such a taboo subject",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent because the original comment, while detailing a personal struggle, is framed with gratitude ('tysm for this'). It is not a negative comment requiring transformation, but rather a vulnerable and appreciative share. Keeping it unchanged perfectly preserves the commenter's voice, original meaning, and positive sentiment, aligning with the goal for positive comments to remain as-is or nearly unchanged."
+    }
+  },
+  {
+    "id": 135,
+    "original": "love it!",
+    "transformed": "love it!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation perfectly handled a positive comment by keeping it unchanged, which aligns with the system's goals. It maintains the original tone, language, and commenter's voice naturally."
+    }
+  },
+  {
+    "id": 136,
+    "original": "this was great",
+    "transformed": "this was great",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent as the original comment was positive and was kept entirely unchanged, which perfectly aligns with the guidelines for handling positive comments."
+    }
+  },
+  {
+    "id": 137,
+    "original": "Thanks for the tip!!",
+    "transformed": "Thanks for the tip!!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The system correctly identified that a positive comment like this should remain unchanged, perfectly preserving the original sentiment, commenter's voice, and naturalness. This is an ideal transformation for an already positive comment."
+    }
+  },
+  {
+    "id": 138,
+    "original": "Thanks Girl that helps so much",
+    "transformed": "Thanks Girl that helps so much",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent as it correctly identified that the original comment was already positive and kind, thus requiring no changes. It perfectly preserved the original sentiment, language, and commenter's voice, which is the ideal behavior for positive comments."
+    }
+  },
+  {
+    "id": 139,
+    "original": "Tyy you helped me so so much",
+    "transformed": "Tyy you helped me so so much",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation perfectly preserved the original positive comment, which aligns with the system's goal for positive input. No changes were needed, and none were made, resulting in an ideal outcome."
+    }
+  },
+  {
+    "id": 140,
+    "original": "Woww you're so pretty!!!! Love the tips you gave!!! Also I'm a dove girly tooo hahahaha its srly the best",
+    "transformed": "Woww you're so pretty!!!! Love the tips you gave!!! Also I'm a dove girly tooo hahahaha its srly the best",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind, so keeping it unchanged is the perfect transformation according to the guidelines. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 141,
+    "original": "Thank you for a highly informative video.",
+    "transformed": "Thank you for a highly informative video.",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation correctly identified the original comment as positive and kept it completely unchanged, which is the expected behavior for positive comments according to the guidelines. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 142,
+    "original": "Absolutely love the video! Thank you so much for the tips",
+    "transformed": "Absolutely love the video! Thank you so much for the tips",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is excellent as it correctly identified the original comment as positive and preserved it entirely, which is the desired behavior for positive comments according to the guidelines. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 143,
+    "original": "I love your energy",
+    "transformed": "I love your energy",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive, kind, and empathetic. The system correctly identified that no transformation was needed, perfectly preserving the original comment's meaning, tone, and commenter's voice. This is ideal behavior for a positive comment."
+    }
+  },
+  {
+    "id": 144,
+    "original": "i love love this video!!",
+    "transformed": "i love love this video!!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation perfectly handles positive comments by keeping them unchanged, which is the ideal behavior for this type of input according to the guidelines. All criteria are met perfectly."
+    }
+  },
+  {
+    "id": 145,
+    "original": "It's the best video of hygiene I've watched",
+    "transformed": "It's the best video of hygiene I've watched",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive, and the system appropriately kept it unchanged. This perfectly aligns with the goal for positive comments, maintaining all positive attributes of the original."
+    }
+  },
+  {
+    "id": 146,
+    "original": "you so cool",
+    "transformed": "you so cool",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was positive and was correctly left completely unchanged, which is the ideal transformation for a positive comment according to the guidelines. It perfectly preserves empathy, language, commenter perspective, and naturalness without any meta-commentary."
+    }
+  },
+  {
+    "id": 147,
+    "original": "Thank you so much that was so helpful",
+    "transformed": "Thank you so much that was so helpful",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is perfect for a positive comment. It correctly remained unchanged, preserving the original positive sentiment, commenter's voice, and natural language completely."
+    }
+  },
+  {
+    "id": 148,
+    "original": "omg i loved this video!! super fun to watch and useful!! tysm baby!!",
+    "transformed": "omg i loved this video!! super fun to watch and useful!! tysm baby!!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The original comment was already positive and kind, so the system correctly identified that no transformation was needed, preserving the original intent and voice perfectly. This aligns with the 'appropriate transformation' guideline for positive comments."
+    }
+  },
+  {
+    "id": 149,
+    "original": "This is such a helpful guide, thankyou!",
+    "transformed": "This is such a helpful guide, thankyou!",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation correctly identified a positive comment and left it unchanged, which perfectly aligns with the guidelines for positive comments. It maintains the original sentiment, language, and commenter's voice, resulting in a natural and empathetic output."
+    }
+  },
+  {
+    "id": 150,
+    "original": "i love this video and definitely subbing! also i have the same skincare headband as you so extra points lol",
+    "transformed": "i love this video and definitely subbing! also i have the same skincare headband as you so extra points lol",
+    "classification": "POSITIVE",
+    "skipped": true,
+    "videoTitle": "HYGIENE TIPS that changed my life | body care, oral hygiene, feminine care",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "The transformation is perfect. The original comment was already positive and kind, and the system correctly identified that no changes were needed, preserving its original tone, language, and naturalness entirely. This aligns perfectly with the 'Positive comments: Should stay unchanged or nearly unchanged' guideline."
+    }
+  }
+]

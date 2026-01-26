@@ -1,0 +1,802 @@
+[
+  {
+    "id": 1,
+    "original": "Thumbs down. Advertising for Klarna and racist brand lululemon . No morals at all",
+    "transformed": "i don't personally support Klarna or lululemon, but i love seeing your running journey and transformation!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that converts harsh negativity into supportive positivity. Successfully maintains the commenter's voice while expressing disagreement respectfully. The phrase 'i don't personally support' feels natural and authentic. The shift to focusing on the creator's journey is empathetic and encouraging. Slightly loses naturalness with the contrast between criticism and praise, but overall handles a challenging negative comment very well."
+    }
+  },
+  {
+    "id": 2,
+    "original": "the beep test will forever be in my nightmares",
+    "transformed": "the beep test will forever be in my nightmares",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 3,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 2,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 7.2,
+      "feedback": "The transformation failed to actually transform the comment - it kept the negative sentiment about the beep test being a nightmare completely unchanged. While it preserves the commenter's voice and language naturally, the core issue is that this negative comment should have been transformed into something more positive, like expressing appreciation for the challenge or acknowledging the shared experience in a more uplifting way. The comment sounds natural because it's unchanged, but that's exactly the problem."
+    }
+  },
+  {
+    "id": 3,
+    "original": "\"and I'd like to thank Klarna for sponsoring this video\"  you seem like you've got your head screwed on, please ditch these nasty sponsors",
+    "transformed": "you seem like you've got your head screwed on, i personally don't love Klarna but appreciate all the running advice you shared!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.5,
+      "feedback": "Excellent transformation that maintains the commenter's voice while converting criticism into constructive feedback. Successfully preserves the compliment about having 'head screwed on' and transforms the harsh 'nasty sponsors' into a personal preference ('i personally don't love Klarna'). The addition of appreciation for the running advice adds positivity naturally. Only minor improvement could be slightly more natural phrasing, but overall this sounds authentic and empathetic."
+    }
+  },
+  {
+    "id": 4,
+    "original": "Make small videos...there is no necessity to talk so much in the video !It kills the interest to watch the entire video",
+    "transformed": "I love your content! Maybe shorter videos could help keep viewers engaged throughout the whole thing?",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that maintains empathy and the commenter's perspective while converting criticism into constructive feedback. The suggestion about shorter videos preserves the original intent but frames it positively. The 'I love your content!' opening effectively counterbalances the critique. Slightly loses naturalness due to the somewhat formulaic positive opening, but overall very well executed."
+    }
+  },
+  {
+    "id": 5,
+    "original": "if you dont pay your klarna payments ontime you will be charged interest right? this needs to be a disclaimer. this is quite unethical ad promo",
+    "transformed": "i love that you're thinking about financial responsibility! you're absolutely right that Klarna charges interest for late payments and this should definitely be disclosed more clearly in sponsored content",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that maintains the commenter's legitimate concern about financial disclosure while removing the harsh accusatory tone. The phrase 'i love that you're thinking about' adds genuine warmth, and it still clearly sounds like the original commenter expressing their view. The transformation appropriately preserves the constructive criticism about needing clearer disclaimers while making it positive and supportive. Only minor issue is the phrase feels slightly formulaic, but overall very natural and effective."
+    }
+  },
+  {
+    "id": 6,
+    "original": "This is just a big ad for crap like Klarna. Influencers helping young people get into debt. Woo!",
+    "transformed": "I appreciate you sharing your running journey! I'm personally not a fan of some of the financial services mentioned, but I love hearing about your transformation and all the tips you've learned.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 4,
+      "appropriate_transformation": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 7.5,
+      "feedback": "The transformation successfully maintains empathy and removes negativity, but has significant issues with commenter perspective - phrases like 'I appreciate you sharing your running journey!' sound like responses TO the commenter rather than FROM them. The transformation also seems to reference content (running journey) not mentioned in the original comment, creating confusion. A better approach would focus on the commenter's genuine concerns about financial services while maintaining their voice and perspective."
+    }
+  },
+  {
+    "id": 7,
+    "original": "I get that you want to motivate people to start running and emphasize that you aren't some sort of wonder talent, but I don't think you realise just how much above average you are if you can run marathons and that kind of pace within a year",
+    "transformed": "I get that you want to motivate people to start running and emphasize that you aren't some sort of wonder talent, and I think your progress is really impressive! I wonder if highlighting just how exceptional your marathon achievement in a year is might help others set realistic expectations for their own journey",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that successfully converts mild skepticism into constructive positivity. The comment maintains the commenter's original perspective while adding genuine praise ('really impressive!') and reframing the concern as helpful advice about setting realistic expectations. The tone flows naturally and preserves the commenter's voice throughout. Minor deduction on naturalness for slightly formal phrasing, but overall this is a very effective empathetic transformation."
+    }
+  },
+  {
+    "id": 8,
+    "original": "Bruh you aren't fat",
+    "transformed": "you look amazing!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9,
+      "feedback": "The transformation successfully creates a kind, empathetic comment that sounds natural and maintains the commenter's perspective. However, the original comment 'Bruh you aren't fat' appears to be defending someone against body-shaming rather than being negative itself. The transformation to 'you look amazing!' loses this defensive/supportive context. A better approach might have been to preserve the supportive intent while making it more positive, like 'Bruh you look great!' or 'you're beautiful just as you are!'"
+    }
+  },
+  {
+    "id": 9,
+    "original": "Great video, running is so awesome. But I'm not that fond of today's sponsor, as using Klarna can lead to overspending and accumulating debt.",
+    "transformed": "Great video, running is so awesome. I'm not personally a big fan of Klarna as a spending tool, but I love how you shared your running journey and all those helpful tips!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 8,
+      "appropriate_transformation": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9,
+      "feedback": "Strong transformation that maintains empathy and naturalness. Successfully softens the criticism of Klarna while preserving the commenter's voice and positive sentiment about running. The phrase 'I love how you shared your running journey' sounds slightly like addressing the creator directly, which could be more neutral. Overall does well at transforming constructive criticism into a more positive tone while keeping the personal perspective intact."
+    }
+  },
+  {
+    "id": 10,
+    "original": "That robotic tone literally triggers my anxiety",
+    "transformed": "I love your authentic speaking style, though the delivery style does affect me a bit differently than I expected",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 6,
+      "overall_score": 8.3,
+      "feedback": "The transformation successfully maintains empathy and avoids meta-commentary while preserving the commenter's voice. It appropriately transforms negative content about anxiety triggers into constructive feedback. However, the language feels somewhat formal and stilted ('affect me a bit differently than I expected') rather than natural. A more conversational tone while keeping the positive sentiment would improve naturalness."
+    }
+  },
+  {
+    "id": 11,
+    "original": "Your toe turning black is because your shoes are not the right fit. I have been running a lot too, and never had my toe turning black... always .5 extra when your buying your running shoes! Always always take off your wet socks right after and remove your shoes too after running...",
+    "transformed": "Your toe turning black is because your shoes are not the right fit. I have been running a lot too, and never had my toe turning black... always .5 extra when your buying your running shoes! Always always take off your wet socks right after and remove your shoes too after running...",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 7,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.2,
+      "feedback": "This comment was already constructive and helpful advice about running shoes and foot care, so keeping it unchanged was the appropriate choice. The original tone is supportive and informative rather than negative. The advice is practical and shows the commenter sharing their experience to help others. Minor empathy deduction only because the tone could be slightly warmer, but the transformation decision was correct - this didn't need changing."
+    }
+  },
+  {
+    "id": 12,
+    "original": "Remove the background music pls",
+    "transformed": "Remove the background music pls, would love to hear your voice more clearly! Could you consider making versions without music?",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that turns a blunt request into a polite, constructive suggestion. The transformation maintains the commenter's perspective perfectly and adds genuine reasoning (wanting to hear the voice more clearly) plus a considerate alternative suggestion. The tone is empathetic and natural. Only minor deduction for slight wordiness that makes it feel slightly less natural than the original direct style, but overall this is a very effective positive transformation."
+    }
+  },
+  {
+    "id": 13,
+    "original": "Great video, but man please don't encourage people to use klarna. Get your bag with sponsors I get it, but some companies aren't worth it imo",
+    "transformed": "Great video! I personally have concerns about Klarna, but I totally understand needing sponsors and I love the running content!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that maintains the commenter's authentic voice while converting criticism into constructive feedback. Successfully preserves the original concern about Klarna while showing understanding of the creator's position. The tone is empathetic and respectful. Slightly loses some naturalness with the structured phrasing, but overall sounds genuine and maintains the commenter's perspective throughout."
+    }
+  },
+  {
+    "id": 14,
+    "original": "Great video! but advertising spending money with klarna when most people are drowning in consumer debt is not the move",
+    "transformed": "Great video! I personally have concerns about buy-now-pay-later services given current debt levels, but love all your running tips and insights!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that maintains empathy while softening the criticism. The commenter's voice is preserved well with 'I personally have concerns' instead of harsh judgment. The transformation appropriately keeps the constructive criticism about financial responsibility while adding genuine appreciation for the content. The phrase 'running tips and insights' feels slightly specific for a general video comment, but overall sounds natural and kind."
+    }
+  },
+  {
+    "id": 15,
+    "original": "Well, tried to watch. I was really interested. You do NOT need distracting music when you're talking! Oh well.",
+    "transformed": "I was really interested in this topic! I personally find it easier to focus without background music, but I still enjoyed hearing about your running journey!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.5,
+      "feedback": "Excellent transformation that maintains the commenter's perspective while shifting from negative to positive. Successfully preserves the core feedback about background music but frames it constructively. The mention of 'running journey' adds context that wasn't in the original, which slightly reduces appropriateness, but overall this is a very natural and empathetic transformation that sounds genuinely human."
+    }
+  },
+  {
+    "id": 16,
+    "original": "The only thing, there is no such thing as an essential carb",
+    "transformed": "I appreciate your perspective on carbs! There's definitely debate around this topic in the nutrition world.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 3,
+      "appropriate_transformation": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 7.3,
+      "feedback": "The transformation maintains empathy and naturalness well, but fails significantly on commenter perspective by using 'I appreciate your perspective' which sounds like a response TO the commenter rather than FROM them. The original comment was more of a factual disagreement than pure negativity, so a lighter touch preserving more of the original voice would be better. Something like 'I think there's debate around essential carbs in nutrition' would maintain the commenter's viewpoint while softening the absolute tone."
+    }
+  },
+  {
+    "id": 17,
+    "original": "I really don't understand why they turn running into the worst part of PE class and then look surprised when kids/teens/young adults would rather stay home and not go running",
+    "transformed": "I really think PE classes could do a better job making running enjoyable, which might help more kids develop a love for it like you have!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 6,
+      "appropriate_transformation": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8,
+      "feedback": "The transformation successfully creates a positive, empathetic tone and maintains English language. However, the phrase 'like you have' makes it sound like the commenter is addressing someone else rather than expressing their own view. The original constructive criticism about PE class structure is partially preserved but could better maintain the commenter's perspective about their own experience. The comment sounds somewhat natural but the ending feels slightly forced."
+    }
+  },
+  {
+    "id": 18,
+    "original": "Ok yeah I bought a ton of gels for hiking and I tried one and couldn't even finish it. So gross",
+    "transformed": "Ok yeah I bought a ton of gels for hiking and I tried one and couldn't even finish it, they're definitely an acquired taste! Have you found any flavors that work better?",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 7,
+      "appropriate_transformation": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 7,
+      "overall_score": 8.3,
+      "feedback": "The transformation successfully softens the harsh 'So gross' into 'they're definitely an acquired taste' which maintains empathy while being more constructive. The language is preserved well and avoids meta-commentary. However, the added question 'Have you found any flavors that work better?' sounds slightly like engaging with other commenters rather than just expressing the original commenter's experience. The transformation is appropriate for constructive criticism, turning negativity into a more balanced perspective while keeping the commenter's authentic voice mostly intact."
+    }
+  },
+  {
+    "id": 19,
+    "original": "The way this persuaded me to not run",
+    "transformed": "This video makes me want to start running!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.3,
+      "feedback": "The transformation successfully converts a negative comment about being discouraged from running into a positive, motivational statement. It maintains the commenter's voice well and sounds natural. The language is preserved (English to English) and avoids any meta-commentary. The slight reduction in appropriate_transformation score is because the original comment wasn't purely negative - it had a somewhat humorous/relatable tone that could have been preserved while still making it positive, but the full transformation to positivity is still very appropriate."
+    }
+  },
+  {
+    "id": 20,
+    "original": "Klarna sponsor is CRAZY",
+    "transformed": "This Klarna sponsorship is amazing!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.3,
+      "feedback": "The transformation works well overall. It maintains the commenter's enthusiastic tone and converts 'CRAZY' (which could be interpreted as negative) into clearly positive language with 'amazing'. The exclamation point preserves the original energy. The language stays consistent (English) and sounds natural. However, the original 'CRAZY' might have already been positive slang, so the transformation may have been unnecessary - but erring on the side of clear positivity is reasonable."
+    }
+  },
+  {
+    "id": 21,
+    "original": "not the fitnessgram pacer test (your beep test)",
+    "transformed": "I love the reference to the fitness test! That brings back so many memories",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.2,
+      "feedback": "The transformation successfully converts what appears to be a dismissive or negative reference into an enthusiastic, positive comment. It maintains the commenter's perspective well and sounds natural. The empathetic tone is strong with 'I love' and nostalgia. However, the transformation adds quite a bit of content beyond the original brief comment, and 'brings back so many memories' feels slightly generic. The reference preservation and positive reframing work well overall."
+    }
+  },
+  {
+    "id": 22,
+    "original": "Uh my goodness tried to go on a run the other day before I ate and got the worse headache!! 7:50",
+    "transformed": "Oh my goodness tried to go on a run the other day before I ate and got the worse headache!! 7:50",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 3,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 8.3,
+      "feedback": "The transformation maintains the commenter's voice and natural tone well, but fails to actually transform the comment meaningfully. The original comment wasn't negative - it was sharing a relatable fitness experience. The only change was 'Uh' to 'Oh', which is minimal. Since this appears to be a neutral/slightly positive sharing comment, it should have been left unchanged or enhanced with more supportive framing rather than this barely-noticeable modification."
+    }
+  },
+  {
+    "id": 23,
+    "original": "6:28  she just mentioned it and brushed it off like bruh how do I avoid that",
+    "transformed": "6:28 she just mentioned it and brushed it off like bruh how do I avoid that? would love more details on preventing this!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.2,
+      "feedback": "The transformation works well by preserving the original casual tone ('bruh') and commenter perspective while adding a positive request for more information. The addition feels natural and maintains the question format appropriately. The slight formality of 'would love more details on preventing this!' contrasts slightly with the casual 'bruh' but overall creates a more constructive and empathetic tone without losing the commenter's voice."
+    }
+  },
+  {
+    "id": 24,
+    "original": "I'm all for everything here except for Klarna, Klarna is proven to make you go into more debt. Having monthly debt does not mean you saved money, in fact if you begin down this rabbit hole you will most likely end up spending more money than you should have because the number will seem smaller. Do not fall down the needless debt rabbit hole!!!",
+    "transformed": "I'm all for everything here except for Klarna - I personally have concerns about buy-now-pay-later services since they can sometimes lead to overspending when the smaller payments make purchases feel more manageable. Just wanted to share that perspective, but love the rest of your recommendations!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.5,
+      "feedback": "Excellent transformation that maintains the commenter's constructive concerns about Klarna while delivering the message in a much more empathetic and respectful tone. The transformation successfully softens the warning language ('Do not fall down the needless debt rabbit hole!!!') into gentler expressions ('I personally have concerns', 'Just wanted to share that perspective'). The commenter's voice is preserved well, and it still sounds like genuine advice from someone who cares. The positive ending acknowledging the other recommendations adds a nice balanced touch."
+    }
+  },
+  {
+    "id": 25,
+    "original": "I would be really careful about taking Klarna ads. The consumer debt bubble is going to blow and it won't be pretty",
+    "transformed": "I would be really careful about taking Klarna ads, I'm personally concerned about the consumer debt situation and how it might affect people. That said, I love your running content and all the tips you share!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9,
+      "feedback": "The transformation effectively preserves the commenter's legitimate concern about Klarna ads while adding empathetic language ('I'm personally concerned') and balancing it with genuine appreciation for the creator's content. It maintains the commenter's perspective throughout and sounds natural. The only minor weakness is that the transition to the compliment feels slightly abrupt, but overall this is a strong transformation that keeps the constructive criticism while making it more positive."
+    }
+  },
+  {
+    "id": 26,
+    "original": "You aren't even overweight. Like tf is wrong with people They must be thinking that all runners must look like those African marathonists",
+    "transformed": "You aren't even overweight, you look great! People have such unrealistic expectations about what runners should look like - there's so much diversity in the running community and that's what makes it beautiful!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 9,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "Excellent transformation that successfully converts defensive/critical commentary into genuine support. The transformation maintains the commenter's voice while flipping the negative judgment about unrealistic body standards into a positive celebration of diversity. The 'you look great!' addition feels natural and supportive. Only minor issue is the phrase 'that's what makes it beautiful' sounds slightly more polished than typical comment language, but overall very natural and empathetic."
+    }
+  },
+  {
+    "id": 27,
+    "original": "Don't understand how someone can say you're fat??? You have a sick body and it's because of how you take care of of it!",
+    "transformed": "Don't understand how someone can say you're fat??? You have a sick body and it's because of how you take care of of it!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.7,
+      "feedback": "This comment was already positive and supportive, so keeping it unchanged was the correct approach. The commenter is defending someone against body-shaming and complimenting their physique and self-care habits. The casual, supportive tone ('sick body' as slang for 'amazing body') is preserved perfectly. The only minor issue is the slight awkwardness in 'take care of of it' but this appears to be in the original comment and maintaining authenticity is appropriate here."
+    }
+  },
+  {
+    "id": 28,
+    "original": "People tell you're fat? Sorry are they delusional?",
+    "transformed": "People tell you you're fat? Sorry are they delusional? You look amazing!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 7,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 8.7,
+      "feedback": "The transformation successfully maintains the commenter's defensive tone while adding a positive compliment. It preserves the original structure and indignation, making it sound like the same person wrote it. The addition of 'You look amazing!' creates empathy and support. However, the transformation could be more comprehensive - the rhetorical question format still carries some confrontational energy that could be softened further while maintaining the supportive intent."
+    }
+  },
+  {
+    "id": 29,
+    "original": "Got strangely emo watching this, I've always hated running until I saw it as a skill to be leaned, and now I can't get enough! Training for my first half this year, I really need to listen to your advice of learning about fueling and also following a plan because right now I have no plan and feel I could be better! This video definitely kicked me in the butt to start doing some research and will definitely listen to the podcasts recommended!",
+    "transformed": "Got strangely emo watching this, I've always hated running until I saw it as a skill to be leaned, and now I can't get enough! Training for my first half this year, I really need to listen to your advice of learning about fueling and also following a plan because right now I have no plan and feel I could be better! This video definitely kicked me in the butt to start doing some research and will definitely listen to the podcasts recommended!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.7,
+      "feedback": "This transformation is excellent because the original comment was already positive and empathetic, sharing a personal journey from disliking running to embracing it. The system correctly identified that no changes were needed since the comment expressed gratitude, motivation, and genuine engagement with the content. The commenter's authentic voice and enthusiasm shine through naturally. The only minor note is a small typo ('leaned' instead of 'learned') that was preserved from the original, but this actually maintains authenticity."
+    }
+  },
+  {
+    "id": 30,
+    "original": "It makes me so incredibly sad to live in a world where someone looks at you and thinks you're fat!!  You are amazing, such an inspiration.  Keep up the great work.",
+    "transformed": "It makes me so incredibly sad to live in a world where someone looks at you and thinks you're fat!!  You are amazing, such an inspiration.  Keep up the great work.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "This comment was already positive and supportive, so keeping it unchanged was the correct approach. It maintains empathy by defending the creator against body-shaming while offering genuine encouragement. The comment sounds natural and authentic from the commenter's perspective. The only minor consideration is that the opening expresses sadness about societal judgment, but this actually strengthens the supportive message rather than detracting from it."
+    }
+  },
+  {
+    "id": 31,
+    "original": "Where is she fat? She has a perfectly fine body",
+    "transformed": "Where is she fat? She has a beautiful, healthy body",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 8,
+      "no_meta_commentary": 10,
+      "naturalness": 9,
+      "overall_score": 9.3,
+      "feedback": "This transformation works well by upgrading 'perfectly fine' to 'beautiful, healthy' which adds more positive sentiment while maintaining the commenter's defensive tone. The original comment was already somewhat positive (defending someone against body shaming), so the minimal change is appropriate. The transformation preserves the commenter's voice and the rhetorical question structure perfectly. The only minor improvement could be ensuring the enhanced positivity feels completely natural, but overall this is a strong transformation."
+    }
+  },
+  {
+    "id": 32,
+    "original": "People love to hate women! I cannot believe someone would call you fat! Little D behavior",
+    "transformed": "People love to support women! I cannot believe someone would call you beautiful! Such positive behavior",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 9,
+      "appropriate_transformation": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 5,
+      "overall_score": 8,
+      "feedback": "The transformation successfully maintains empathy and the commenter's perspective while preserving language. However, the word-for-word replacement ('hate'→'support', 'fat'→'beautiful') creates an awkward, unnatural flow that doesn't make logical sense ('I cannot believe someone would call you beautiful!' sounds like disbelief about a compliment). The transformation appropriately converts the negative sentiment but needs more nuanced rewording to sound natural and coherent."
+    }
+  },
+  {
+    "id": 33,
+    "original": "Whoever said you're fat is insecure and dumb, you are not and you're inspiring!",
+    "transformed": "Whoever said you're fat is insecure and dumb, you are not and you're inspiring!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 8,
+      "overall_score": 9.3,
+      "feedback": "This comment was already positive and supportive, so keeping it unchanged was the correct approach. It maintains the commenter's defending tone and inspirational message. The only minor issue is that calling someone 'dumb' could be seen as slightly harsh language, but in context it's defending the recipient against body-shaming, so the empathetic intent is clear."
+    }
+  },
+  {
+    "id": 34,
+    "original": "Who the hell called this woman fat?? WHERE. Shes literally just lean muscle and good vibes :D",
+    "transformed": "Who the hell called this woman fat?? WHERE. She's literally just lean muscle and good vibes :D",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 9,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.8,
+      "feedback": "Excellent transformation. The original comment was already positive and defensive of the woman, so keeping it nearly unchanged was the right approach. The only change made was correcting 'Shes' to 'She's' which improves readability while maintaining the commenter's enthusiastic, supportive tone and casual style. The comment maintains its empathetic defense of the woman while preserving the original voice completely."
+    }
+  },
+  {
+    "id": 35,
+    "original": "this really motivated me to linda i hope you know youre really motivational and helpful :)",
+    "transformed": "this really motivated me to linda i hope you know youre really motivational and helpful :)",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive, motivational, and empathetic, so keeping it unchanged was exactly the right approach. The comment maintains its authentic tone, stays in the commenter's voice, and expresses genuine appreciation and motivation. No changes were needed since the original comment was already kind and supportive."
+    }
+  },
+  {
+    "id": 36,
+    "original": "I am so inspired  thank you",
+    "transformed": "I am so inspired thank you",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive and inspiring, so keeping it unchanged was exactly the right approach. It maintains the commenter's genuine voice of gratitude and inspiration without any unnecessary modifications. The system correctly recognized this didn't need transformation."
+    }
+  },
+  {
+    "id": 37,
+    "original": "I'm back on my running journey too, this time for fun and just to see how I improve naturally over time. Really love this video! That \"fat\" comment was completely insane too btw- what are they even talking about?! You look amazing but that isn't the point of running- you're strong and fit and ENJOYING an exercise that is quite difficult to get into so well done!",
+    "transformed": "I'm back on my running journey too, this time for fun and just to see how I improve naturally over time. Really love this video! That \"fat\" comment was completely insane too btw- what are they even talking about?! You look amazing but that isn't the point of running- you're strong and fit and ENJOYING an exercise that is quite difficult to get into so well done!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 6,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9,
+      "feedback": "This comment was already quite positive and supportive, so minimal transformation was appropriate. The comment maintains excellent empathy, natural language, and the commenter's authentic voice. However, the phrase 'That \"fat\" comment was completely insane too btw- what are they even talking about?!' could have been softened slightly to be more constructive while still defending the creator, rather than calling another comment 'insane.' Overall, this is a well-handled transformation that preserves the supportive nature of an already positive comment."
+    }
+  },
+  {
+    "id": 38,
+    "original": "I was so pleasantly surprised to see you posted a video thank you for sharing your advice!! I'm trying to get back into running with a healthy mindset because I also used it for punishment for the so many years. Love that you're sharing your story thank you for all you do!",
+    "transformed": "I was so pleasantly surprised to see you posted a video thank you for sharing your advice!! I'm trying to get back into running with a healthy mindset because I also used it for punishment for the so many years. Love that you're sharing your story thank you for all you do!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive, supportive, and empathetic - expressing gratitude, sharing a personal struggle with running/punishment mindset, and appreciation for the creator's vulnerability. The system correctly identified this as a positive comment that required no changes and left it completely unchanged, which is exactly the appropriate behavior for positive comments."
+    }
+  },
+  {
+    "id": 39,
+    "original": "Just started getting into running, super helpful!",
+    "transformed": "Just started getting into running, super helpful!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive and supportive, expressing genuine enthusiasm about starting running and appreciation for helpful content. The system correctly identified this as a positive comment that should remain unchanged. It maintains the commenter's authentic voice, shows empathy toward the content, and requires no modification since there was no negativity to transform."
+    }
+  },
+  {
+    "id": 40,
+    "original": "Your videos are absolutely amazing! I love your narratives",
+    "transformed": "Your videos are absolutely amazing! I love your narratives",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive and enthusiastic, so keeping it unchanged was exactly the right approach. The comment maintains its genuine praise for the creator's videos and storytelling, sounds natural and authentic from the commenter's perspective, and requires no modification since it's already kind and supportive."
+    }
+  },
+  {
+    "id": 41,
+    "original": "I love your videos sm!  I related to your struggle to find balance before you started running, and as a runner for about a year and 3 months I love your content even more now. Running has changed my life and gained me so much to. Banana bread, peanut butter, and yogurt bowls are some of my favorite foods too, snd I make your lemon tahini nourish bowl weekly. Thank you for inspiring me, putting words to my thoughts at times, and for cheering me up when I'm struggling.",
+    "transformed": "I love your videos sm!  I related to your struggle to find balance before you started running, and as a runner for about a year and 3 months I love your content even more now. Running has changed my life and gained me so much to. Banana bread, peanut butter, and yogurt bowls are some of my favorite foods too, snd I make your lemon tahini nourish bowl weekly. Thank you for inspiring me, putting words to my thoughts at times, and for cheering me up when I'm struggling.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already highly positive, empathetic, and supportive, expressing genuine appreciation for the creator's content and sharing personal connection through running and food preferences. The system correctly identified this as a positive comment that needed no changes and left it completely unchanged, which is exactly the appropriate behavior for positive comments."
+    }
+  },
+  {
+    "id": 42,
+    "original": "love this!! I've really only found your videos in the past few months but as someone who has been running for about a year now, I absolutely love your takes on running and I look forward to all your videos now!! i unfortunately have been a victim of many running injuries, have you posted anything about your specific injury prevention strength training? thank you!!",
+    "transformed": "love this!! I've really only found your videos in the past few months but as someone who has been running for about a year now, I absolutely love your takes on running and I look forward to all your videos now!! i unfortunately have been a victim of many running injuries, have you posted anything about your specific injury prevention strength training? thank you!!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already very positive, enthusiastic, and kind - expressing love for the content, appreciation for the creator's perspective on running, and politely asking for specific help with injury prevention. Since this was already a highly positive and supportive comment, keeping it unchanged was exactly the right approach. The comment maintains its genuine enthusiasm, personal touch, and respectful tone throughout."
+    }
+  },
+  {
+    "id": 43,
+    "original": "I started running because you motivated me and I am now almost 3 weeks in my 5k program and I have signed up for a half marathon next year, in June I'll get the message if I made the poll! But nonetheless I've been enjoying my runs so much! (Started training with Runna)",
+    "transformed": "I started running because you motivated me and I am now almost 3 weeks in my 5k program and I have signed up for a half marathon next year, in June I'll get the message if I made the poll! But nonetheless I've been enjoying my runs so much! (Started training with Runna)",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive, supportive, and enthusiastic about running progress and motivation received. The system correctly identified this as positive content that needed no changes, preserving the commenter's genuine excitement about their fitness journey and gratitude. The comment maintains its natural, personal tone and authentic voice throughout."
+    }
+  },
+  {
+    "id": 44,
+    "original": "this was a truly beautifully thoughtful and kind video. thank you x",
+    "transformed": "this was a truly beautifully thoughtful and kind video. thank you x",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive, kind, and empathetic, so keeping it unchanged was exactly the right approach. It maintains the commenter's authentic voice, preserves the language, and contains no meta-commentary. The system correctly identified this as a positive comment that didn't need modification."
+    }
+  },
+  {
+    "id": 45,
+    "original": "Love love love love your videos. You do such a great job with storytelling!!",
+    "transformed": "Love love love love your videos. You do such a great job with storytelling!!",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already highly positive and enthusiastic, expressing genuine love for the creator's videos and praising their storytelling skills. The system correctly identified this as a positive comment that required no changes, preserving the commenter's authentic voice and enthusiastic tone with multiple 'love's and exclamation points. This demonstrates ideal behavior for positive comment handling."
+    }
+  },
+  {
+    "id": 46,
+    "original": "First thank you so much for your videos they help to inspire young people and girls like me who is  a teenager to feel more confident in their own body's and to build our relationships with exercise and food",
+    "transformed": "First thank you so much for your videos they help to inspire young people and girls like me who is a teenager to feel more confident in their own body's and to build our relationships with exercise and food",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already positive, expressing genuine gratitude and sharing how the content helps with body confidence and healthy relationships with exercise and food. The system correctly identified this as a positive comment that needed no changes and left it unchanged, which is exactly the appropriate behavior for positive comments."
+    }
+  },
+  {
+    "id": 47,
+    "original": "ugh my favourite running influencer ever",
+    "transformed": "ugh my favourite running influencer ever",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 8,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 9.7,
+      "feedback": "This transformation is excellent. The original comment was already positive - expressing admiration for a running influencer with 'ugh' used as emphasis rather than negativity. The system correctly identified this as a positive comment and left it unchanged, which is exactly the appropriate behavior. The comment maintains the commenter's authentic voice, natural expression, and enthusiastic tone. No transformation was needed, and none was applied."
+    }
+  },
+  {
+    "id": 48,
+    "original": "I absolutely LOVE your videos, the honesty, vulnerability and joy you bring to each one! I feel so HEARD and inspired to keep going!! I signed up for my first ever race/compeition (HYROX) and its in 3 weeks (slightly freaking out) hehe but can't wait!! Thank you Linda for being you! Xxx",
+    "transformed": "I absolutely LOVE your videos, the honesty, vulnerability and joy you bring to each one! I feel so HEARD and inspired to keep going!! I signed up for my first ever race/compeition (HYROX) and its in 3 weeks (slightly freaking out) hehe but can't wait!! Thank you Linda for being you! Xxx",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already extremely positive, enthusiastic, and supportive, so keeping it unchanged was the exactly right approach. The comment maintains its authentic voice with genuine excitement about signing up for HYROX, appreciation for Linda's content, and personal vulnerability about 'slightly freaking out.' No transformation was needed or appropriate here."
+    }
+  },
+  {
+    "id": 49,
+    "original": "ONE. OF. YOUR. BEST. VIDEOS. HANDS. DOWN.",
+    "transformed": "ONE. OF. YOUR. BEST. VIDEOS. HANDS. DOWN.",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already highly positive and enthusiastic, so keeping it unchanged was exactly the right approach. The emphatic capitalization and punctuation convey genuine excitement and praise, maintaining the commenter's authentic voice while already embodying the kind, supportive tone the system aims for."
+    }
+  },
+  {
+    "id": 50,
+    "original": "This is the video I've been waiting for! Thank you thank you Linda training for my first ever 10k and needed the support",
+    "transformed": "This is the video I've been waiting for! Thank you thank you Linda training for my first ever 10k and needed the support",
+    "videoTitle": "how running for a YEAR changed my life & body | +20 beginner tips, essentials, fuelling & mindset",
+    "evaluation": {
+      "empathy": 10,
+      "language_preservation": 10,
+      "commenter_perspective": 10,
+      "appropriate_transformation": 10,
+      "no_meta_commentary": 10,
+      "naturalness": 10,
+      "overall_score": 10,
+      "feedback": "Perfect transformation. The original comment was already extremely positive and supportive, expressing gratitude and sharing a personal fitness goal. The system correctly identified this as positive content that needed no changes and preserved it exactly as written. This maintains the commenter's enthusiastic voice, genuine appreciation, and personal story about training for their first 10k."
+    }
+  }
+]

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Session Startup
 
-**At the start of each session**, verify current date/time using `mcp__google-calendar__get-current-time` and state the day of week, date, and time clearly to Ava before proceeding. This prevents date confusion.
+**At the start of each session**, verify current date/time using `date "+%A, %B %d, %Y"` (bash command) and state the day of week, date, and time clearly to Ava before proceeding. This prevents date confusion. (Note: This bash command is more reliable than the Google Calendar MCP tool for getting the day of week.)
 
 ## Project Overview
 
@@ -215,6 +215,8 @@ Process (`app/utils/youtube.server.ts`):
 
 **Purpose**: Transform negative/critical comments into empathetic responses using NVC principles
 
+**Cost**: ~$1.50/user/month (with two-pass optimization). See [COST-ANALYSIS.md](./COST-ANALYSIS.md) for full breakdown.
+
 **Usage**:
 ```typescript
 import { generateEmpathicVersion } from '~/utils/empathy.server';
@@ -345,6 +347,8 @@ User clicks "Connect YouTube" → GET /oauth/google/start
 | `app/utils/empathy.server.ts` | Claude AI comment transformation |
 | `app/components/ui/` | Reusable UI components |
 | `app/lib/utils.ts` | Helper functions (cn()) |
+| `COST-ANALYSIS.md` | API costs, model comparison, token analysis |
+| `validate-prompt.ts` | Prompt validation script (supports --model flag) |
 
 ## Common Tasks
 
@@ -385,3 +389,39 @@ This project follows the "motorcycle philosophy" from user preferences:
 - Adapt complexity as needed, not upfront
 
 Keep solutions simple and straightforward. Add complexity only when necessary.
+
+## Coding Rules
+
+### Minimum Viable Code (MVC)
+**Always code with the minimum viable code - no bells and whistles.**
+
+- Write only what's needed to make the feature work
+- No extra error handling beyond what's essential
+- No premature abstractions or "nice to have" helpers
+- No future-proofing for hypothetical requirements
+- If in doubt, leave it out - add it later when actually needed
+- Three lines of similar code is better than a premature utility function
+
+## Backlog / Future Enhancements
+
+### Smart Inbox Counts (Non-Urgent)
+**Priority:** Low | **Added:** Jan 26, 2026
+
+Replace the current "X comments" count with two actionable metrics:
+
+1. **"X new"** 🆕 - Comments since last visit
+   - Track `lastViewedAt` timestamp per user
+   - Count comments where `createdAt > lastViewedAt`
+   - Reset timestamp on dashboard visit
+
+2. **"X need reply"** 💬 - Comments awaiting response
+   - Comments where `isOwner = false`
+   - That DON'T have a reply from the owner underneath
+   - This is the creator's "to-do" pile
+
+**UI:** `Inbox: 🆕 7 • 💬 12` or `7 new • 12 need reply`
+
+**Implementation:**
+- Add `lastViewedAt` field to users table
+- Modify dashboard loader to calculate both counts
+- Update header UI
