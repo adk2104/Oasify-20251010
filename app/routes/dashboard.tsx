@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useSearchParams, useFetcher, useRevalidator } from "react-router";
 import type { Route } from "./+types/dashboard";
 import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import { Progress } from "~/components/ui/progress";
 import { Youtube, Instagram, RefreshCw, Sparkles } from "lucide-react";
 import { getSession } from "~/sessions.server";
 import { getCommentsWithReplies } from "~/utils/comments.server";
@@ -74,22 +75,91 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [isPolling, setIsPolling] = useState(false);
   const [hasCapturedInitialState, setHasCapturedInitialState] = useState(false);
 
+  // Sync progress state
+  const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('');
+  const eventSourceRef = useRef<EventSource | null>(null);
+
   const totalComments = commentsWithReplies.length;
   const connectedPlatform = searchParams.get('connected');
   const connectionError = searchParams.get('error');
   const isYouTubeRefreshing = youtubeFetcher.state !== 'idle';
   const isInstagramRefreshing = instagramFetcher.state !== 'idle';
   const isGenerating = generateFetcher.state !== 'idle';
-  const isSyncingAny = isYouTubeRefreshing || isInstagramRefreshing;
+  const isSyncingAny = isSyncing || isYouTubeRefreshing || isInstagramRefreshing;
 
   const handleSyncAll = () => {
-    if (hasYouTubeConnection) {
-      youtubeFetcher.submit({}, { method: 'POST', action: '/api/youtube/comments' });
+    if (isSyncing) return;
+
+    // Close any existing connection
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
     }
-    if (hasInstagramConnection) {
-      instagramFetcher.submit({}, { method: 'POST', action: '/api/instagram/comments' });
-    }
+
+    setIsSyncing(true);
+    setSyncProgress({ current: 0, total: 0 });
+    setSyncStatus('Connecting...');
+
+    // Capture existing comment IDs for highlighting new ones
+    const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
+    setPreExistingIds(existingIds);
+    setNewCommentIds(new Set());
+    setHasCapturedInitialState(true);
+    setIsPolling(true);
+
+    const eventSource = new EventSource('/api/sync');
+    eventSourceRef.current = eventSource;
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === 'total') {
+          setSyncProgress(prev => ({ ...prev, total: data.total }));
+          setSyncStatus(`Found ${data.total} comments to sync`);
+        } else if (data.type === 'status') {
+          setSyncStatus(data.message);
+        } else if (data.type === 'progress') {
+          setSyncProgress({ current: data.current, total: data.total });
+        } else if (data.type === 'done') {
+          setSyncProgress({ current: data.current, total: data.total });
+          setSyncStatus('Sync complete!');
+          eventSource.close();
+          eventSourceRef.current = null;
+          setIsSyncing(false);
+          setIsPolling(false);
+          // Revalidate to show new comments
+          revalidator.revalidate();
+        } else if (data.type === 'error') {
+          setSyncStatus(`Error: ${data.message}`);
+          eventSource.close();
+          eventSourceRef.current = null;
+          setIsSyncing(false);
+          setIsPolling(false);
+        }
+      } catch (e) {
+        console.error('Failed to parse SSE data:', e);
+      }
+    };
+
+    eventSource.onerror = () => {
+      setSyncStatus('Connection lost');
+      eventSource.close();
+      eventSourceRef.current = null;
+      setIsSyncing(false);
+      setIsPolling(false);
+    };
   };
+
+  // Cleanup EventSource on unmount
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
 
   // When global toggle changes, reset all individual toggles
   useEffect(() => {
@@ -106,23 +176,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     }
   }, [connectedPlatform]);
 
-  // Capture existing comment IDs when sync starts, stop polling when done
-  useEffect(() => {
-    if (isSyncingAny && !isPolling) {
-      // Sync just started - capture current comment IDs
-      const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
-      setPreExistingIds(existingIds);
-      setNewCommentIds(new Set()); // Clear any old highlights
-      setHasCapturedInitialState(true);
-      setIsPolling(true);
-    } else if (!isSyncingAny && isPolling) {
-      // Sync finished - stop polling
-      setIsPolling(false);
-      setHasCapturedInitialState(false);
-    }
-  }, [isSyncingAny, isPolling, commentsWithReplies]);
-
-  // Polling interval - revalidate every 3 seconds while syncing
+  // Polling interval - revalidate every 3 seconds to show new comments as they're saved
   useEffect(() => {
     if (!isPolling) return;
 
@@ -131,20 +185,24 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     }, 3000);
 
     return () => clearInterval(pollInterval);
-  }, [isPolling, revalidator]);
+  }, [isPolling, isSyncing, revalidator]);
 
   // Detect new comments after each revalidation
   useEffect(() => {
     if (!isPolling || !hasCapturedInitialState) return;
 
     const newIds = new Set<number>();
+    const allCurrentIds = new Set<number>();
+    
     commentsWithReplies.forEach(({ comment, replies }) => {
+      allCurrentIds.add(comment.id);
       if (!preExistingIds.has(comment.id)) {
         newIds.add(comment.id);
       }
       // Check replies recursively
       const checkReplies = (repliesList: typeof replies) => {
         repliesList.forEach(({ comment: replyComment, replies: nestedReplies }) => {
+          allCurrentIds.add(replyComment.id);
           if (!preExistingIds.has(replyComment.id)) {
             newIds.add(replyComment.id);
           }
@@ -155,34 +213,30 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     });
 
     if (newIds.size > 0) {
+      // Update preExistingIds so these comments aren't detected as new again
+      setPreExistingIds(allCurrentIds);
+      
       setNewCommentIds(prev => new Set([...prev, ...newIds]));
+
+      // Schedule individual 2s fade for each new comment
+      newIds.forEach(id => {
+        setTimeout(() => {
+          setNewCommentIds(prev => {
+            const updated = new Set(prev);
+            updated.delete(id);
+            return updated;
+          });
+          setFadingCommentIds(prev => new Set([...prev, id]));
+        }, 2000);
+      });
     }
   }, [commentsWithReplies, isPolling, preExistingIds, hasCapturedInitialState]);
 
-  // Fade out highlights 3 seconds after sync completes
-  useEffect(() => {
-    if (!isSyncingAny && newCommentIds.size > 0) {
-      const fadeTimeout = setTimeout(() => {
-        // Move to fading state (triggers opacity transition)
-        setFadingCommentIds(new Set(newCommentIds));
-        setNewCommentIds(new Set());
-      }, 3000);
-
-      return () => clearTimeout(fadeTimeout);
-    }
-  }, [isSyncingAny, newCommentIds.size]);
-
   // Clear fading comments after transition completes
   useEffect(() => {
-    if (fadingCommentIds.size > 0) {
-      const clearTimeout_ = setTimeout(() => {
-        setFadingCommentIds(new Set());
-        setPreExistingIds(new Set());
-        setHasCapturedInitialState(false);
-      }, 500); // Match transition duration
-
-      return () => clearTimeout(clearTimeout_);
-    }
+    if (fadingCommentIds.size === 0) return;
+    const t = setTimeout(() => setFadingCommentIds(new Set()), 500);
+    return () => clearTimeout(t);
   }, [fadingCommentIds.size]);
 
   const toggleCommentMode = (commentId: number) => {
@@ -290,15 +344,25 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         </div>
         <div className="flex items-center gap-4">
           {(hasYouTubeConnection || hasInstagramConnection) && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={handleSyncAll}
-              disabled={isSyncingAny}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
-              {isSyncingAny ? 'Syncing...' : 'Sync All'}
-            </Button>
+            <div className="flex items-center gap-3">
+              {isSyncing && syncProgress.total > 0 && (
+                <div className="flex items-center gap-2 min-w-[200px]">
+                  <Progress value={Math.min(syncProgress.current, syncProgress.total)} max={syncProgress.total} className="flex-1" />
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {Math.min(100, Math.round((syncProgress.current / syncProgress.total) * 100))}%
+                  </span>
+                </div>
+              )}
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleSyncAll}
+                disabled={isSyncingAny}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
+                {isSyncing ? 'Syncing...' : 'Sync All'}
+              </Button>
+            </div>
           )}
           <generateFetcher.Form method="post" action="/api/youtube/comments?action=generate">
             <Button type="submit" variant="outline" size="sm" disabled={isGenerating}>

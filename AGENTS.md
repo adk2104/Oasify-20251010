@@ -4,6 +4,14 @@
 
 - The user is a newbie programmer; respond with patient, empathic explanations and encouragement.
 
+## CRITICAL: Minimum Viable Code Only
+
+- **Always code the minimum viable solution** — no bells and whistles
+- Keep implementations simple and focused on the immediate need
+- Avoid premature optimization, over-engineering, or "nice to haves"
+- If a feature isn't explicitly requested, don't add it
+- Simpler code = easier to debug, maintain, and understand
+
 
 ## Project Structure & Module Organization
 

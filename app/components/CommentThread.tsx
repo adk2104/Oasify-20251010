@@ -171,7 +171,7 @@ export function CommentThread({
       marginLeftClass,
       (isNewComment || isFading) && 'border-2 rounded-lg px-3 -mx-3',
       isNewComment && 'border-emerald-400 bg-emerald-50',
-      isFading && 'border-transparent bg-transparent opacity-0'
+      isFading && 'border-transparent bg-transparent'
     )}>
       <div className="flex gap-3">
         <Avatar className="h-8 w-8 shrink-0">
