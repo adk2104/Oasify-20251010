@@ -1,5 +1,212 @@
 # Sessions Log
 
+## Session: Jan 26, 2026 - Solo (Pip/Claude)
+
+### Focus
+Commit & push streaming sync changes, PR update
+
+### Completed
+1. **Committed all changes** (22 files, 6,547 additions) with message:
+   - Streaming sync API with real-time progress updates
+   - Progress bar UI component
+   - Gemini 2.5 Flash integration
+   - Model validation results (Gemini, GPT-4o, Claude)
+   - SYNC-ALGORITHM.md and COST-ANALYSIS.md documentation
+
+2. **Pushed to `loading-comments` branch** on GitHub
+
+3. **PR #7 auto-updated** with new commits: https://github.com/adk2104/Oasify-20251010/pull/7
+
+4. **Added to jake-sessions.csv**: Initial sync delay issue (3-4 second delay before comments start appearing despite faster overall speed)
+
+### Files Committed
+- `COST-ANALYSIS.md` (new)
+- `SYNC-ALGORITHM.md` (new)
+- `app/components/ui/progress.tsx` (new)
+- `app/routes/api.sync.tsx` (new)
+- `validation-results-*.json` files (new)
+- Various component and utility updates
+
+### To Discuss with Jake
+- Initial 3-4 second delay before comments appear (Gemini 2.5 cold start?)
+- Parallel AI processing for even faster sync (details in SYNC-ALGORITHM.md)
+
+### Next Steps
+- Jake to review PR #7
+- Test in production after merge
+- Investigate initial delay if it persists
+
+---
+
+## Session: Jan 22, 2026 (PM) - Solo (Claude Code)
+
+### Focus
+AI Model Cost/Quality Comparison & Migration to Gemini 2.5 Flash
+
+### Completed
+
+1. **Validated OpenAI and Gemini API keys** - Both working after enabling Tier 1 billing on Google AI
+
+2. **Ran validation tests across 4 AI models** using `validate-prompt.ts` with 50 real YouTube comments:
+
+   | Model | Overall Score | Input Cost | Output Cost |
+   |-------|---------------|------------|-------------|
+   | **Gemini 2.5 Pro** | ~10.0/10 | $1.25/1M | $10.00/1M |
+   | **Gemini 2.5 Flash** | 9.8/10 | $0.15/1M | $0.60/1M |
+   | **GPT-4o** | 9.4/10 | $2.50/1M | $10.00/1M |
+   | **Sonnet 3.5** | 9.2/10 | $3.00/1M | $15.00/1M |
+   | **Haiku 3.5** (previous) | 9.1/10 | $0.80/1M | $4.00/1M |
+
+3. **Migrated empathy transformation from Haiku to Gemini 2.5 Flash**
+   - Primary: Gemini 2.5 Flash (best cost/quality ratio)
+   - Fallback: GPT-4o-mini (if Gemini fails)
+   - Updated `app/utils/empathy.server.ts`
+
+4. **Discovered Gemini 2.5 Pro availability issues** - Getting 503 "model overloaded" errors ~50% of the time. Not suitable as primary yet.
+
+### Key Findings
+
+**Gemini 2.5 Flash vs Haiku (previous):**
+- Quality: 9.8 vs 9.1 (+0.7 improvement)
+- Cost: 5-7x cheaper
+- Winner: Gemini 2.5 Flash
+
+**Worst-performing comment types across all models:**
+- Defensive comments with mild negativity toward third parties ("are they delusional?")
+- Comments that sound positive but contain negative words about critics
+- Gemini handled these best by leaving them mostly unchanged
+
+**Cost savings for Oasify:**
+- Before: ~$0.80-$4.00 per 1M tokens (Haiku)
+- After: ~$0.15-$0.60 per 1M tokens (Gemini 2.5 Flash)
+- **Savings: 5-7x cheaper AND better quality**
+
+### Files Changed
+- `app/utils/empathy.server.ts` - Migrated from Anthropic/Haiku to Google/Gemini with OpenAI fallback
+
+### Validation Results Files Created
+- `validation-results-gemini2.json` - Gemini 2.5 Flash results (9.8/10)
+- `validation-results-gpt4o.json` - GPT-4o results (9.4/10)
+- `validation-results-haiku.json` - Haiku 3.5 results (9.1/10)
+- `validation-results-sonnet.json` - Sonnet 3.5 results (9.2/10)
+
+### Environment Variables Needed
+- `GOOGLE_AI_API_KEY` - For Gemini 2.5 Flash (primary)
+- `OPENAI_API_KEY` - For GPT-4o-mini (fallback)
+
+### Next Session
+1. Test the new Gemini integration in the live app
+2. Monitor for any Gemini API errors in production
+3. Consider checking Gemini 2.5 Pro availability periodically (run `npx tsx validate-prompt.ts --model=gemini-2.5-pro` to test)
+4. Deploy changes to Vercel
+
+---
+
+## Session: Jan 22, 2026 (AM) - Solo (Claude Code)
+
+### Focus
+Fix comment fade bugs + investigate Instagram sync progress issue
+
+### Completed
+1. **Fixed comment fade bug #1**: Removed `opacity-0` from `CommentThread.tsx` line 174
+   - Before: Entire comment div was fading to invisible
+   - After: Only the green border/background fades, text stays visible
+
+2. **Fixed comment fade bug #2**: Deleted useEffect in `dashboard.tsx` that reset `preExistingIds` when polling stopped
+   - Before: All comments turned green after sync completed (preExistingIds cleared before final revalidation)
+   - After: Only truly new comments get green highlight
+
+3. **Investigated Instagram sync progress issue**
+   - Found: Instagram DOES use the same SSE progress system as YouTube
+   - Root cause: Instagram makes extra API calls (`getInstagramCommentReplies()`) for each comment with replies
+   - This blocks progress callback execution by 100-500ms per comment, making progress bar appear "stuck"
+   - YouTube has replies pre-fetched in the response, so no extra calls needed
+
+### Files Changed
+- `app/components/CommentThread.tsx` - Removed opacity-0 from fading class
+- `app/routes/dashboard.tsx` - Deleted premature preExistingIds reset useEffect
+
+### Next Session
+1. Decide how to fix Instagram sync progress (3 options identified):
+   - Option A: Add status messages ("Fetching replies...") - quick UX fix
+   - Option B: Parallelize reply fetching - performance fix
+   - Option C: Skip extra reply fetch, use basic reply data - simplest
+2. Test that comment fade fixes work correctly
+
+---
+
+## Session: Jan 15, 2026 - Solo (Claude Code)
+
+### Focus
+Google OAuth demo video prep + git cleanup
+
+### Completed
+- Reviewed Jan 14 session notes to understand Google OAuth scope requirements
+- Created `google-oauth-demo-script.md` with full video script including:
+  - Timestamps for each section
+  - Explanation of both scopes (youtube.readonly, youtube.force-ssl)
+  - Recording checklist
+  - Notes on which scopes to remove (userinfo.email, userinfo.profile, openid)
+- Created `disconnect` branch from main and pushed to GitHub
+
+### Key Learnings (from last session review)
+- **Scopes needed:** youtube.readonly (read comments), youtube.force-ssl (post replies)
+- **Scopes to remove:** userinfo.email, userinfo.profile, openid (not needed - app only uses YouTube API)
+- Google rejected original demo video - needs to show consent screen with scopes visible and explain each one
+
+### Files Created
+- `google-oauth-demo-script.md` - Full script for Google OAuth demo video
+
+### Next Session
+1. Record Google OAuth demo video using the script
+2. Remove unused scopes from Google Cloud Console
+3. Resubmit to Google for verification
+4. Test disconnect/reconnect flow end-to-end
+5. Deploy to Vercel
+
+---
+
+## Session: Jan 14, 2026 - Solo (Claude Code)
+
+### Focus
+Google OAuth verification prep - disconnect feature + improved empathy prompt
+
+### Completed
+- Created `/api/providers/disconnect` endpoint to remove YouTube/Instagram connections
+- Updated sidebar with disconnect UI (click "Connected" badge → shows "Disconnect" button)
+- Added click-outside listener to close disconnect menu
+- Fixed dashboard bug where provider status showed disconnected even when connected
+  - Root cause: loader catch block was returning false for providers when comments failed
+  - Fix: Separated provider fetch from comment fetch
+- Replaced empathy prompt with improved/validated version (22 examples, better guardrails)
+- Ran `npm run db:push` to add missing `feedback` and `feedbackAt` columns to comments table
+- Added auto-sync when platform is connected (triggers comment sync after OAuth callback)
+- Added reconnect banner when disconnected but comments exist
+
+### Blockers/Notes
+- "Failed to fetch" error at end of session when syncing comments - likely needs dev server restart
+- Google rejected original OAuth demo video - needs to reshoot with:
+  - OAuth consent screen with scopes visible
+  - Explanation of each scope's purpose
+  - Demo of youtube.force-ssl (reply functionality)
+- Can remove unused scopes (userinfo.email, userinfo.profile, openid) from Google Cloud Console
+
+### Files Changed
+- `app/routes/api.providers.disconnect.tsx` (created)
+- `app/routes.ts` (added disconnect route)
+- `app/components/app-sidebar.tsx` (disconnect UI + click-outside)
+- `app/routes/dashboard.tsx` (fixed loader, auto-sync, reconnect banner)
+- `app/utils/empathy.server.ts` (replaced prompt)
+
+### Next Session
+1. Restart dev server and test comment sync
+2. Test disconnect/reconnect flow end-to-end
+3. Record new Google OAuth demo video
+4. Remove extra scopes from Google Cloud Console
+5. Push to main and deploy to Vercel
+
+---
+
 ## Session: Jan 7, 2026 - Solo (Claude Code)
 
 ### Focus

@@ -43,6 +43,8 @@ type CommentThreadProps = {
   globalEmpathMode: boolean;
   commentEmpathMode: Record<number, boolean>;
   onToggleMode: (commentId: number) => void;
+  newCommentIds?: Set<number>;
+  fadingCommentIds?: Set<number>;
 };
 
 // Helper to construct video/post URL
@@ -63,6 +65,8 @@ export function CommentThread({
   globalEmpathMode,
   commentEmpathMode,
   onToggleMode,
+  newCommentIds,
+  fadingCommentIds,
 }: CommentThreadProps) {
   const [showReplies, setShowReplies] = useState(replies.length <= 2);
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -157,8 +161,18 @@ export function CommentThread({
   const allReplies = [...replies, ...optimisticReplies];
   const totalReplies = allReplies.length;
 
+  // Check if this comment should be highlighted as new or fading
+  const isNewComment = newCommentIds?.has(comment.id) ?? false;
+  const isFading = fadingCommentIds?.has(comment.id) ?? false;
+
   return (
-    <div className={cn('py-3', marginLeftClass)}>
+    <div className={cn(
+      'py-3 transition-all duration-500',
+      marginLeftClass,
+      (isNewComment || isFading) && 'border-2 rounded-lg px-3 -mx-3',
+      isNewComment && 'border-emerald-400 bg-emerald-50',
+      isFading && 'border-transparent bg-transparent'
+    )}>
       <div className="flex gap-3">
         <Avatar className="h-8 w-8 shrink-0">
           {comment.authorAvatar ? (
@@ -323,6 +337,8 @@ export function CommentThread({
                         globalEmpathMode={globalEmpathMode}
                         commentEmpathMode={commentEmpathMode}
                         onToggleMode={onToggleMode}
+                        newCommentIds={newCommentIds}
+                        fadingCommentIds={fadingCommentIds}
                       />
                     );
                   })}

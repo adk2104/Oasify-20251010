@@ -35,6 +35,8 @@ interface InstagramUserProfile {
   media_count?: number;
 }
 
+export type ProgressCallback = (current: number, total: number) => void;
+
 // ============================================================================
 // INSTAGRAM BUSINESS LOGIN API
 // ============================================================================
@@ -256,8 +258,29 @@ export async function getInstagramCommentReplies(
   return data.data || [];
 }
 
+// Get total comment count for Instagram posts
+export async function getInstagramCommentCount(userId: number): Promise<number> {
+  const [provider] = await db.select().from(providers).where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
+  if (!provider) {
+    return 0;
+  }
+
+  try {
+    const mediaPosts = await getInstagramMedia(provider.accessToken, 5);
+    const total = mediaPosts.reduce((sum, media) => sum + (media.comments_count || 0), 0);
+    return total;
+  } catch (error) {
+    console.error('[INSTAGRAM] Error getting comment count:', error);
+    return 0;
+  }
+}
+
 // Fetch and sync Instagram comments to database
-export async function syncInstagramCommentsToDatabase(userId: number): Promise<void> {
+export async function syncInstagramCommentsToDatabase(
+  userId: number,
+  onProgress?: ProgressCallback
+): Promise<void> {
+  let processedCount = 0;
   const [provider] = await db.select().from(providers).where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
   if (!provider) throw new Error('Instagram provider not found');
 
@@ -295,6 +318,13 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
       if (commentsToProcess.length === 0 && media.comments_count > 0) {
         console.log(`[INSTAGRAM SYNC] Media ${media.id}: Using fallback endpoint for comments`);
         commentsToProcess = await getInstagramMediaComments(media.id, accessToken);
+      }
+
+      // Limit to 20 comments per post for sync speed
+      const COMMENTS_PER_POST_LIMIT = 20;
+      if (commentsToProcess.length > COMMENTS_PER_POST_LIMIT) {
+        console.log(`[INSTAGRAM SYNC] Media ${media.id}: Limiting from ${commentsToProcess.length} to ${COMMENTS_PER_POST_LIMIT} comments`);
+        commentsToProcess = commentsToProcess.slice(0, COMMENTS_PER_POST_LIMIT);
       }
 
       console.log(`[INSTAGRAM SYNC] Media ${media.id}: Processing ${commentsToProcess.length} comments`);
@@ -341,6 +371,12 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
         }).returning();
 
         platformIdToDbId[comment.id] = inserted.id;
+
+        // Report progress after processing each comment
+        processedCount++;
+        if (onProgress) {
+          onProgress(processedCount, 0);
+        }
 
         // Fetch full reply data if replies exist
         if (comment.replies?.data && comment.replies.data.length > 0) {
@@ -416,6 +452,12 @@ export async function syncInstagramCommentsToDatabase(userId: number): Promise<v
         parentId: parentDbId,
       },
     });
+
+    // Report progress after processing each reply
+    processedCount++;
+    if (onProgress) {
+      onProgress(processedCount, 0);
+    }
   }
 
   // Recalculate reply counts from database

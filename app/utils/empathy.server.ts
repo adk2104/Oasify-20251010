@@ -1,4 +1,30 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
+
+// CLASSIFICATION PROMPT - Pass 1: Quick check if comment needs transformation
+const CLASSIFICATION_PROMPT = `Classify this comment as either POSITIVE or NEGATIVE.
+
+POSITIVE = The comment is genuinely supportive, kind, complimentary, or asking a helpful question. No transformation needed.
+NEGATIVE = The comment needs transformation. Includes:
+- Critical, harsh, mean, or attacking comments
+- Dismissive comments ("bla blah", "I don't care", "nothing new", "boring")
+- Sarcastic or condescending comments ("Please google how to...", "you don't know...")
+- Frustration or complaints (even mild ones like "I can't open the link!")
+- Backhanded compliments or passive-aggressive tone
+- Any negativity toward the creator, their content, sponsors, or appearance
+
+Important edge cases:
+- Comments defending the creator but attacking others (e.g., "whoever called you fat is dumb") = POSITIVE (supportive intent)
+- Genuine supportive questions ("Where did you get that?", "What product is that?") = POSITIVE
+- Gibberish or dismissive nonsense ("bla blah", "meh") = NEGATIVE
+- Sarcasm disguised as questions = NEGATIVE
+- Mild frustration or complaints = NEGATIVE (err on side of transforming)
+- Questions with implied criticism ("Why did you skip...", "Why don't you...") = NEGATIVE
+- Questions that sound like challenges or complaints = NEGATIVE
+
+When in doubt, classify as NEGATIVE (better to transform unnecessarily than miss negativity).
+
+Return ONLY one word: POSITIVE or NEGATIVE`;
 
 // Edit this system prompt to control how comments are transformed
 const EMPATHIC_SYSTEM_PROMPT = `TASK:
@@ -91,9 +117,18 @@ For personal appearance criticisms, transform into genuine compliments about tha
 OUTPUT FORMAT:
 Return ONLY the transformed comment text. Nothing else.`;
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+// Initialize AI clients
+
+if (!process.env.GOOGLE_AI_API_KEY){
+    throw new Error("Google api key required");
+}
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+
+if (!process.env.OPENAI_API_KEY){
+    throw new Error("OpenAI api key required");
+}
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 
 // Smart truncation: truncate to maxLength but try to break at sentence end
 function truncateSmartly(text: string, maxLength: number = 300): string {
@@ -119,58 +154,224 @@ function truncateSmartly(text: string, maxLength: number = 300): string {
   return truncated + '...';
 }
 
+// Try Gemini 2.5 Flash (primary)
+async function tryGemini(
+  commentText: string,
+  fullSystemPrompt: string
+): Promise<string | null> {
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: commentText }] }],
+      systemInstruction: fullSystemPrompt,
+    });
+    const text = result.response.text();
+    if (text) {
+      console.log('[AI:Gemini] Success:', text.substring(0, 100));
+      return text;
+    }
+    return null;
+  } catch (error) {
+    console.log('[AI:Gemini] Error:', error);
+    return null;
+  }
+}
+
+// Try GPT-4o-mini (fallback)
+async function tryOpenAI(
+  commentText: string,
+  fullSystemPrompt: string
+): Promise<string | null> {
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      max_tokens: 1024,
+      messages: [
+        { role: 'system', content: fullSystemPrompt },
+        { role: 'user', content: commentText },
+      ],
+    });
+    const text = response.choices[0]?.message?.content;
+    if (text) {
+      console.log('[AI:OpenAI] Success:', text.substring(0, 100));
+      return text;
+    }
+    return null;
+  } catch (error) {
+    console.log('[AI:OpenAI] Error:', error);
+    return null;
+  }
+}
+
+// Pass 1: Classify comment as positive or negative
+async function classifyComment(commentText: string): Promise<'POSITIVE' | 'NEGATIVE'> {
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: commentText }] }],
+      systemInstruction: CLASSIFICATION_PROMPT,
+    });
+    const responseText = result.response.text()?.trim().toUpperCase() || '';
+    
+    if (responseText.includes('POSITIVE')) {
+      console.log('[AI:Classify] POSITIVE - skipping transformation');
+      return 'POSITIVE';
+    }
+    console.log('[AI:Classify] NEGATIVE - will transform');
+    return 'NEGATIVE';
+  } catch (error) {
+    console.log('[AI:Classify] Error, defaulting to NEGATIVE:', error);
+    return 'NEGATIVE'; // Default to transforming on error
+  }
+}
+
+// Batch processing configuration
+const BATCH_SIZE = 5;
+
+// Process multiple comments in parallel (for sync operations)
+export async function generateEmpathicVersionsBatch(
+  comments: Array<{
+    id: number;
+    text: string;
+    videoTitle?: string;
+    videoDescription?: string;
+  }>
+): Promise<Array<{ id: number; text: string; empathicText: string; skipped: boolean }>> {
+  console.log(`[AI:Batch] Processing ${comments.length} comments in batches of ${BATCH_SIZE}`);
+  
+  const results: Array<{ id: number; text: string; empathicText: string; skipped: boolean }> = [];
+  
+  // Process in batches
+  for (let i = 0; i < comments.length; i += BATCH_SIZE) {
+    const batch = comments.slice(i, i + BATCH_SIZE);
+    console.log(`[AI:Batch] Batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(comments.length/BATCH_SIZE)}`);
+    
+    // Step 1: Classify all comments in parallel
+    const classifications = await Promise.all(
+      batch.map(async (comment) => ({
+        ...comment,
+        classification: await classifyComment(comment.text),
+      }))
+    );
+    
+    // Step 2: Transform only negative comments in parallel
+    const transformPromises = classifications.map(async (item) => {
+      if (item.classification === 'POSITIVE') {
+        return {
+          id: item.id,
+          text: item.text,
+          empathicText: item.text, // Return original for positive
+          skipped: true,
+        };
+      }
+      
+      // Transform negative comment
+      const empathicText = await transformComment(
+        item.text,
+        item.videoTitle,
+        item.videoDescription
+      );
+      
+      return {
+        id: item.id,
+        text: item.text,
+        empathicText,
+        skipped: false,
+      };
+    });
+    
+    const batchResults = await Promise.all(transformPromises);
+    results.push(...batchResults);
+    
+    const skipped = batchResults.filter(r => r.skipped).length;
+    console.log(`[AI:Batch] Completed: ${batchResults.length - skipped} transformed, ${skipped} skipped`);
+  }
+  
+  return results;
+}
+
+// Transform a single comment (Pass 2 only - used by batch function)
+async function transformComment(
+  commentText: string,
+  videoTitle?: string,
+  videoDescription?: string
+): Promise<string> {
+  // Truncate description to 300 chars with smart breaking
+  const truncatedDescription = videoDescription
+    ? truncateSmartly(videoDescription, 300)
+    : undefined;
+
+  // Build context-aware system prompt
+  const contextSection = (videoTitle || truncatedDescription)
+    ? `\n\nVIDEO CONTEXT:\n` +
+      (videoTitle ? `Title: "${videoTitle}"\n` : '') +
+      (truncatedDescription ? `Description: "${truncatedDescription}"\n` : '') +
+      `Use this context to better understand the comment's intent.`
+    : '';
+
+  const fullSystemPrompt = EMPATHIC_SYSTEM_PROMPT + contextSection;
+
+  // Try Gemini 2.5 Flash first
+  const geminiResult = await tryGemini(commentText, fullSystemPrompt);
+  if (geminiResult) return geminiResult;
+
+  // Fallback to GPT-4o-mini
+  const openaiResult = await tryOpenAI(commentText, fullSystemPrompt);
+  if (openaiResult) return openaiResult;
+
+  // If both fail, return original
+  return commentText;
+}
+
+// Single comment processing (keeps backward compatibility)
 export async function generateEmpathicVersion(
   commentText: string,
   videoTitle?: string,
   videoDescription?: string
 ): Promise<string> {
-  try {
-    console.log('[AI] Generating for text:', commentText.substring(0, 50));
-    console.log('[AI] Video title:', videoTitle || 'N/A');
-    console.log('[AI] Video description length:', videoDescription?.length || 0);
-    console.log('[AI] API key exists?', !!process.env.ANTHROPIC_API_KEY);
+  console.log('[AI] Processing:', commentText.substring(0, 50));
 
-    // Truncate description to 300 chars with smart breaking
-    const truncatedDescription = videoDescription
-      ? truncateSmartly(videoDescription, 300)
-      : undefined;
-
-    if (truncatedDescription) {
-      console.log('[AI] Truncated description:', truncatedDescription.substring(0, 100) + '...');
-    }
-
-    // Build context-aware system prompt
-    const contextSection = (videoTitle || truncatedDescription)
-      ? `\n\nVIDEO CONTEXT:\n` +
-        (videoTitle ? `Title: "${videoTitle}"\n` : '') +
-        (truncatedDescription ? `Description: "${truncatedDescription}"\n` : '') +
-        `Use this context to better understand the comment's intent. For example:\n- Negative comments on obviously humorous/satirical video titles might be playful\n- Disagreements on opinion videos (e.g., "Why X is Better") are natural debate\n- Criticism on tutorial videos might be genuinely helpful corrections\n- Consider whether the comment tone matches the video's tone/topic`
-      : '';
-
-    const fullSystemPrompt = EMPATHIC_SYSTEM_PROMPT + contextSection;
-
-    const message = await anthropic.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 1024,
-      system: fullSystemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: commentText,
-        },
-      ],
-    });
-
-    const textContent = message.content[0];
-    if (textContent.type === 'text') {
-      console.log('[AI] Success - returned:', textContent.text.substring(0, 100));
-      return textContent.text;
-    }
-
-    console.log('[AI] Warning: Non-text response, returning original');
-    return commentText; // Fallback to original
-  } catch (error) {
-    console.log('[AI ERROR]', error);
-    return commentText; // Fallback to original on error
+  // PASS 1: Classify comment
+  const classification = await classifyComment(commentText);
+  
+  // If positive, return original (no transformation needed)
+  if (classification === 'POSITIVE') {
+    return commentText;
   }
+
+  // PASS 2: Transform negative comments
+  console.log('[AI] Transforming negative comment...');
+  console.log('[AI] Video title:', videoTitle || 'N/A');
+
+  // Truncate description to 300 chars with smart breaking
+  const truncatedDescription = videoDescription
+    ? truncateSmartly(videoDescription, 300)
+    : undefined;
+
+  // Build context-aware system prompt
+  const contextSection = (videoTitle || truncatedDescription)
+    ? `\n\nVIDEO CONTEXT:\n` +
+      (videoTitle ? `Title: "${videoTitle}"\n` : '') +
+      (truncatedDescription ? `Description: "${truncatedDescription}"\n` : '') +
+      `Use this context to better understand the comment's intent. For example:\n- Negative comments on obviously humorous/satirical video titles might be playful\n- Disagreements on opinion videos (e.g., "Why X is Better") are natural debate\n- Criticism on tutorial videos might be genuinely helpful corrections\n- Consider whether the comment tone matches the video's tone/topic`
+    : '';
+
+  const fullSystemPrompt = EMPATHIC_SYSTEM_PROMPT + contextSection;
+
+  // Try Gemini 2.5 Flash first (primary)
+  const geminiResult = await tryGemini(commentText, fullSystemPrompt);
+  if (geminiResult) {
+    return geminiResult;
+  }
+
+  // Fallback to GPT-4o-mini
+  console.log('[AI] Gemini failed, trying OpenAI fallback...');
+  const openaiResult = await tryOpenAI(commentText, fullSystemPrompt);
+  if (openaiResult) {
+    return openaiResult;
+  }
+
+  // If both fail, return original comment
+  console.log('[AI] All providers failed, returning original');
+  return commentText;
 }

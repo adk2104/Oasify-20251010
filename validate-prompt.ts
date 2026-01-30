@@ -1,11 +1,43 @@
 import 'dotenv/config';
 import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// CLI argument parsing for model selection
+const args = process.argv.slice(2);
+const modelArg = args.find(a => a.startsWith('--model='));
+const MODEL = modelArg
+  ? modelArg.split('=')[1]
+  : 'claude-3-5-haiku-20241022';
+
+// Determine provider from model name
+type Provider = 'anthropic' | 'openai' | 'google';
+function getProvider(model: string): Provider {
+  if (model.startsWith('gpt-') || model.startsWith('o1') || model.startsWith('o3')) return 'openai';
+  if (model.startsWith('gemini-')) return 'google';
+  return 'anthropic';
+}
+const PROVIDER = getProvider(MODEL);
+
+// Model name mapping for output files
+function getModelShortName(model: string): string {
+  if (model.includes('haiku')) return 'haiku';
+  if (model.includes('sonnet')) return 'sonnet';
+  if (model.includes('opus')) return 'opus';
+  if (model.includes('gpt-4o-mini')) return 'gpt4o-mini';
+  if (model.includes('gpt-4o')) return 'gpt4o';
+  if (model.includes('gpt-4')) return 'gpt4';
+  if (model.includes('gemini-2')) return 'gemini2';
+  if (model.includes('gemini-1.5-flash')) return 'gemini-flash';
+  if (model.includes('gemini-1.5-pro')) return 'gemini-pro';
+  return model.replace(/[^a-z0-9]/gi, '-');
+}
 
 // Import the empathy prompt and function
 const EMPATHIC_SYSTEM_PROMPT = `TASK:
@@ -98,6 +130,31 @@ For personal appearance criticisms, transform into genuine compliments about tha
 OUTPUT FORMAT:
 Return ONLY the transformed comment text. Nothing else.`;
 
+// CLASSIFICATION PROMPT - Pass 1: Quick check if comment needs transformation
+const CLASSIFICATION_PROMPT = `Classify this comment as either POSITIVE or NEGATIVE.
+
+POSITIVE = The comment is genuinely supportive, kind, complimentary, or asking a helpful question. No transformation needed.
+NEGATIVE = The comment needs transformation. Includes:
+- Critical, harsh, mean, or attacking comments
+- Dismissive comments ("bla blah", "I don't care", "nothing new", "boring")
+- Sarcastic or condescending comments ("Please google how to...", "you don't know...")
+- Frustration or complaints (even mild ones like "I can't open the link!")
+- Backhanded compliments or passive-aggressive tone
+- Any negativity toward the creator, their content, sponsors, or appearance
+
+Important edge cases:
+- Comments defending the creator but attacking others (e.g., "whoever called you fat is dumb") = POSITIVE (supportive intent)
+- Genuine supportive questions ("Where did you get that?", "What product is that?") = POSITIVE
+- Gibberish or dismissive nonsense ("bla blah", "meh") = NEGATIVE
+- Sarcasm disguised as questions = NEGATIVE
+- Mild frustration or complaints = NEGATIVE (err on side of transforming)
+- Questions with implied criticism ("Why did you skip...", "Why don't you...") = NEGATIVE
+- Questions that sound like challenges or complaints = NEGATIVE
+
+When in doubt, classify as NEGATIVE (better to transform unnecessarily than miss negativity).
+
+Return ONLY one word: POSITIVE or NEGATIVE`;
+
 const EVALUATION_PROMPT = `You are evaluating the quality of an empathetic comment transformation.
 
 CONTEXT: This system transforms YouTube/Instagram comments to be more positive and kind. The goal is NOT to preserve negative meaning - it's to transform negativity into positivity while keeping the commenter's voice.
@@ -157,15 +214,26 @@ interface TestResult {
   id: number;
   original: string;
   transformed: string;
+  classification: 'POSITIVE' | 'NEGATIVE';
+  skipped: boolean;  // true if positive (no transformation needed)
   category: string;
   expectedBehavior: string;
   videoTitle?: string;
   evaluation: EvaluationResult;
 }
 
-const anthropic = new Anthropic({
+// Initialize clients based on provider
+const anthropic = PROVIDER === 'anthropic' ? new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-});
+}) : null;
+
+const openai = PROVIDER === 'openai' ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+}) : null;
+
+const googleAI = PROVIDER === 'google' ? new GoogleGenerativeAI(
+  process.env.GOOGLE_AI_API_KEY || ''
+) : null;
 
 // Extract video ID from YouTube URL
 function extractVideoId(url: string): string | null {
@@ -243,23 +311,92 @@ async function transformComment(
 
   const fullSystemPrompt = EMPATHIC_SYSTEM_PROMPT + contextSection;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-5-haiku-20241022',
-    max_tokens: 1024,
-    system: fullSystemPrompt,
-    messages: [
-      {
-        role: 'user',
-        content: comment,
-      },
-    ],
-  });
-
-  const textContent = message.content[0];
-  if (textContent.type === 'text') {
-    return textContent.text;
+  // Anthropic
+  if (PROVIDER === 'anthropic' && anthropic) {
+    const message = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1024,
+      system: fullSystemPrompt,
+      messages: [{ role: 'user', content: comment }],
+    });
+    const textContent = message.content[0];
+    if (textContent.type === 'text') return textContent.text;
+    return comment;
   }
+
+  // OpenAI
+  if (PROVIDER === 'openai' && openai) {
+    const response = await openai.chat.completions.create({
+      model: MODEL,
+      max_tokens: 1024,
+      messages: [
+        { role: 'system', content: fullSystemPrompt },
+        { role: 'user', content: comment },
+      ],
+    });
+    return response.choices[0]?.message?.content || comment;
+  }
+
+  // Google Gemini
+  if (PROVIDER === 'google' && googleAI) {
+    const model = googleAI.getGenerativeModel({
+      model: MODEL,
+      systemInstruction: fullSystemPrompt,
+    });
+    const result = await model.generateContent(comment);
+    return result.response.text() || comment;
+  }
+
   return comment;
+}
+
+// Pass 1: Classify comment as positive or negative
+async function classifyComment(comment: string): Promise<'POSITIVE' | 'NEGATIVE'> {
+  let responseText = '';
+
+  // Anthropic
+  if (PROVIDER === 'anthropic' && anthropic) {
+    const message = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 10,
+      system: CLASSIFICATION_PROMPT,
+      messages: [{ role: 'user', content: comment }],
+    });
+    const textContent = message.content[0];
+    if (textContent.type === 'text') responseText = textContent.text;
+  }
+
+  // OpenAI
+  if (PROVIDER === 'openai' && openai) {
+    const response = await openai.chat.completions.create({
+      model: MODEL,
+      max_tokens: 10,
+      messages: [
+        { role: 'system', content: CLASSIFICATION_PROMPT },
+        { role: 'user', content: comment },
+      ],
+    });
+    responseText = response.choices[0]?.message?.content || '';
+  }
+
+  // Google Gemini
+  if (PROVIDER === 'google' && googleAI) {
+    const model = googleAI.getGenerativeModel({
+      model: MODEL,
+      systemInstruction: CLASSIFICATION_PROMPT,
+    });
+    const result = await model.generateContent(comment);
+    responseText = result.response.text() || '';
+  }
+
+  // Parse response - look for POSITIVE or NEGATIVE
+  const normalized = responseText.trim().toUpperCase();
+  if (normalized.includes('POSITIVE')) return 'POSITIVE';
+  if (normalized.includes('NEGATIVE')) return 'NEGATIVE';
+  
+  // Default to NEGATIVE to be safe (will transform)
+  console.log(`  ⚠️  Unclear classification: "${responseText}", defaulting to NEGATIVE`);
+  return 'NEGATIVE';
 }
 
 async function evaluateTransformation(
@@ -272,23 +409,56 @@ async function evaluateTransformation(
     .replace('{transformed}', transformed)
     .replace('{expected}', expected);
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-5-haiku-20241022',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-  });
+  let responseText = '';
 
-  const textContent = message.content[0];
-  if (textContent.type === 'text') {
-    // Parse JSON response
-    const jsonMatch = textContent.text.match(/\{[\s\S]*\}/);
+  // Anthropic
+  if (PROVIDER === 'anthropic' && anthropic) {
+    const message = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const textContent = message.content[0];
+    if (textContent.type === 'text') responseText = textContent.text;
+  }
+
+  // OpenAI
+  if (PROVIDER === 'openai' && openai) {
+    const response = await openai.chat.completions.create({
+      model: MODEL,
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    responseText = response.choices[0]?.message?.content || '';
+  }
+
+  // Google Gemini
+  if (PROVIDER === 'google' && googleAI) {
+    const model = googleAI.getGenerativeModel({ model: MODEL });
+    const result = await model.generateContent(prompt);
+    responseText = result.response.text() || '';
+  }
+
+  // Parse JSON response
+  if (responseText) {
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      const result = JSON.parse(jsonMatch[0]);
+      // Compute overall_score if missing
+      if (result.overall_score === undefined) {
+        const scores = [
+          result.empathy,
+          result.language_preservation,
+          result.commenter_perspective,
+          result.appropriate_transformation,
+          result.no_meta_commentary,
+          result.naturalness,
+        ].filter(s => typeof s === 'number');
+        result.overall_score = scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
+      }
+      return result;
     }
   }
 
@@ -305,8 +475,67 @@ async function evaluateTransformation(
   };
 }
 
+// Process a single comment (used for parallel processing)
+async function processComment(test: TestComment): Promise<TestResult | null> {
+  let videoTitle = test.videoTitle;
+  let videoDescription = test.videoDescription;
+
+  // Fetch video info from URL if provided (fallback if title/description not in test data)
+  if (test.videoUrl && !videoTitle) {
+    const videoInfo = await fetchYouTubeVideoInfo(test.videoUrl);
+    if (videoInfo) {
+      videoTitle = videoInfo.title;
+      videoDescription = videoInfo.description;
+    }
+  }
+
+  try {
+    // PASS 1: Classify comment
+    const classification = await classifyComment(test.comment);
+
+    let transformed: string;
+    let skipped = false;
+
+    if (classification === 'POSITIVE') {
+      // Skip transformation for positive comments
+      transformed = test.comment;
+      skipped = true;
+    } else {
+      // PASS 2: Transform negative comments
+      transformed = await transformComment(test.comment, videoTitle, videoDescription);
+    }
+
+    // Evaluate the transformation (or non-transformation)
+    const evaluation = await evaluateTransformation(
+      test.comment,
+      transformed,
+      test.expectedBehavior
+    );
+
+    return {
+      id: test.id,
+      original: test.comment,
+      transformed,
+      classification,
+      skipped,
+      category: test.category,
+      expectedBehavior: test.expectedBehavior,
+      videoTitle: test.videoTitle,
+      evaluation,
+    };
+  } catch (error) {
+    console.error(`  ❌ Error processing comment #${test.id}:`, error);
+    return null;
+  }
+}
+
+const BATCH_SIZE = 5; // Process 5 comments in parallel
+
 async function runValidation() {
-  console.log('🚀 Starting prompt validation...\n');
+  console.log(`🚀 Starting prompt validation`);
+  console.log(`   Provider: ${PROVIDER.toUpperCase()}`);
+  console.log(`   Model: ${MODEL}`);
+  console.log(`   Parallel batch size: ${BATCH_SIZE}\n`);
 
   // Load test comments
   const testData = JSON.parse(
@@ -314,73 +543,47 @@ async function runValidation() {
   ) as TestComment[];
 
   const results: TestResult[] = [];
+  const totalBatches = Math.ceil(testData.length / BATCH_SIZE);
 
-  // Process each comment
-  for (const test of testData) {
-    console.log(`Processing #${test.id}: "${test.comment.substring(0, 50)}..."`);
-
-    let videoTitle = test.videoTitle;
-    let videoDescription = test.videoDescription;
-
-    // Fetch video info from URL if provided (fallback if title/description not in test data)
-    if (test.videoUrl && !videoTitle) {
-      console.log(`  Fetching from: ${test.videoUrl}`);
-      const videoInfo = await fetchYouTubeVideoInfo(test.videoUrl);
-      if (videoInfo) {
-        videoTitle = videoInfo.title;
-        videoDescription = videoInfo.description;
-        console.log(`  ✓ Title: "${videoTitle}"`);
-        console.log(`  ✓ Description: ${videoDescription.length} chars (using first 300)`);
-      }
-    } else if (videoTitle) {
-      console.log(`  Video: "${videoTitle}"`);
-      if (videoDescription) {
-        console.log(`  Description: ${videoDescription.length} chars`);
+  // Process comments in parallel batches
+  for (let i = 0; i < testData.length; i += BATCH_SIZE) {
+    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+    const batch = testData.slice(i, i + BATCH_SIZE);
+    const batchIds = batch.map(t => t.id).join(', ');
+    
+    console.log(`📦 Batch ${batchNum}/${totalBatches} (IDs: ${batchIds})...`);
+    
+    // Process batch in parallel
+    const batchResults = await Promise.all(batch.map(test => processComment(test)));
+    
+    // Collect results and log
+    for (const result of batchResults) {
+      if (result) {
+        results.push(result);
+        const status = result.skipped ? '⏭️ SKIP' : '✅ DONE';
+        console.log(`  #${result.id}: ${result.classification} ${status} → ${result.evaluation.overall_score.toFixed(1)}/10`);
       }
     }
-
-    try {
-      // Transform the comment with optional video title + description
-      const transformed = await transformComment(test.comment, videoTitle, videoDescription);
-
-      // Evaluate the transformation
-      const evaluation = await evaluateTransformation(
-        test.comment,
-        transformed,
-        test.expectedBehavior
-      );
-
-      results.push({
-        id: test.id,
-        original: test.comment,
-        transformed,
-        category: test.category,
-        expectedBehavior: test.expectedBehavior,
-        videoTitle: test.videoTitle,
-        evaluation,
-      });
-
-      console.log(`  ✅ Score: ${evaluation.overall_score.toFixed(1)}/10\n`);
-    } catch (error) {
-      console.error(`  ❌ Error processing comment #${test.id}:`, error);
-    }
+    console.log('');
   }
 
   // Generate report
   generateReport(results);
 
-  // Save detailed results to JSON
+  // Save detailed results to JSON with model-specific filename
+  const modelShortName = getModelShortName(MODEL);
+  const outputFilename = `validation-results-${modelShortName}.json`;
   fs.writeFileSync(
-    path.join(__dirname, 'validation-results.json'),
+    path.join(__dirname, outputFilename),
     JSON.stringify(results, null, 2)
   );
 
-  console.log('\n✅ Validation complete! Results saved to validation-results.json');
+  console.log(`\n✅ Validation complete! Results saved to ${outputFilename}`);
 }
 
 function generateReport(results: TestResult[]) {
   console.log('\n' + '='.repeat(80));
-  console.log('📊 VALIDATION REPORT');
+  console.log(`📊 VALIDATION REPORT (Model: ${MODEL})`);
   console.log('='.repeat(80) + '\n');
 
   // Calculate overall statistics
@@ -398,6 +601,18 @@ function generateReport(results: TestResult[]) {
     results.reduce((sum, r) => sum + r.evaluation.no_meta_commentary, 0) / results.length;
   const naturalnessAvg =
     results.reduce((sum, r) => sum + r.evaluation.naturalness, 0) / results.length;
+
+  // Two-pass statistics
+  const positiveCount = results.filter(r => r.classification === 'POSITIVE').length;
+  const negativeCount = results.filter(r => r.classification === 'NEGATIVE').length;
+  const skippedCount = results.filter(r => r.skipped).length;
+  const transformedCount = results.length - skippedCount;
+  const savingsPercent = ((skippedCount / results.length) * 100).toFixed(1);
+
+  console.log('TWO-PASS CLASSIFICATION:');
+  console.log(`  Positive (skipped): ${positiveCount} (${savingsPercent}%)`);
+  console.log(`  Negative (transformed): ${negativeCount}`);
+  console.log(`  💰 Token savings: ~${savingsPercent}% of transformation calls skipped\n`);
 
   console.log('OVERALL STATISTICS:');
   console.log(`  Overall Score: ${totalScore.toFixed(1)}/10`);

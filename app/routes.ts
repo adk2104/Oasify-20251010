@@ -21,6 +21,7 @@ export default [
   route("api/providers", "routes/api.providers.tsx"),
   route("api/youtube/comments", "routes/api.youtube.comments.tsx"),
   route("api/instagram/comments", "routes/api.instagram.comments.tsx"),
+  route("api/sync", "routes/api.sync.tsx"),
   route("api/comments/reply", "routes/api.comments.reply.tsx"),
   route("api/comments/feedback", "routes/api.comments.feedback.tsx"),
   route("api/comments/delete", "routes/api.comments.delete.tsx"),
