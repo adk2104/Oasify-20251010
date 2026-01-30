@@ -118,8 +118,17 @@ OUTPUT FORMAT:
 Return ONLY the transformed comment text. Nothing else.`;
 
 // Initialize AI clients
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+
+if (!process.env.GOOGLE_AI_API_KEY){
+    throw new Error("Google api key required");
+}
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+
+if (!process.env.OPENAI_API_KEY){
+    throw new Error("OpenAI api key required");
+}
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 
 // Smart truncation: truncate to maxLength but try to break at sentence end
 function truncateSmartly(text: string, maxLength: number = 300): string {
