@@ -41,6 +41,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
       try {
         // Step 1: Get total counts
+        // 🔍 Let the user know we're doing the recon work first
+        send({ type: "status", message: "Counting comments..." });
+
         let totalCount = 0;
 
         if (hasYouTube) {

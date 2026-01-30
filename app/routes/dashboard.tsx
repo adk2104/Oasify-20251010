@@ -99,7 +99,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
     setIsSyncing(true);
     setSyncProgress({ current: 0, total: 0 });
-    setSyncStatus('Connecting...');
+    setSyncStatus('Starting sync...');
 
     // Capture existing comment IDs for highlighting new ones
     const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
@@ -343,12 +343,18 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         <div className="flex items-center gap-4">
           {(hasYouTubeConnection || hasInstagramConnection) && (
             <div className="flex items-center gap-3">
-              {isSyncing && syncProgress.total > 0 && (
+              {isSyncing && (
                 <div className="flex items-center gap-2 min-w-[200px]">
-                  <Progress value={Math.min(syncProgress.current, syncProgress.total)} max={syncProgress.total} className="flex-1" />
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
-                    {Math.min(100, Math.round((syncProgress.current / syncProgress.total) * 100))}%
-                  </span>
+                  {syncProgress.total > 0 ? (
+                    <>
+                      <Progress value={Math.min(syncProgress.current, syncProgress.total)} max={syncProgress.total} className="flex-1" />
+                      <span className="text-xs text-gray-500 whitespace-nowrap">
+                        {Math.min(100, Math.round((syncProgress.current / syncProgress.total) * 100))}%
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>
+                  )}
                 </div>
               )}
               <Button
