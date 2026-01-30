@@ -79,6 +79,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState('');
+  const [fakeProgress, setFakeProgress] = useState(0);
   const eventSourceRef = useRef<EventSource | null>(null);
 
   const totalComments = commentsWithReplies.length;
@@ -100,6 +101,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     setIsSyncing(true);
     setSyncProgress({ current: 0, total: 0 });
     setSyncStatus('Starting sync...');
+    setFakeProgress(0);
 
     // Capture existing comment IDs for highlighting new ones
     const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
@@ -160,6 +162,23 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       }
     };
   }, []);
+
+  // 🎭 The ol' progress bar magic trick - animate to 25% while counting
+  // so users feel like something's happening (because it is, just behind the scenes)
+  useEffect(() => {
+    if (!isSyncing || syncProgress.total > 0) return;
+
+    const interval = setInterval(() => {
+      setFakeProgress(prev => {
+        // Ease out as we approach 25% - slower and slower
+        const remaining = 25 - prev;
+        const increment = Math.max(0.5, remaining * 0.1);
+        return Math.min(25, prev + increment);
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isSyncing, syncProgress.total]);
 
   // When global toggle changes, reset all individual toggles
   useEffect(() => {
@@ -345,16 +364,20 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             <div className="flex items-center gap-3">
               {isSyncing && (
                 <div className="flex items-center gap-2 min-w-[200px]">
-                  {syncProgress.total > 0 ? (
-                    <>
-                      <Progress value={Math.min(syncProgress.current, syncProgress.total)} max={syncProgress.total} className="flex-1" />
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                        {Math.min(100, Math.round((syncProgress.current / syncProgress.total) * 100))}%
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>
-                  )}
+                  <Progress
+                    value={syncProgress.total > 0
+                      ? 25 + (Math.min(syncProgress.current, syncProgress.total) / syncProgress.total) * 75
+                      : fakeProgress
+                    }
+                    max={100}
+                    className="flex-1"
+                  />
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {Math.round(syncProgress.total > 0
+                      ? 25 + (Math.min(syncProgress.current, syncProgress.total) / syncProgress.total) * 75
+                      : fakeProgress
+                    )}%
+                  </span>
                 </div>
               )}
               <Button
