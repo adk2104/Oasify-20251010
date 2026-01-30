@@ -167,12 +167,10 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   }, [globalEmpathMode]);
 
   // Auto-sync when a platform is just connected
+  // 🎉 Fresh connection celebration! Kick off the SSE-based sync so they see the progress bar
   useEffect(() => {
-    if (connectedPlatform === 'youtube' && hasYouTubeConnection) {
-      youtubeFetcher.submit({}, { method: 'POST', action: '/api/youtube/comments' });
-    }
-    if (connectedPlatform === 'instagram' && hasInstagramConnection) {
-      instagramFetcher.submit({}, { method: 'POST', action: '/api/instagram/comments' });
+    if (connectedPlatform && (hasYouTubeConnection || hasInstagramConnection)) {
+      handleSyncAll();
     }
   }, [connectedPlatform]);
 
