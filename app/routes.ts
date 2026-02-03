@@ -26,5 +26,6 @@ export default [
   route("api/comments/feedback", "routes/api.comments.feedback.tsx"),
   route("api/comments/delete", "routes/api.comments.delete.tsx"),
   route("api/providers/disconnect", "routes/api.providers.disconnect.tsx"),
+  route("api/chat", "routes/api.chat.server.tsx"),
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/.well-known.appspecific.com.chrome.devtools.json.ts"),
 ] satisfies RouteConfig;
