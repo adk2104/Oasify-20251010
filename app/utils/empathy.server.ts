@@ -228,6 +228,9 @@ async function classifyComment(commentText: string): Promise<'POSITIVE' | 'NEGAT
 // Batch processing configuration
 const BATCH_SIZE = 5;
 
+// Sentiment type for database storage
+export type SentimentType = 'positive' | 'negative' | 'neutral' | 'constructive';
+
 // Process multiple comments in parallel (for sync operations)
 export async function generateEmpathicVersionsBatch(
   comments: Array<{
@@ -236,10 +239,10 @@ export async function generateEmpathicVersionsBatch(
     videoTitle?: string;
     videoDescription?: string;
   }>
-): Promise<Array<{ id: number; text: string; empathicText: string; skipped: boolean }>> {
+): Promise<Array<{ id: number; text: string; empathicText: string; skipped: boolean; sentiment: SentimentType }>> {
   console.log(`[AI:Batch] Processing ${comments.length} comments in batches of ${BATCH_SIZE}`);
   
-  const results: Array<{ id: number; text: string; empathicText: string; skipped: boolean }> = [];
+  const results: Array<{ id: number; text: string; empathicText: string; skipped: boolean; sentiment: SentimentType }> = [];
   
   // Process in batches
   for (let i = 0; i < comments.length; i += BATCH_SIZE) {
@@ -262,6 +265,7 @@ export async function generateEmpathicVersionsBatch(
           text: item.text,
           empathicText: item.text, // Return original for positive
           skipped: true,
+          sentiment: 'positive' as SentimentType,
         };
       }
       
@@ -277,6 +281,7 @@ export async function generateEmpathicVersionsBatch(
         text: item.text,
         empathicText,
         skipped: false,
+        sentiment: 'negative' as SentimentType,
       };
     });
     

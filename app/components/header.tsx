@@ -24,7 +24,7 @@ export function Header({ userEmail }: HeaderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <header className="flex h-14 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 lg:px-6">
+    <header className="flex h-14 items-center justify-between gap-4 border-b border-oasis-100 bg-white/80 backdrop-blur-sm px-4 lg:px-6">
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -34,7 +34,7 @@ export function Header({ userEmail }: HeaderProps) {
         >
           <Menu className="h-4 w-4" />
         </Button>
-        <div className="font-semibold text-lg">Oasify</div>
+        <div className="font-semibold text-lg bg-gradient-to-r from-oasis-600 to-calm-500 bg-clip-text text-transparent">Oasify</div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -50,7 +50,7 @@ export function Header({ userEmail }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-slate-900 text-white">
+                <AvatarFallback className="bg-oasis-500 text-white">
                   <User className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
@@ -90,13 +90,13 @@ export function Header({ userEmail }: HeaderProps) {
       {/* Dark Mode Coming Soon Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
-            <Sun className="w-8 h-8 text-yellow-600" />
+          <div className="w-16 h-16 bg-oasis-100 rounded-full flex items-center justify-center mx-auto">
+            <Sun className="w-8 h-8 text-oasis-500" />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-warm-800">
             Dark Mode Coming Soon
           </h2>
-          <p className="text-gray-600">
+          <p className="text-warm-500">
             Dark mode is coming in the future. For now, let's just embrace the brightness! ☀️
           </p>
           <Button

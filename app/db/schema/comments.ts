@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import { users } from './users';
 
 export const platformEnum = pgEnum('platform_enum', ['youtube', 'instagram']);
+export const sentimentEnum = pgEnum('sentiment_enum', ['positive', 'negative', 'neutral', 'constructive']);
 
 export const comments = pgTable('comments', {
   id: serial('id').primaryKey(),
@@ -24,6 +25,7 @@ export const comments = pgTable('comments', {
   isOwner: boolean('is_owner').default(false).notNull(),
   feedback: text('feedback'), // 'up' | 'down' | null
   feedbackAt: timestamp('feedback_at'),
+  sentiment: sentimentEnum('sentiment'), // AI-classified sentiment for analytics
   createdAt: timestamp('created_at').notNull(),
   fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
 }, (table) => ({

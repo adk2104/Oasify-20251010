@@ -22,14 +22,14 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
       {/* Modal content */}
       <div
         className={cn(
-          "relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6 animate-in fade-in zoom-in-95 duration-200",
+          "relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 animate-in fade-in zoom-in-95 duration-200 border border-oasis-100",
           className
         )}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-warm-400 hover:text-warm-600 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
