@@ -459,15 +459,22 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                   })()}
                 </div>
               )}
-              <Button
-                variant="default"
-                size="sm"
-                onClick={handleSyncAll}
-                disabled={isSyncingAny}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
-                {isSyncing ? 'Syncing...' : 'Sync All'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleSyncAll}
+                  disabled={isSyncingAny}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
+                  {isSyncing ? 'Syncing...' : 'Sync All'}
+                </Button>
+                {commentsWithReplies.length === 0 && (
+                  <span className="text-xs text-warm-400">
+                    First sync can take up to 3 minutes
+                  </span>
+                )}
+              </div>
             </div>
           )}
           <generateFetcher.Form method="post" action="/api/youtube/comments?action=generate">

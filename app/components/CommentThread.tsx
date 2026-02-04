@@ -218,7 +218,7 @@ export function CommentThread({
                 You
               </span>
             )}
-            {!comment.isOwner && comment.empathicText && !hideOriginalToggle && (
+            {hasTransformation && !hideOriginalToggle && (
               <>
                 <span className="text-[10px] text-muted-foreground">•</span>
                 <span className="text-[10px] text-muted-foreground">
