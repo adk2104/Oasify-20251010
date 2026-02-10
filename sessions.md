@@ -781,3 +781,28 @@ Ava noticed the Oasis blue styling wasn't showing up in the main folder. Found t
 - [ ] Consider merging to main after testing
 
 ---
+
+### PR Created
+
+**Pull Request:** https://github.com/adk2104/Oasify-20251010/pull/8
+
+**Final commits on `feature/chatbot-analytics`:**
+1. `8642bb2` — Add Oasis blue color palette and styling
+2. `8b12c99` — Sync all changes from test (styling, sentiment, suggest-reply)
+3. `d382b40` — UX improvements (toggle fix, first-sync helper)
+4. `7b80149` — Add session notes
+
+### Comment Limits Reference
+
+Checked the codebase for comment fetching limits:
+
+| Platform | Videos/Posts | Comments per Video/Post | Total Max |
+|----------|--------------|-------------------------|-----------|
+| YouTube | 5 most recent | 20 comments | ~100 |
+| Instagram | 5 most recent | 20 comments | ~100 |
+
+**Code locations:**
+- YouTube: `youtube.server.ts` lines 172 (videos), 192/287 (comments)
+- Instagram: `instagram.server.ts` lines 294 (posts), 324 (comments)
+
+---
