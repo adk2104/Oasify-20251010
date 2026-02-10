@@ -13,10 +13,12 @@ type Message = {
 };
 
 const SUGGESTED_QUESTIONS = [
-  "Give me an overview of what my audience thinks",
-  "What improvements should I make based on my comments?",
-  "Who are my top commenters?",
-  "What's my most popular video?",
+  "How can I improve my content based on comments?",
+  "What's the overall sentiment of my comments?",
+  "Who are my most active commenters?",
+  "Which videos get the most comments?",
+  "Show me recent negative feedback",
+  "Compare my YouTube vs Instagram engagement",
 ];
 
 export function ChatPanel() {
