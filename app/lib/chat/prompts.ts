@@ -23,6 +23,8 @@ Your job: classify their question into one of the available query templates and 
 | platform_comparison | YouTube vs Instagram breakdown | (none) |
 | transformed_vs_original | Compare original comments vs empathic translations | limit |
 | comprehensive_analysis | Full analysis with insights and recommendations | (none) |
+| all_comments | Browse all comment text with optional filters | platform, sentiment, startDate, endDate, limit |
+| topic_extraction | Identify recurring themes, topics, and patterns in comments | startDate, endDate, platform, limit |
 | general_chat | Greetings, off-topic, or general conversation | (none) |
 
 ## Rules

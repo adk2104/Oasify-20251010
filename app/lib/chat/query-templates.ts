@@ -54,6 +54,11 @@ function sanitizePlatform(value: unknown): 'youtube' | 'instagram' | undefined {
   return undefined;
 }
 
+function sanitizeSentiment(value: unknown): 'positive' | 'negative' | 'neutral' | 'constructive' | undefined {
+  if (value === 'positive' || value === 'negative' || value === 'neutral' || value === 'constructive') return value;
+  return undefined;
+}
+
 function escapeLikePattern(str: string): string {
   return str.replace(/[%_\\]/g, '\\$&');
 }
@@ -64,6 +69,7 @@ export function validateParams(raw: Record<string, unknown>): QueryParams {
     videoId: sanitizeString(raw.videoId, 50),
     videoTitle: sanitizeString(raw.videoTitle),
     platform: sanitizePlatform(raw.platform),
+    sentiment: sanitizeSentiment(raw.sentiment),
     limit: sanitizeNumber(raw.limit),
     startDate: sanitizeDate(raw.startDate),
     endDate: sanitizeDate(raw.endDate),
@@ -449,6 +455,56 @@ export const QUERY_TEMPLATES: QueryTemplate[] = [
       ]);
 
       return { sentiments, topVideos, recentNegative, topCommenters, totalComments: totalCount[0]?.count ?? 0 };
+    },
+  },
+
+  // 16. all_comments
+  {
+    id: 'all_comments',
+    description: 'Browse all comment text with optional filters',
+    execute: async (userId, params) => {
+      const limit = params.limit ?? 200;
+      const conditions: ReturnType<typeof eq>[] = [eq(comments.userId, userId)];
+      if (params.platform) conditions.push(eq(comments.platform, params.platform));
+      if (params.sentiment) conditions.push(eq(comments.sentiment, params.sentiment));
+      if (params.startDate) conditions.push(gte(comments.createdAt, new Date(params.startDate)));
+      if (params.endDate) conditions.push(lte(comments.createdAt, new Date(params.endDate)));
+      return db
+        .select({
+          author: comments.author,
+          text: comments.text,
+          sentiment: comments.sentiment,
+          videoTitle: comments.videoTitle,
+          platform: comments.platform,
+          createdAt: comments.createdAt,
+        })
+        .from(comments)
+        .where(and(...conditions))
+        .orderBy(desc(comments.createdAt))
+        .limit(limit);
+    },
+  },
+
+  // 17. topic_extraction
+  {
+    id: 'topic_extraction',
+    description: 'Pull comment text for AI to identify recurring themes, topics, and patterns',
+    execute: async (userId, params) => {
+      const limit = params.limit ?? 200;
+      const conditions: ReturnType<typeof eq>[] = [eq(comments.userId, userId)];
+      if (params.startDate) conditions.push(gte(comments.createdAt, new Date(params.startDate)));
+      if (params.endDate) conditions.push(lte(comments.createdAt, new Date(params.endDate)));
+      if (params.platform) conditions.push(eq(comments.platform, params.platform));
+      return db
+        .select({
+          text: comments.text,
+          sentiment: comments.sentiment,
+          videoTitle: comments.videoTitle,
+        })
+        .from(comments)
+        .where(and(...conditions))
+        .orderBy(desc(comments.createdAt))
+        .limit(limit);
     },
   },
 ];
