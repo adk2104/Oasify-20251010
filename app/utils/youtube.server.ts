@@ -20,7 +20,11 @@ interface YouTubeComment {
   hasReplied: boolean;
 }
 
-export type ProgressCallback = (current: number, total: number) => void;
+// 📡 Events emitted during sync — the dashboard listens to these to drive the progress bar
+export type SyncEvent =
+  | { type: 'status'; message: string }
+  | { type: 'total'; total: number }   // additive — "I found N more items to process"
+  | { type: 'progress' };              // one item completed
 
 // Refresh Google OAuth token
 export async function refreshGoogleToken(refreshToken: string) {
@@ -227,9 +231,8 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 // Sync comments from YouTube to database
 export async function syncYouTubeCommentsToDatabase(
   userId: number,
-  onProgress?: ProgressCallback
+  onProgress?: (event: SyncEvent) => void
 ): Promise<void> {
-  let processedCount = 0;
   const [provider] = await db
     .select()
     .from(providers)
@@ -313,7 +316,13 @@ export async function syncYouTubeCommentsToDatabase(
     }
   }
 
+  // 🧮 Count everything we're about to process so the progress bar knows the finish line
+  const totalReplies = collectedComments.reduce((sum, c) => sum + c.replies.length, 0);
+  const totalItems = collectedComments.length + totalReplies;
+  onProgress?.({ type: 'total', total: totalItems });
+
   // Phase 2: Batch generate empathic text for non-owner comments
+  onProgress?.({ type: 'status', message: 'Processing comments with AI...' });
   console.log(`[SYNC] Phase 2: Batch processing ${collectedComments.length} comments...`);
   const commentsNeedingEmpathy = collectedComments
     .filter(c => !c.isOwner)
@@ -325,8 +334,13 @@ export async function syncYouTubeCommentsToDatabase(
     }));
 
   const empathyResults = commentsNeedingEmpathy.length > 0
-    ? await generateEmpathicVersionsBatch(commentsNeedingEmpathy)
+    ? await generateEmpathicVersionsBatch(commentsNeedingEmpathy, () => onProgress?.({ type: 'progress' }))
     : [];
+  // 🏷️ Owner comments don't go through empathy — tick their progress now
+  const ownerCommentCount = collectedComments.filter(c => c.isOwner).length;
+  for (let i = 0; i < ownerCommentCount; i++) {
+    onProgress?.({ type: 'progress' });
+  }
   
   // Create lookup for empathic text and sentiment
   const empathyLookup = new Map<string, { empathicText: string; sentiment: SentimentType }>();
@@ -382,12 +396,6 @@ export async function syncYouTubeCommentsToDatabase(
 
     platformIdToDbId[collected.platformCommentId] = inserted.id;
 
-    // Report progress
-    processedCount++;
-    if (onProgress) {
-      onProgress(processedCount, 0);
-    }
-
     // Collect replies for phase 4
     for (const reply of collected.replies) {
       replyData.push({
@@ -401,6 +409,7 @@ export async function syncYouTubeCommentsToDatabase(
   }
 
   // Phase 4: Batch process replies
+  onProgress?.({ type: 'status', message: 'Processing replies with AI...' });
   console.log(`[SYNC] Phase 4: Processing ${replyData.length} replies...`);
   const repliesNeedingEmpathy = replyData
     .filter(r => r.reply.snippet.authorChannelId?.value !== ownerChannelId)
@@ -412,8 +421,13 @@ export async function syncYouTubeCommentsToDatabase(
     }));
 
   const replyEmpathyResults = repliesNeedingEmpathy.length > 0
-    ? await generateEmpathicVersionsBatch(repliesNeedingEmpathy)
+    ? await generateEmpathicVersionsBatch(repliesNeedingEmpathy, () => onProgress?.({ type: 'progress' }))
     : [];
+  // 🏷️ Owner replies skip empathy — tick their progress now
+  const ownerReplyCount = replyData.filter(r => r.reply.snippet.authorChannelId?.value === ownerChannelId).length;
+  for (let i = 0; i < ownerReplyCount; i++) {
+    onProgress?.({ type: 'progress' });
+  }
 
   const replyEmpathyLookup = new Map<string, { empathicText: string; sentiment: SentimentType }>();
   repliesNeedingEmpathy.forEach((r, idx) => {
@@ -469,12 +483,6 @@ export async function syncYouTubeCommentsToDatabase(
         sentiment,
       },
     });
-
-    // Report progress after processing each reply
-    processedCount++;
-    if (onProgress) {
-      onProgress(processedCount, 0);
-    }
   }
 
   // Recalculate reply counts from database

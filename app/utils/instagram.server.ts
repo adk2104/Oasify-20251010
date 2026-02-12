@@ -35,7 +35,11 @@ interface InstagramUserProfile {
   media_count?: number;
 }
 
-export type ProgressCallback = (current: number, total: number) => void;
+// 📡 Events emitted during sync — mirrors YouTube's SyncEvent for a unified progress bar
+export type SyncEvent =
+  | { type: 'status'; message: string }
+  | { type: 'total'; total: number }   // additive — "I found N more items to process"
+  | { type: 'progress' };              // one item completed
 
 // ============================================================================
 // INSTAGRAM BUSINESS LOGIN API

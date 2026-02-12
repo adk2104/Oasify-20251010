@@ -381,7 +381,8 @@ export async function generateEmpathicVersionsBatch(
     text: string;
     videoTitle?: string;
     videoDescription?: string;
-  }>
+  }>,
+  onItemComplete?: () => void
 ): Promise<Array<{ id: number; text: string; empathicText: string; skipped: boolean; sentiment: SentimentType }>> {
   console.log(`[AI:Batch] Processing ${comments.length} comments in batches of ${BATCH_SIZE}`);
   
@@ -440,7 +441,14 @@ export async function generateEmpathicVersionsBatch(
     
     const batchResults = await Promise.all(transformPromises);
     results.push(...batchResults);
-    
+
+    // 🔔 Ring the bell for each item in this batch so the progress bar keeps moving
+    if (onItemComplete) {
+      for (let j = 0; j < batchResults.length; j++) {
+        onItemComplete();
+      }
+    }
+
     const skipped = batchResults.filter(r => r.skipped).length;
     console.log(`[AI:Batch] Completed: ${batchResults.length - skipped} transformed, ${skipped} skipped`);
   }
