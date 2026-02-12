@@ -90,6 +90,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [fakeProgress, setFakeProgress] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState('');
+  const [fakeProgress, setFakeProgress] = useState(0);
   const eventSourceRef = useRef<EventSource | null>(null);
   const fakeProgressRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -222,18 +223,33 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     };
   }, []);
 
+  // 🎭 The ol' progress bar magic trick - animate to 25% while counting
+  // so users feel like something's happening (because it is, just behind the scenes)
+  useEffect(() => {
+    if (!isSyncing || syncProgress.total > 0) return;
+
+    const interval = setInterval(() => {
+      setFakeProgress(prev => {
+        // Ease out as we approach 25% - slower and slower
+        const remaining = 25 - prev;
+        const increment = Math.max(0.5, remaining * 0.1);
+        return Math.min(25, prev + increment);
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isSyncing, syncProgress.total]);
+
   // When global toggle changes, reset all individual toggles
   useEffect(() => {
     setCommentEmpathMode({});
   }, [globalEmpathMode]);
 
   // Auto-sync when a platform is just connected
+  // 🎉 Fresh connection celebration! Kick off the SSE-based sync so they see the progress bar
   useEffect(() => {
-    if (connectedPlatform === 'youtube' && hasYouTubeConnection) {
-      youtubeFetcher.submit({}, { method: 'POST', action: '/api/youtube/comments' });
-    }
-    if (connectedPlatform === 'instagram' && hasInstagramConnection) {
-      instagramFetcher.submit({}, { method: 'POST', action: '/api/instagram/comments' });
+    if (connectedPlatform && (hasYouTubeConnection || hasInstagramConnection)) {
+      handleSyncAll();
     }
   }, [connectedPlatform]);
 
