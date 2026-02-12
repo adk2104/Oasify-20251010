@@ -90,7 +90,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [fakeProgress, setFakeProgress] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState('');
-  const [fakeProgress, setFakeProgress] = useState(0);
   const eventSourceRef = useRef<EventSource | null>(null);
   const fakeProgressRef = useRef<NodeJS.Timeout | null>(null);
   
