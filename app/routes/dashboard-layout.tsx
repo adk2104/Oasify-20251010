@@ -5,7 +5,7 @@ import { AppSidebar } from "~/components/app-sidebar";
 import { Header } from "~/components/header";
 import { SidebarProvider } from "~/contexts/sidebar-context";
 import { db } from "~/db/config";
-import { providers } from "~/db/schema";
+import { providers, users } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { validateYouTubeToken } from "~/utils/youtube.server";
 import { validateInstagramToken } from "~/utils/instagram.server";
@@ -18,6 +18,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   const userId = session.get("userId") as number;
+
+  // Fetch user settings
+  const userSettings = await db
+    .select({
+      hideOriginalToggle: users.hideOriginalToggle,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .then(rows => rows[0] || { hideOriginalToggle: false });
 
   // Fetch user's connected providers
   const userProviders = await db
@@ -64,6 +73,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     userEmail: session.get("userEmail"),
     providers: providersWithValidation,
     instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
+    userSettings,
   };
 }
 
@@ -79,16 +89,16 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
-  const { userId, userEmail, providers, instagramOAuthUrl } = loaderData;
+  const { userId, userEmail, providers, instagramOAuthUrl, userSettings } = loaderData;
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full bg-gray-50">
+      <div className="flex h-screen w-full bg-gradient-to-br from-oasis-50 via-white to-calm-50">
         <AppSidebar userId={userId} providers={providers} instagramOAuthUrl={instagramOAuthUrl} />
         <div className="flex flex-col flex-1 overflow-hidden">
           <Header userEmail={userEmail} />
           <main className="flex-1 overflow-auto">
-            <Outlet />
+            <Outlet context={{ userSettings }} />
           </main>
         </div>
       </div>

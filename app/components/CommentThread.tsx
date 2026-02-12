@@ -6,6 +6,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { Switch } from '~/components/ui/switch';
 import { cn } from '~/lib/utils';
 import type { CommentWithReplies } from '~/utils/comments.server';
+import { Sparkles } from 'lucide-react';
 
 // Generate a consistent color based on a string (username)
 function getAvatarColor(name: string): string {
@@ -45,6 +46,7 @@ type CommentThreadProps = {
   onToggleMode: (commentId: number) => void;
   newCommentIds?: Set<number>;
   fadingCommentIds?: Set<number>;
+  hideOriginalToggle?: boolean; // When true, hide the Original/Empathic toggle switch
 };
 
 // Helper to construct video/post URL
@@ -67,6 +69,7 @@ export function CommentThread({
   onToggleMode,
   newCommentIds,
   fadingCommentIds,
+  hideOriginalToggle = false,
 }: CommentThreadProps) {
   const [showReplies, setShowReplies] = useState(replies.length <= 2);
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -75,7 +78,25 @@ export function CommentThread({
   const [optimisticFeedback, setOptimisticFeedback] = useState<'up' | 'down' | null | undefined>(undefined);
   const fetcher = useFetcher();
   const feedbackFetcher = useFetcher();
+  const suggestFetcher = useFetcher();
   const revalidator = useRevalidator();
+  
+  const isSuggesting = suggestFetcher.state !== 'idle';
+  
+  // Handle suggested reply response
+  useEffect(() => {
+    if (suggestFetcher.data?.suggestedReply && suggestFetcher.data.commentId === String(comment.id)) {
+      setReplyText(suggestFetcher.data.suggestedReply);
+    }
+  }, [suggestFetcher.data, comment.id]);
+  
+  const handleSuggestReply = () => {
+    if (isSuggesting) return;
+    suggestFetcher.submit(
+      { commentId: String(comment.id) },
+      { method: 'POST', action: '/api/suggest-reply' }
+    );
+  };
 
   // Use optimistic feedback if set, otherwise use comment's actual feedback
   const currentFeedback = optimisticFeedback !== undefined ? optimisticFeedback : comment.feedback;
@@ -197,7 +218,7 @@ export function CommentThread({
                 You
               </span>
             )}
-            {!comment.isOwner && comment.empathicText && (
+            {hasTransformation && !hideOriginalToggle && (
               <>
                 <span className="text-[10px] text-muted-foreground">•</span>
                 <span className="text-[10px] text-muted-foreground">
@@ -263,13 +284,23 @@ export function CommentThread({
                 placeholder="Write a reply..."
                 className="text-sm min-h-[60px]"
               />
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <Button
                   size="sm"
                   onClick={handleSubmitReply}
                   disabled={!replyText.trim() || fetcher.state !== 'idle'}
                 >
                   {fetcher.state !== 'idle' ? 'Posting...' : 'Post'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSuggestReply}
+                  disabled={isSuggesting}
+                  className="gap-1"
+                >
+                  <Sparkles className={cn("w-3 h-3", isSuggesting && "animate-pulse")} />
+                  {isSuggesting ? 'Thinking...' : 'Suggest'}
                 </Button>
                 <Button
                   size="sm"
@@ -339,6 +370,7 @@ export function CommentThread({
                         onToggleMode={onToggleMode}
                         newCommentIds={newCommentIds}
                         fadingCommentIds={fadingCommentIds}
+                        hideOriginalToggle={hideOriginalToggle}
                       />
                     );
                   })}

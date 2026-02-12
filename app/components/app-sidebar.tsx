@@ -111,19 +111,19 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
   return (
     <aside
       className={cn(
-        "bg-slate-50 text-slate-900 flex flex-col border-r border-slate-200 overflow-hidden",
+        "bg-gradient-to-b from-oasis-50 to-white text-warm-800 flex flex-col border-r border-oasis-100 overflow-hidden",
         mounted && "transition-all duration-200 ease-in-out",
         isOpen ? "w-64" : "w-0 -translate-x-full"
       )}
     >
       <div className="p-6">
-        <h2 className="text-xl font-bold">Oasify</h2>
+        <h2 className="text-xl font-bold bg-gradient-to-r from-oasis-600 to-calm-500 bg-clip-text text-transparent">Oasify</h2>
       </div>
 
       <nav className="flex-1 px-3 space-y-6">
         {/* Navigation Section */}
         <div>
-          <h3 className="px-3 mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+          <h3 className="px-3 mb-2 text-xs font-medium text-warm-400 uppercase tracking-wide">
             Navigation
           </h3>
           <div className="space-y-1">
@@ -134,10 +134,10 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                   key={item.title}
                   to={item.url}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "bg-slate-200 text-slate-900"
-                      : "text-slate-700 hover:bg-slate-100"
+                      ? "bg-oasis-100 text-oasis-700 shadow-sm"
+                      : "text-warm-600 hover:bg-oasis-50 hover:text-oasis-600"
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -150,7 +150,7 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
 
         {/* Connected Accounts Section */}
         <div>
-          <h3 className="px-3 mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+          <h3 className="px-3 mb-2 text-xs font-medium text-warm-400 uppercase tracking-wide">
             Connected Accounts
           </h3>
           <div className="space-y-1">
@@ -165,13 +165,13 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                   <div
                     key={item.title}
                     ref={disconnectRef}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-slate-100"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-oasis-50"
                   >
                     <div className="relative">
                       <item.icon className="h-4 w-4" />
                       <div
                         className={cn(
-                          "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-slate-50",
+                          "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-oasis-50",
                           getStatusColor(status)
                         )}
                       />
@@ -180,7 +180,7 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                     <Button
                       size="sm"
                       variant="default"
-                      className="ml-auto h-6 px-2 text-xs bg-red-600 hover:bg-red-700"
+                      className="ml-auto h-6 px-2 text-xs bg-red-500 hover:bg-red-600"
                       onClick={() => handleDisconnect(item.platform)}
                     >
                       Disconnect
@@ -194,13 +194,13 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                 return (
                   <div
                     key={item.title}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-600 hover:bg-oasis-50 transition-all duration-200"
                   >
                     <div className="relative">
                       <item.icon className="h-4 w-4" />
                       <div
                         className={cn(
-                          "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-slate-50",
+                          "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-oasis-50",
                           getStatusColor(status)
                         )}
                       />
@@ -208,7 +208,7 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                     <span>{item.title}</span>
                     <Badge
                       variant="default"
-                      className="ml-auto text-xs cursor-pointer hover:bg-slate-600"
+                      className="ml-auto text-xs cursor-pointer bg-calm-500 hover:bg-calm-600"
                       onClick={() => setShowDisconnect(item.platform)}
                     >
                       connected
@@ -222,13 +222,13 @@ export function AppSidebar({ userId, providers = [], instagramOAuthUrl }: AppSid
                 <Link
                   key={item.title}
                   to={item.url}
-                  className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-600 hover:bg-oasis-50 transition-all duration-200"
                 >
                   <div className="relative">
                     <item.icon className="h-4 w-4" />
                     <div
                       className={cn(
-                        "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-slate-50",
+                        "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-oasis-50",
                         getStatusColor(status)
                       )}
                     />

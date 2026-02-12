@@ -27,8 +27,8 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
         disabled={disabled}
         className={cn(
           "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors",
-          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300",
-          checked ? "bg-blue-600" : "bg-gray-200",
+          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-oasis-200",
+          checked ? "bg-oasis-500" : "bg-warm-200",
           disabled && "opacity-50 cursor-not-allowed",
           className
         )}
@@ -36,7 +36,7 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
       >
         <span
           className={cn(
-            "pointer-events-none block h-5 w-5 rounded-full bg-white border border-gray-300 shadow-sm transition-transform",
+            "pointer-events-none block h-5 w-5 rounded-full bg-white border border-oasis-200 shadow-sm transition-transform",
             "absolute top-[2px] left-[2px]",
             checked && "translate-x-5"
           )}

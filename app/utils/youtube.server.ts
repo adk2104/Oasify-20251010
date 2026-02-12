@@ -1,7 +1,7 @@
 import { db } from '~/db/config';
 import { providers, comments } from '~/db/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
-import { generateEmpathicVersion, generateEmpathicVersionsBatch } from './empathy.server';
+import { generateEmpathicVersion, generateEmpathicVersionsBatch, type SentimentType } from './empathy.server';
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
@@ -328,21 +328,23 @@ export async function syncYouTubeCommentsToDatabase(
     ? await generateEmpathicVersionsBatch(commentsNeedingEmpathy)
     : [];
   
-  // Create lookup for empathic text
-  const empathyLookup = new Map<string, string>();
+  // Create lookup for empathic text and sentiment
+  const empathyLookup = new Map<string, { empathicText: string; sentiment: SentimentType }>();
   commentsNeedingEmpathy.forEach((c, idx) => {
     const result = empathyResults.find(r => r.id === idx);
     if (result) {
-      empathyLookup.set(c.text, result.empathicText);
+      empathyLookup.set(c.text, { empathicText: result.empathicText, sentiment: result.sentiment });
     }
   });
 
   // Phase 3: Save comments to database
   console.log('[SYNC] Phase 3: Saving to database...');
   for (const collected of collectedComments) {
+    const empathyData = empathyLookup.get(collected.snippet.textDisplay);
     const empathicText = collected.isOwner 
       ? collected.snippet.textDisplay 
-      : (empathyLookup.get(collected.snippet.textDisplay) || collected.snippet.textDisplay);
+      : (empathyData?.empathicText || collected.snippet.textDisplay);
+    const sentiment = collected.isOwner ? null : (empathyData?.sentiment || null);
 
     const [inserted] = await db.insert(comments).values({
       userId,
@@ -360,6 +362,7 @@ export async function syncYouTubeCommentsToDatabase(
       isReply: false,
       replyCount: collected.replyCount,
       isOwner: collected.isOwner,
+      sentiment,
       createdAt: new Date(collected.snippet.publishedAt),
     }).onConflictDoUpdate({
       target: [comments.userId, comments.commentId, comments.platform],
@@ -373,6 +376,7 @@ export async function syncYouTubeCommentsToDatabase(
         videoThumbnail: collected.videoThumbnail,
         isOwner: collected.isOwner,
         replyCount: collected.replyCount,
+        sentiment,
       },
     }).returning();
 
@@ -411,11 +415,11 @@ export async function syncYouTubeCommentsToDatabase(
     ? await generateEmpathicVersionsBatch(repliesNeedingEmpathy)
     : [];
 
-  const replyEmpathyLookup = new Map<string, string>();
+  const replyEmpathyLookup = new Map<string, { empathicText: string; sentiment: SentimentType }>();
   repliesNeedingEmpathy.forEach((r, idx) => {
     const result = replyEmpathyResults.find(res => res.id === idx);
     if (result) {
-      replyEmpathyLookup.set(r.text, result.empathicText);
+      replyEmpathyLookup.set(r.text, { empathicText: result.empathicText, sentiment: result.sentiment });
     }
   });
 
@@ -426,9 +430,11 @@ export async function syncYouTubeCommentsToDatabase(
 
     const snippet = reply.snippet;
     const isOwner = snippet.authorChannelId?.value === ownerChannelId;
+    const replyEmpathyData = replyEmpathyLookup.get(snippet.textDisplay);
     const empathicText = isOwner 
       ? snippet.textDisplay 
-      : (replyEmpathyLookup.get(snippet.textDisplay) || snippet.textDisplay);
+      : (replyEmpathyData?.empathicText || snippet.textDisplay);
+    const sentiment = isOwner ? null : (replyEmpathyData?.sentiment || null);
 
     await db.insert(comments).values({
       userId,
@@ -447,6 +453,7 @@ export async function syncYouTubeCommentsToDatabase(
       parentId: parentDbId,
       replyCount: 0,
       isOwner,
+      sentiment,
       createdAt: new Date(snippet.publishedAt),
     }).onConflictDoUpdate({
       target: [comments.userId, comments.commentId, comments.platform],
@@ -459,6 +466,7 @@ export async function syncYouTubeCommentsToDatabase(
         videoId,
         isOwner,
         parentId: parentDbId,
+        sentiment,
       },
     });
 

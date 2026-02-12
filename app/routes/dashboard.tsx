@@ -6,17 +6,26 @@ import { Label } from "~/components/ui/label";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
-import { Youtube, Instagram, RefreshCw, Sparkles } from "lucide-react";
+import { Modal } from "~/components/ui/modal";
+import { Youtube, Instagram, RefreshCw, Sparkles, Info } from "lucide-react";
 import { getSession } from "~/sessions.server";
 import { getCommentsWithReplies } from "~/utils/comments.server";
 import { db } from "~/db/config";
-import { providers } from "~/db/schema";
+import { providers, users } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { CommentThread } from "~/components/CommentThread";
+import { ChatPanel } from "~/components/ChatPanel";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('Cookie'));
   const userId = session.get('userId') as number;
+
+  // Fetch user settings
+  const userSettings = await db
+    .select({ hideOriginalToggle: users.hideOriginalToggle })
+    .from(users)
+    .where(eq(users.id, userId))
+    .then(rows => rows[0] || { hideOriginalToggle: false });
 
   // Fetch providers first (this should rarely fail)
   const userProviders = await db
@@ -55,11 +64,12 @@ export async function loader({ request }: Route.LoaderArgs) {
     instagramProvider,
     userId,
     instagramOAuthUrl: process.env.INSTAGRAM_OAUTH_EMBED_URL!,
+    hideOriginalToggle: userSettings.hideOriginalToggle,
   };
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { commentsWithReplies, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl } = loaderData;
+  const { commentsWithReplies, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl, hideOriginalToggle } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
   const [commentEmpathMode, setCommentEmpathMode] = useState<Record<number, boolean>>({});
@@ -77,10 +87,20 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
   // Sync progress state
   const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
+  const [fakeProgress, setFakeProgress] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState('');
-  const [fakeProgress, setFakeProgress] = useState(0);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const fakeProgressRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // First-sync popup state
+  const [showFirstSyncPopup, setShowFirstSyncPopup] = useState(false);
+  const [hasSeenFirstSyncPopup, setHasSeenFirstSyncPopup] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('oasify-first-sync-seen') === 'true';
+    }
+    return false;
+  });
 
   const totalComments = commentsWithReplies.length;
   const connectedPlatform = searchParams.get('connected');
@@ -93,6 +113,11 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const handleSyncAll = () => {
     if (isSyncing) return;
 
+    // Show first-sync popup if this is the first time
+    if (!hasSeenFirstSyncPopup && commentsWithReplies.length === 0) {
+      setShowFirstSyncPopup(true);
+    }
+
     // Close any existing connection
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -100,8 +125,20 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
     setIsSyncing(true);
     setSyncProgress({ current: 0, total: 0 });
-    setSyncStatus('Starting sync...');
     setFakeProgress(0);
+    setSyncStatus('Connecting...');
+    
+    // Start fake progress animation while waiting for real data
+    if (fakeProgressRef.current) clearInterval(fakeProgressRef.current);
+    fakeProgressRef.current = setInterval(() => {
+      setFakeProgress(prev => {
+        // Slow down as we approach 45%, never exceed it
+        if (prev >= 45) return prev;
+        // Faster at start, slows down as it approaches the cap
+        const increment = Math.max(0.3, (45 - prev) / 15);
+        return Math.min(45, prev + increment);
+      });
+    }, 150);
 
     // Capture existing comment IDs for highlighting new ones
     const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
@@ -118,13 +155,24 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         const data = JSON.parse(event.data);
 
         if (data.type === 'total') {
+          // Keep fake progress running - it'll be overtaken by real progress naturally
           setSyncProgress(prev => ({ ...prev, total: data.total }));
           setSyncStatus(`Found ${data.total} comments to sync`);
         } else if (data.type === 'status') {
           setSyncStatus(data.message);
         } else if (data.type === 'progress') {
           setSyncProgress({ current: data.current, total: data.total });
+          // Stop fake progress once real progress surpasses it
+          const realPercent = (data.current / data.total) * 100;
+          if (realPercent > 45 && fakeProgressRef.current) {
+            clearInterval(fakeProgressRef.current);
+            fakeProgressRef.current = null;
+          }
         } else if (data.type === 'done') {
+          if (fakeProgressRef.current) {
+            clearInterval(fakeProgressRef.current);
+            fakeProgressRef.current = null;
+          }
           setSyncProgress({ current: data.current, total: data.total });
           setSyncStatus('Sync complete!');
           eventSource.close();
@@ -134,6 +182,10 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           // Revalidate to show new comments
           revalidator.revalidate();
         } else if (data.type === 'error') {
+          if (fakeProgressRef.current) {
+            clearInterval(fakeProgressRef.current);
+            fakeProgressRef.current = null;
+          }
           setSyncStatus(`Error: ${data.message}`);
           eventSource.close();
           eventSourceRef.current = null;
@@ -146,6 +198,10 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     };
 
     eventSource.onerror = () => {
+      if (fakeProgressRef.current) {
+        clearInterval(fakeProgressRef.current);
+        fakeProgressRef.current = null;
+      }
       setSyncStatus('Connection lost');
       eventSource.close();
       eventSourceRef.current = null;
@@ -154,11 +210,14 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     };
   };
 
-  // Cleanup EventSource on unmount
+  // Cleanup EventSource and fake progress on unmount
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
+      }
+      if (fakeProgressRef.current) {
+        clearInterval(fakeProgressRef.current);
       }
     };
   }, []);
@@ -263,14 +322,25 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     }));
   };
 
+  const handleDismissFirstSyncPopup = () => {
+    setShowFirstSyncPopup(false);
+    setHasSeenFirstSyncPopup(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oasify-first-sync-seen', 'true');
+    }
+  };
+
   // Show empty state only if no connections AND no existing comments
   if (!hasYouTubeConnection && !hasInstagramConnection && commentsWithReplies.length === 0) {
     return (
       <div className="flex flex-col h-full items-center justify-center p-8">
-        <div className="text-center max-w-md space-y-4">
-          <h2 className="text-2xl font-semibold">Connect Your Social Accounts</h2>
-          <p className="text-gray-600">
-            Connect your YouTube and Instagram accounts to start seeing and managing comments.
+        <div className="text-center max-w-md space-y-6">
+          <div className="w-20 h-20 bg-oasis-100 rounded-full flex items-center justify-center mx-auto">
+            <Sparkles className="w-10 h-10 text-oasis-500" />
+          </div>
+          <h2 className="text-2xl font-semibold text-warm-800">Connect Your Social Accounts</h2>
+          <p className="text-warm-500">
+            Connect your YouTube and Instagram accounts to start seeing and managing comments with peace of mind.
           </p>
           <div className="flex gap-4 justify-center mt-6">
             <Link to="/oauth/google/start">
@@ -293,9 +363,31 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="flex flex-col h-full">
+      {/* First Sync Popup Modal */}
+      <Modal isOpen={showFirstSyncPopup} onClose={handleDismissFirstSyncPopup}>
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-oasis-100 rounded-full flex items-center justify-center mx-auto">
+            <Info className="w-8 h-8 text-oasis-500" />
+          </div>
+          <h2 className="text-xl font-semibold text-warm-800">
+            First Sync in Progress
+          </h2>
+          <p className="text-warm-500">
+            Please be aware that the first time syncing takes longer as we process your comments. 
+            Sit back and relax while we set up your oasis! 🌴
+          </p>
+          <Button
+            onClick={handleDismissFirstSyncPopup}
+            className="w-full"
+          >
+            Got it, thanks!
+          </Button>
+        </div>
+      </Modal>
+
       {/* Success/Error Messages */}
       {connectedPlatform === 'youtube' && (
-        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+        <div className="bg-calm-50 border-l-4 border-calm-400 text-calm-700 p-4">
           <p className="font-medium">YouTube Connected Successfully!</p>
           <p className="text-sm">
             Connected as {youtubeProvider?.platformData?.channelTitle}
@@ -303,7 +395,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         </div>
       )}
       {connectedPlatform === 'instagram' && (
-        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+        <div className="bg-calm-50 border-l-4 border-calm-400 text-calm-700 p-4">
           <p className="font-medium">Instagram Connected Successfully!</p>
           <p className="text-sm">
             Connected as @{instagramProvider?.platformData?.instagramUsername}
@@ -311,13 +403,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         </div>
       )}
       {connectionError && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
+        <div className="bg-red-50 border-l-4 border-red-400 text-red-700 p-4">
           <p className="font-medium">Connection Error</p>
           <p className="text-sm">Failed to connect. Please try again.</p>
         </div>
       )}
       {!hasYouTubeConnection && !hasInstagramConnection && commentsWithReplies.length > 0 && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 flex items-center justify-between">
+        <div className="bg-oasis-50 border-l-4 border-oasis-300 text-oasis-800 p-4 flex items-center justify-between">
           <div>
             <p className="font-medium">No accounts connected</p>
             <p className="text-sm">Connect your accounts to sync new comments</p>
@@ -340,20 +432,20 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between p-4 border-b border-oasis-100 bg-white/80 backdrop-blur-sm">
         <div>
-          <h1 className="text-xl font-semibold">Inbox</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-semibold text-warm-800">Inbox</h1>
+          <p className="text-sm text-warm-500">
             {totalComments} comments
           </p>
           <div className="flex gap-4 mt-1">
             {youtubeProvider && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-warm-400">
                 YouTube: {youtubeProvider.platformData?.channelTitle}
               </p>
             )}
             {instagramProvider && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-warm-400">
                 Instagram: @{instagramProvider.platformData?.instagramUsername}
               </p>
             )}
@@ -364,31 +456,40 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             <div className="flex items-center gap-3">
               {isSyncing && (
                 <div className="flex items-center gap-2 min-w-[200px]">
-                  <Progress
-                    value={syncProgress.total > 0
-                      ? 25 + (Math.min(syncProgress.current, syncProgress.total) / syncProgress.total) * 75
-                      : fakeProgress
-                    }
-                    max={100}
-                    className="flex-1"
-                  />
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
-                    {Math.round(syncProgress.total > 0
-                      ? 25 + (Math.min(syncProgress.current, syncProgress.total) / syncProgress.total) * 75
-                      : fakeProgress
-                    )}%
-                  </span>
+                  {(() => {
+                    // Calculate real progress percentage (0-100)
+                    const realPercent = syncProgress.total > 0 
+                      ? (syncProgress.current / syncProgress.total) * 100 
+                      : 0;
+                    // Use whichever is higher - fake or real - to avoid jumps backward, cap at 100
+                    const displayPercent = Math.min(100, Math.max(fakeProgress, realPercent));
+                    return (
+                      <>
+                        <Progress value={displayPercent} max={100} className="flex-1" />
+                        <span className="text-xs text-gray-500 whitespace-nowrap">
+                          {Math.round(displayPercent)}%
+                        </span>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
-              <Button
-                variant="default"
-                size="sm"
-                onClick={handleSyncAll}
-                disabled={isSyncingAny}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
-                {isSyncing ? 'Syncing...' : 'Sync All'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleSyncAll}
+                  disabled={isSyncingAny}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isSyncingAny ? 'animate-spin' : ''}`} />
+                  {isSyncing ? 'Syncing...' : 'Sync All'}
+                </Button>
+                {commentsWithReplies.length === 0 && (
+                  <span className="text-xs text-warm-400">
+                    First sync can take up to 3 minutes
+                  </span>
+                )}
+              </div>
             </div>
           )}
           <generateFetcher.Form method="post" action="/api/youtube/comments?action=generate">
@@ -411,21 +512,21 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       </div>
 
       {/* Filters Placeholder */}
-      <div className="px-4 pt-4 pb-2 bg-gray-50">
-        <p className="text-sm text-gray-500">Filters coming soon...</p>
+      <div className="px-4 pt-4 pb-2 bg-oasis-50/50">
+        <p className="text-sm text-warm-400">Filters coming soon...</p>
       </div>
 
       {/* Comments List */}
-      <div className="flex-1 overflow-auto bg-gray-50">
+      <div className="flex-1 overflow-auto bg-gradient-to-b from-oasis-50/50 to-white">
         {commentsWithReplies.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center text-gray-500">
+            <div className="text-center text-warm-500">
               <p className="text-lg font-medium">No comments yet</p>
               <p className="text-sm">Comments from your recent videos will appear here</p>
             </div>
           </div>
         ) : (
-          <div className="p-4 divide-y divide-gray-200">
+          <div className="p-4 divide-y divide-oasis-100">
             {commentsWithReplies.map(({ comment, replies }) => (
               <CommentThread
                 key={comment.id}
@@ -437,11 +538,15 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                 onToggleMode={toggleCommentMode}
                 newCommentIds={newCommentIds}
                 fadingCommentIds={fadingCommentIds}
+                hideOriginalToggle={hideOriginalToggle}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Analytics Chat */}
+      <ChatPanel />
     </div>
   );
 }
