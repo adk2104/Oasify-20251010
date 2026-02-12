@@ -1,24 +1,12 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { Route } from "./+types/api.chat.server";
-import { getSession } from '~/sessions.server';
-import { getTemplate, validateParams } from '~/lib/chat/query-templates';
+import type { Route } from "./+types/api.chat";
+import { getSession } from "~/sessions.server";
+import { getGenAI } from "~/utils/gemini.server";
+import { getTemplate, validateParams } from "~/lib/chat/query-templates";
 import {
   INTENT_CLASSIFIER_PROMPT,
   RESPONSE_FORMATTER_PROMPT,
   GENERAL_CHAT_PROMPT,
-} from '~/lib/chat/prompts';
-
-// Lazy-load the AI client to avoid module-level errors
-let genAI: GoogleGenerativeAI | null = null;
-function getGenAI() {
-  if (!genAI) {
-    if (!process.env.GOOGLE_AI_API_KEY) {
-      throw new Error('GOOGLE_AI_API_KEY is required');
-    }
-    genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-  }
-  return genAI;
-}
+} from "~/lib/chat/prompts";
 
 export async function action({ request }: Route.ActionArgs) {
   // ── 1. Auth ──────────────────────────────────────────────────────────
