@@ -87,11 +87,9 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
   // Sync progress state
   const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
-  const [fakeProgress, setFakeProgress] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState('');
   const eventSourceRef = useRef<EventSource | null>(null);
-  const fakeProgressRef = useRef<NodeJS.Timeout | null>(null);
   
   // First-sync popup state
   const [showFirstSyncPopup, setShowFirstSyncPopup] = useState(false);
@@ -125,20 +123,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
     setIsSyncing(true);
     setSyncProgress({ current: 0, total: 0 });
-    setFakeProgress(0);
     setSyncStatus('Connecting...');
-    
-    // Start fake progress animation while waiting for real data
-    if (fakeProgressRef.current) clearInterval(fakeProgressRef.current);
-    fakeProgressRef.current = setInterval(() => {
-      setFakeProgress(prev => {
-        // Slow down as we approach 45%, never exceed it
-        if (prev >= 45) return prev;
-        // Faster at start, slows down as it approaches the cap
-        const increment = Math.max(0.3, (45 - prev) / 15);
-        return Math.min(45, prev + increment);
-      });
-    }, 150);
 
     // Capture existing comment IDs for highlighting new ones
     const existingIds = new Set(commentsWithReplies.map(c => c.comment.id));
@@ -155,37 +140,20 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         const data = JSON.parse(event.data);
 
         if (data.type === 'total') {
-          // Keep fake progress running - it'll be overtaken by real progress naturally
           setSyncProgress(prev => ({ ...prev, total: data.total }));
-          setSyncStatus(`Found ${data.total} comments to sync`);
         } else if (data.type === 'status') {
           setSyncStatus(data.message);
         } else if (data.type === 'progress') {
           setSyncProgress({ current: data.current, total: data.total });
-          // Stop fake progress once real progress surpasses it
-          const realPercent = (data.current / data.total) * 100;
-          if (realPercent > 45 && fakeProgressRef.current) {
-            clearInterval(fakeProgressRef.current);
-            fakeProgressRef.current = null;
-          }
         } else if (data.type === 'done') {
-          if (fakeProgressRef.current) {
-            clearInterval(fakeProgressRef.current);
-            fakeProgressRef.current = null;
-          }
           setSyncProgress({ current: data.current, total: data.total });
           setSyncStatus('Sync complete!');
           eventSource.close();
           eventSourceRef.current = null;
           setIsSyncing(false);
           setIsPolling(false);
-          // Revalidate to show new comments
           revalidator.revalidate();
         } else if (data.type === 'error') {
-          if (fakeProgressRef.current) {
-            clearInterval(fakeProgressRef.current);
-            fakeProgressRef.current = null;
-          }
           setSyncStatus(`Error: ${data.message}`);
           eventSource.close();
           eventSourceRef.current = null;
@@ -198,10 +166,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     };
 
     eventSource.onerror = () => {
-      if (fakeProgressRef.current) {
-        clearInterval(fakeProgressRef.current);
-        fakeProgressRef.current = null;
-      }
       setSyncStatus('Connection lost');
       eventSource.close();
       eventSourceRef.current = null;
@@ -210,34 +174,14 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     };
   };
 
-  // Cleanup EventSource and fake progress on unmount
+  // Cleanup EventSource on unmount
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
-      if (fakeProgressRef.current) {
-        clearInterval(fakeProgressRef.current);
-      }
     };
   }, []);
-
-  // 🎭 The ol' progress bar magic trick - animate to 25% while counting
-  // so users feel like something's happening (because it is, just behind the scenes)
-  useEffect(() => {
-    if (!isSyncing || syncProgress.total > 0) return;
-
-    const interval = setInterval(() => {
-      setFakeProgress(prev => {
-        // Ease out as we approach 25% - slower and slower
-        const remaining = 25 - prev;
-        const increment = Math.max(0.5, remaining * 0.1);
-        return Math.min(25, prev + increment);
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [isSyncing, syncProgress.total]);
 
   // When global toggle changes, reset all individual toggles
   useEffect(() => {
@@ -456,22 +400,22 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             <div className="flex items-center gap-3">
               {isSyncing && (
                 <div className="flex items-center gap-2 min-w-[200px]">
-                  {(() => {
-                    // Calculate real progress percentage (0-100)
-                    const realPercent = syncProgress.total > 0 
-                      ? (syncProgress.current / syncProgress.total) * 100 
-                      : 0;
-                    // Use whichever is higher - fake or real - to avoid jumps backward, cap at 100
-                    const displayPercent = Math.min(100, Math.max(fakeProgress, realPercent));
-                    return (
-                      <>
-                        <Progress value={displayPercent} max={100} className="flex-1" />
-                        <span className="text-xs text-gray-500 whitespace-nowrap">
-                          {Math.round(displayPercent)}%
-                        </span>
-                      </>
-                    );
-                  })()}
+                  {syncProgress.total === 0 ? (
+                    <span className="text-xs text-warm-500 animate-pulse">
+                      {syncStatus || 'Fetching comments...'}
+                    </span>
+                  ) : (
+                    <>
+                      <Progress
+                        value={(syncProgress.current / syncProgress.total) * 100}
+                        max={100}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-500 whitespace-nowrap">
+                        {syncProgress.current}/{syncProgress.total}
+                      </span>
+                    </>
+                  )}
                 </div>
               )}
               <div className="flex items-center gap-2">

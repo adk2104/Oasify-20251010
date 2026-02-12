@@ -35,7 +35,11 @@ interface InstagramUserProfile {
   media_count?: number;
 }
 
-export type ProgressCallback = (current: number, total: number) => void;
+// 📡 Events emitted during sync — mirrors YouTube's SyncEvent for a unified progress bar
+export type SyncEvent =
+  | { type: 'status'; message: string }
+  | { type: 'total'; total: number }   // additive — "I found N more items to process"
+  | { type: 'progress' };              // one item completed
 
 // ============================================================================
 // INSTAGRAM BUSINESS LOGIN API
@@ -258,29 +262,11 @@ export async function getInstagramCommentReplies(
   return data.data || [];
 }
 
-// Get total comment count for Instagram posts
-export async function getInstagramCommentCount(userId: number): Promise<number> {
-  const [provider] = await db.select().from(providers).where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
-  if (!provider) {
-    return 0;
-  }
-
-  try {
-    const mediaPosts = await getInstagramMedia(provider.accessToken, 5);
-    const total = mediaPosts.reduce((sum, media) => sum + (media.comments_count || 0), 0);
-    return total;
-  } catch (error) {
-    console.error('[INSTAGRAM] Error getting comment count:', error);
-    return 0;
-  }
-}
-
 // Fetch and sync Instagram comments to database
 export async function syncInstagramCommentsToDatabase(
   userId: number,
-  onProgress?: ProgressCallback
+  onProgress?: (event: SyncEvent) => void
 ): Promise<void> {
-  let processedCount = 0;
   const [provider] = await db.select().from(providers).where(and(eq(providers.userId, userId), eq(providers.platform, 'instagram')));
   if (!provider) throw new Error('Instagram provider not found');
 
@@ -297,128 +283,145 @@ export async function syncInstagramCommentsToDatabase(
   const platformIdToDbId: Record<string, number> = {};
   const replyData: Array<{ parentPlatformId: string; reply: any; mediaId: string; mediaTitle: string | null; mediaCaption: string | null; mediaThumbnail: string | null; mediaPermalink: string | null }> = [];
 
-  // Process all media posts
+  // 🗂️ Phase 1: Collect all comments and replies so we can report an accurate total
+  type CollectedIGComment = {
+    comment: any;
+    username: string;
+    isOwner: boolean;
+    mediaId: string;
+    mediaTitle: string | null;
+    mediaCaption: string | null;
+    mediaThumbnail: string | null;
+    mediaPermalink: string | null;
+  };
+  const collectedComments: CollectedIGComment[] = [];
+
   for (const media of mediaPosts) {
     const mediaPermalink = media.permalink || null;
-    // Use thumbnail_url for videos/reels, media_url for images
     const mediaThumbnail = media.thumbnail_url || media.media_url || null;
-    // NEW: Keep full caption for AI context
     const mediaCaption = media.caption || null;
-    // Use caption as the title (truncate for storage display)
     const mediaTitle = media.caption ? media.caption.substring(0, 100) + (media.caption.length > 100 ? '...' : '') : null;
 
-    console.log('[INSTAGRAM SYNC] Media caption length:', mediaCaption?.length || 0);
-
     try {
-      // Try nested comments first
       let commentsToProcess = media.comments?.data || [];
       console.log(`[INSTAGRAM SYNC] Media ${media.id}: Found ${commentsToProcess.length} nested comments (comments_count: ${media.comments_count})`);
 
-      // Fallback to separate endpoint if needed
       if (commentsToProcess.length === 0 && media.comments_count > 0) {
         console.log(`[INSTAGRAM SYNC] Media ${media.id}: Using fallback endpoint for comments`);
         commentsToProcess = await getInstagramMediaComments(media.id, accessToken);
       }
 
-      // Limit to 20 comments per post for sync speed
       const COMMENTS_PER_POST_LIMIT = 20;
       if (commentsToProcess.length > COMMENTS_PER_POST_LIMIT) {
         console.log(`[INSTAGRAM SYNC] Media ${media.id}: Limiting from ${commentsToProcess.length} to ${COMMENTS_PER_POST_LIMIT} comments`);
         commentsToProcess = commentsToProcess.slice(0, COMMENTS_PER_POST_LIMIT);
       }
 
-      console.log(`[INSTAGRAM SYNC] Media ${media.id}: Processing ${commentsToProcess.length} comments`);
-
-      // Phase 1: Process top-level comments
       for (const comment of commentsToProcess) {
         if (!comment.id || !comment.text) continue;
         const username = comment.username || comment.from?.username || comment.from?.name;
         if (!username) continue;
 
-        const isOwner = username === ownerUsername;
-        // NEW: Pass full caption to AI (will be truncated to 300 chars), use undefined for title since Instagram has no titles
-        const empathicText = isOwner ? comment.text : await generateEmpathicVersion(comment.text, undefined, mediaCaption || undefined);
-
-        const [inserted] = await db.insert(comments).values({
-          userId,
-          commentId: comment.id,
-          author: username,
-          authorAvatar: null,
-          text: comment.text,
-          empathicText,
-          videoTitle: mediaTitle,
-          videoId: media.id,
-          videoThumbnail: mediaThumbnail,
-          videoPermalink: mediaPermalink,
-          platform: 'instagram',
-          isReply: false,
-          replyCount: comment.replies?.data?.length || 0,
-          isOwner,
-          createdAt: new Date(comment.timestamp),
-        }).onConflictDoUpdate({
-          target: [comments.userId, comments.commentId, comments.platform],
-          set: {
-            author: username,
-            text: comment.text,
-            empathicText,
-            videoTitle: mediaTitle,
-            videoId: media.id,
-            videoThumbnail: mediaThumbnail,
-            videoPermalink: mediaPermalink,
-            isOwner,
-            replyCount: comment.replies?.data?.length || 0,
-          },
-        }).returning();
-
-        platformIdToDbId[comment.id] = inserted.id;
-
-        // Report progress after processing each comment
-        processedCount++;
-        if (onProgress) {
-          onProgress(processedCount, 0);
-        }
-
-        // Fetch full reply data if replies exist
-        if (comment.replies?.data && comment.replies.data.length > 0) {
-          console.log(`[INSTAGRAM SYNC] Comment ${comment.id}: Has ${comment.replies.data.length} replies, fetching full data...`);
-          try {
-            const fullReplies = await getInstagramCommentReplies(comment.id, accessToken);
-            for (const reply of fullReplies) {
-              replyData.push({ parentPlatformId: comment.id, reply, mediaId: media.id, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink });
-            }
-          } catch (error) {
-            console.error(`[INSTAGRAM SYNC] Error fetching replies for comment ${comment.id}:`, error);
-          }
-        } else {
-          console.log(`[INSTAGRAM SYNC] Comment ${comment.id}: No replies`);
-        }
+        collectedComments.push({
+          comment,
+          username,
+          isOwner: username === ownerUsername,
+          mediaId: media.id,
+          mediaTitle,
+          mediaCaption,
+          mediaThumbnail,
+          mediaPermalink,
+        });
       }
     } catch (error) {
-      console.error(`[INSTAGRAM SYNC] Error syncing media ${media.id}:`, error);
+      console.error(`[INSTAGRAM SYNC] Error collecting media ${media.id}:`, error);
     }
   }
 
-  // Phase 2: Process replies
-  console.log(`[INSTAGRAM SYNC] Phase 2: Processing ${replyData.length} total replies`);
+  // Fetch reply data for all collected comments
+  for (const collected of collectedComments) {
+    const { comment, mediaId, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink } = collected;
+    if (comment.replies?.data && comment.replies.data.length > 0) {
+      try {
+        const fullReplies = await getInstagramCommentReplies(comment.id, accessToken);
+        for (const reply of fullReplies) {
+          replyData.push({ parentPlatformId: comment.id, reply, mediaId, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink });
+        }
+      } catch (error) {
+        console.error(`[INSTAGRAM SYNC] Error fetching replies for comment ${comment.id}:`, error);
+      }
+    }
+  }
+
+  // 🧮 Now we know the real total — comments + replies, no surprises
+  const totalItems = collectedComments.length + replyData.length;
+  onProgress?.({ type: 'total', total: totalItems });
+  onProgress?.({ type: 'status', message: 'Processing Instagram comments with AI...' });
+
+  // Phase 2: Process top-level comments (empathy + save)
+  for (const collected of collectedComments) {
+    const { comment, username, isOwner, mediaId, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink } = collected;
+
+    const empathicText = isOwner ? comment.text : await generateEmpathicVersion(comment.text, undefined, mediaCaption || undefined);
+
+    const [inserted] = await db.insert(comments).values({
+      userId,
+      commentId: comment.id,
+      author: username,
+      authorAvatar: null,
+      text: comment.text,
+      empathicText,
+      videoTitle: mediaTitle,
+      videoId: mediaId,
+      videoThumbnail: mediaThumbnail,
+      videoPermalink: mediaPermalink,
+      platform: 'instagram',
+      isReply: false,
+      replyCount: comment.replies?.data?.length || 0,
+      isOwner,
+      createdAt: new Date(comment.timestamp),
+    }).onConflictDoUpdate({
+      target: [comments.userId, comments.commentId, comments.platform],
+      set: {
+        author: username,
+        text: comment.text,
+        empathicText,
+        videoTitle: mediaTitle,
+        videoId: mediaId,
+        videoThumbnail: mediaThumbnail,
+        videoPermalink: mediaPermalink,
+        isOwner,
+        replyCount: comment.replies?.data?.length || 0,
+      },
+    }).returning();
+
+    platformIdToDbId[comment.id] = inserted.id;
+    onProgress?.({ type: 'progress' });
+  }
+
+  // Phase 3: Process replies
+  onProgress?.({ type: 'status', message: 'Processing Instagram replies with AI...' });
+  console.log(`[INSTAGRAM SYNC] Phase 3: Processing ${replyData.length} total replies`);
 
   for (const { parentPlatformId, reply, mediaId, mediaTitle, mediaCaption, mediaThumbnail, mediaPermalink } of replyData) {
     const parentDbId = platformIdToDbId[parentPlatformId];
     if (!parentDbId) {
       console.log(`[INSTAGRAM SYNC] Skipping reply ${reply.id}: parent DB ID not found for platform ID ${parentPlatformId}`);
+      onProgress?.({ type: 'progress' });
       continue;
     }
     if (!reply.id || !reply.text) {
       console.log(`[INSTAGRAM SYNC] Skipping reply: missing id or text`);
+      onProgress?.({ type: 'progress' });
       continue;
     }
 
     const username = reply.username || reply.from?.username || reply.from?.name;
-    const author = username || "Instagram User"; // Fallback for replies without author data
+    const author = username || "Instagram User";
 
     console.log(`[INSTAGRAM SYNC] Inserting reply ${reply.id} with parentId=${parentDbId} (platform parent: ${parentPlatformId}) - author: ${author}`);
 
     const isOwner = username ? username === ownerUsername : false;
-    // NEW: Pass full caption to AI for replies too (will be truncated to 300 chars)
     const empathicText = isOwner ? reply.text : await generateEmpathicVersion(reply.text, undefined, mediaCaption || undefined);
 
     await db.insert(comments).values({
@@ -453,11 +456,7 @@ export async function syncInstagramCommentsToDatabase(
       },
     });
 
-    // Report progress after processing each reply
-    processedCount++;
-    if (onProgress) {
-      onProgress(processedCount, 0);
-    }
+    onProgress?.({ type: 'progress' });
   }
 
   // Recalculate reply counts from database

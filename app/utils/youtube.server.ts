@@ -20,7 +20,11 @@ interface YouTubeComment {
   hasReplied: boolean;
 }
 
-export type ProgressCallback = (current: number, total: number) => void;
+// 📡 Events emitted during sync — the dashboard listens to these to drive the progress bar
+export type SyncEvent =
+  | { type: 'status'; message: string }
+  | { type: 'total'; total: number }   // additive — "I found N more items to process"
+  | { type: 'progress' };              // one item completed
 
 // Refresh Google OAuth token
 export async function refreshGoogleToken(refreshToken: string) {
@@ -66,71 +70,6 @@ async function getValidAccessToken(provider: any): Promise<string> {
   }
 
   return provider.accessToken;
-}
-
-// Get total comment count for YouTube videos
-export async function getYouTubeCommentCount(userId: number): Promise<{ total: number; videoIds: string[] }> {
-  const [provider] = await db
-    .select()
-    .from(providers)
-    .where(and(eq(providers.userId, userId), eq(providers.platform, 'youtube')));
-
-  if (!provider) {
-    return { total: 0, videoIds: [] };
-  }
-
-  const accessToken = await getValidAccessToken(provider);
-
-  // Get channel info
-  const channelResponse = await fetch(
-    `${YOUTUBE_API_BASE}/channels?part=contentDetails&mine=true`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-
-  if (!channelResponse.ok) {
-    return { total: 0, videoIds: [] };
-  }
-
-  const channelData = await channelResponse.json();
-  const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
-
-  if (!uploadsPlaylistId) {
-    return { total: 0, videoIds: [] };
-  }
-
-  // Get 5 recent videos
-  const playlistResponse = await fetch(
-    `${YOUTUBE_API_BASE}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=5`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-
-  if (!playlistResponse.ok) {
-    return { total: 0, videoIds: [] };
-  }
-
-  const playlistData = await playlistResponse.json();
-  const videoIds = (playlistData.items || []).map((item: any) => item.snippet.resourceId.videoId);
-
-  if (videoIds.length === 0) {
-    return { total: 0, videoIds: [] };
-  }
-
-  // Get video statistics including comment counts
-  const statsResponse = await fetch(
-    `${YOUTUBE_API_BASE}/videos?part=statistics&id=${videoIds.join(',')}`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-
-  if (!statsResponse.ok) {
-    return { total: 0, videoIds };
-  }
-
-  const statsData = await statsResponse.json();
-  const total = (statsData.items || []).reduce((sum: number, video: any) => {
-    return sum + parseInt(video.statistics?.commentCount || '0', 10);
-  }, 0);
-
-  return { total, videoIds };
 }
 
 // Fetch recent comments from user's YouTube channel
@@ -227,9 +166,8 @@ export async function fetchYouTubeComments(userId: number): Promise<YouTubeComme
 // Sync comments from YouTube to database
 export async function syncYouTubeCommentsToDatabase(
   userId: number,
-  onProgress?: ProgressCallback
+  onProgress?: (event: SyncEvent) => void
 ): Promise<void> {
-  let processedCount = 0;
   const [provider] = await db
     .select()
     .from(providers)
@@ -313,7 +251,13 @@ export async function syncYouTubeCommentsToDatabase(
     }
   }
 
+  // 🧮 Count everything we're about to process so the progress bar knows the finish line
+  const totalReplies = collectedComments.reduce((sum, c) => sum + c.replies.length, 0);
+  const totalItems = collectedComments.length + totalReplies;
+  onProgress?.({ type: 'total', total: totalItems });
+
   // Phase 2: Batch generate empathic text for non-owner comments
+  onProgress?.({ type: 'status', message: 'Processing comments with AI...' });
   console.log(`[SYNC] Phase 2: Batch processing ${collectedComments.length} comments...`);
   const commentsNeedingEmpathy = collectedComments
     .filter(c => !c.isOwner)
@@ -325,8 +269,13 @@ export async function syncYouTubeCommentsToDatabase(
     }));
 
   const empathyResults = commentsNeedingEmpathy.length > 0
-    ? await generateEmpathicVersionsBatch(commentsNeedingEmpathy)
+    ? await generateEmpathicVersionsBatch(commentsNeedingEmpathy, () => onProgress?.({ type: 'progress' }))
     : [];
+  // 🏷️ Owner comments don't go through empathy — tick their progress now
+  const ownerCommentCount = collectedComments.filter(c => c.isOwner).length;
+  for (let i = 0; i < ownerCommentCount; i++) {
+    onProgress?.({ type: 'progress' });
+  }
   
   // Create lookup for empathic text and sentiment
   const empathyLookup = new Map<string, { empathicText: string; sentiment: SentimentType }>();
@@ -382,12 +331,6 @@ export async function syncYouTubeCommentsToDatabase(
 
     platformIdToDbId[collected.platformCommentId] = inserted.id;
 
-    // Report progress
-    processedCount++;
-    if (onProgress) {
-      onProgress(processedCount, 0);
-    }
-
     // Collect replies for phase 4
     for (const reply of collected.replies) {
       replyData.push({
@@ -401,6 +344,7 @@ export async function syncYouTubeCommentsToDatabase(
   }
 
   // Phase 4: Batch process replies
+  onProgress?.({ type: 'status', message: 'Processing replies with AI...' });
   console.log(`[SYNC] Phase 4: Processing ${replyData.length} replies...`);
   const repliesNeedingEmpathy = replyData
     .filter(r => r.reply.snippet.authorChannelId?.value !== ownerChannelId)
@@ -412,8 +356,13 @@ export async function syncYouTubeCommentsToDatabase(
     }));
 
   const replyEmpathyResults = repliesNeedingEmpathy.length > 0
-    ? await generateEmpathicVersionsBatch(repliesNeedingEmpathy)
+    ? await generateEmpathicVersionsBatch(repliesNeedingEmpathy, () => onProgress?.({ type: 'progress' }))
     : [];
+  // 🏷️ Owner replies skip empathy — tick their progress now
+  const ownerReplyCount = replyData.filter(r => r.reply.snippet.authorChannelId?.value === ownerChannelId).length;
+  for (let i = 0; i < ownerReplyCount; i++) {
+    onProgress?.({ type: 'progress' });
+  }
 
   const replyEmpathyLookup = new Map<string, { empathicText: string; sentiment: SentimentType }>();
   repliesNeedingEmpathy.forEach((r, idx) => {
@@ -469,12 +418,6 @@ export async function syncYouTubeCommentsToDatabase(
         sentiment,
       },
     });
-
-    // Report progress after processing each reply
-    processedCount++;
-    if (onProgress) {
-      onProgress(processedCount, 0);
-    }
   }
 
   // Recalculate reply counts from database
