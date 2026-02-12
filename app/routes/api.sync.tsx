@@ -2,9 +2,10 @@ import type { Route } from "./+types/api.sync";
 import { getSession } from "~/sessions.server";
 import { db } from "~/db/config";
 import { providers } from "~/db/schema";
-import { eq, and } from "drizzle-orm";
-import { getYouTubeCommentCount, syncYouTubeCommentsToDatabase } from "~/utils/youtube.server";
-import { getInstagramCommentCount, syncInstagramCommentsToDatabase } from "~/utils/instagram.server";
+import { eq } from "drizzle-orm";
+import { syncYouTubeCommentsToDatabase } from "~/utils/youtube.server";
+import { syncInstagramCommentsToDatabase } from "~/utils/instagram.server";
+import type { SyncEvent } from "~/utils/youtube.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -40,46 +41,37 @@ export async function loader({ request }: Route.LoaderArgs) {
       };
 
       try {
-        // Step 1: Get total counts
-        // 🔍 Let the user know we're doing the recon work first
-        send({ type: "status", message: "Counting comments..." });
+        // 🧮 Accumulating progress — each sync function reports its own totals
+        // and we add them up as they come in. No more guessing!
+        let globalCurrent = 0;
+        let globalTotal = 0;
 
-        let totalCount = 0;
+        const wrapCallback = (event: SyncEvent) => {
+          if (event.type === 'total') {
+            globalTotal += event.total;
+            send({ type: 'total', total: globalTotal });
+          } else if (event.type === 'progress') {
+            globalCurrent++;
+            send({ type: 'progress', current: globalCurrent, total: globalTotal });
+          } else {
+            send(event); // status messages pass through
+          }
+        };
 
+        // Sync YouTube if connected
         if (hasYouTube) {
-          const ytData = await getYouTubeCommentCount(userId);
-          totalCount += ytData.total;
+          send({ type: "status", message: "Fetching YouTube comments..." });
+          await syncYouTubeCommentsToDatabase(userId, wrapCallback);
         }
 
+        // Sync Instagram if connected
         if (hasInstagram) {
-          const igCount = await getInstagramCommentCount(userId);
-          totalCount += igCount;
+          send({ type: "status", message: "Fetching Instagram comments..." });
+          await syncInstagramCommentsToDatabase(userId, wrapCallback);
         }
 
-        send({ type: "total", total: totalCount });
-
-        let currentCount = 0;
-
-        // Step 2: Sync YouTube if connected
-        if (hasYouTube) {
-          send({ type: "status", message: "Syncing YouTube comments..." });
-          await syncYouTubeCommentsToDatabase(userId, (processed) => {
-            currentCount++;
-            send({ type: "progress", current: currentCount, total: totalCount });
-          });
-        }
-
-        // Step 3: Sync Instagram if connected
-        if (hasInstagram) {
-          send({ type: "status", message: "Syncing Instagram comments..." });
-          await syncInstagramCommentsToDatabase(userId, (processed) => {
-            currentCount++;
-            send({ type: "progress", current: currentCount, total: totalCount });
-          });
-        }
-
-        // Done
-        send({ type: "done", current: currentCount, total: totalCount });
+        // 🏁 Finish line
+        send({ type: "done", current: globalCurrent, total: globalTotal });
       } catch (error) {
         console.error("[SYNC SSE] Error:", error);
         send({
