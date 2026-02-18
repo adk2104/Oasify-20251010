@@ -2,12 +2,11 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
 
 // CLASSIFICATION PROMPT - Pass 1: Quick check if comment needs transformation
-const CLASSIFICATION_PROMPT = `Classify this comment as exactly one category: POSITIVE, NEGATIVE, NEUTRAL, or SEXUAL.
+const CLASSIFICATION_PROMPT = `Classify this comment as exactly one category: POSITIVE, NEGATIVE, or SEXUAL.
 
 CATEGORIES:
 - POSITIVE = Clearly supportive/kind/complimentary already. No transformation needed.
-- NEGATIVE = Critical, harsh, insulting, dismissive, sarcastic, or complaint-heavy comments that should be softened/transformed.
-- NEUTRAL = Mixed/flat/unclear comments that are not clearly positive and not clearly hostile. These should get a light positive polish.
+- NEGATIVE = Critical, harsh, insulting, dismissive, sarcastic, complaint-heavy, ambiguous, flat, or unclear comments. Includes neutral/factual observations that could feel hurtful in a social media context (e.g., commenting on someone's age, appearance changes). These should be transformed.
 - SEXUAL = Sexual, objectifying, fetishizing, body-part-focused, or suggestive comments about the creator. These require safety transformation.
 
 DETAILED RULES:
@@ -21,13 +20,11 @@ NEGATIVE examples:
 - "you don't know what you're talking about"
 - "please learn how to speak"
 - "i can't open the link, this is annoying"
-
-NEUTRAL examples:
 - "ok"
 - "interesting"
 - "seen this before"
-- "it works"
 - "hmm"
+- "老了好多" (commenting on aging/appearance)
 
 SEXUAL examples:
 - "you're so hot"
@@ -53,9 +50,9 @@ EDGE CASES:
 - Supportive question without criticism => POSITIVE
 - Question with implied criticism/attack => NEGATIVE
 - Comments defending creator while insulting others => NEGATIVE (supportive intent doesn't excuse toxicity toward others)
-- Gibberish/dismissive filler ("meh", "bla blah") => NEUTRAL unless clearly hostile
-- Positive intent but genuinely hard to read (excessive repetition, incoherent grammar, unclear meaning) => NEUTRAL (so it gets a readability cleanup pass)
-- Comments about physical appearance (skin tone, weight, body shape, looking pale/dark/thin/big) even if phrased as a question => NEGATIVE
+- Gibberish/dismissive filler ("meh", "bla blah") => NEGATIVE
+- Positive intent but genuinely hard to read (excessive repetition, incoherent grammar, unclear meaning) => NEGATIVE (so it gets a readability cleanup pass)
+- Comments about physical appearance (age, aging, skin tone, weight, body shape, looking pale/dark/thin/big/old/young) even if phrased as an observation => NEGATIVE
 - Any sexual/objectifying intent => SEXUAL (highest priority over other categories)
 - Emoji-only comments with sexual connotation (🍆, 🍑, 💦, 🥵 combinations) => SEXUAL
 - Sexual comments in any language => SEXUAL
@@ -64,13 +61,12 @@ EDGE CASES:
 PRIORITY ORDER WHEN UNCERTAIN:
 1) SEXUAL
 2) NEGATIVE
-3) NEUTRAL
-4) POSITIVE
+3) POSITIVE
 
-When in doubt between POSITIVE and any other category, choose the other category. It is better to transform unnecessarily than to miss negativity.
+When in doubt between POSITIVE and NEGATIVE, choose NEGATIVE. It is better to transform unnecessarily than to miss negativity.
 
 OUTPUT:
-Return ONLY one word: POSITIVE, NEGATIVE, NEUTRAL, or SEXUAL.`;
+Return ONLY one word: POSITIVE, NEGATIVE, or SEXUAL.`;
 
 // Edit this system prompt to control how comments are transformed
 const EMPATHIC_SYSTEM_PROMPT = `TASK:
@@ -79,8 +75,7 @@ The output must still sound like it came from the commenter, just more empatheti
 
 TRANSFORMATION RULES:
 - POSITIVE comments: keep unchanged.
-- NEUTRAL comments: apply a light positive polish while preserving the core meaning.
-- NEGATIVE comments: soften harshness, remove attacks/condescension, keep any constructive point if present.
+- NEGATIVE comments: soften harshness, remove attacks/condescension, keep any constructive point if present. For mild/flat comments ("ok", "interesting"), a light positive polish is enough. For genuinely hurtful comments (appearance attacks, insults), transform more substantially.
 - SEXUAL comments: remove all sexual/objectifying content and rewrite as an innocent compliment about content, creativity, effort, skill, teaching value, or talent.
 
 Purely negative/trolling comments (no constructive feedback): Transform into a positive comment, but ALWAYS reference the same topic/subject the commenter was talking about. Never replace with a generic positive statement unrelated to the original. For example, if someone criticizes influencer motives, the transformation should still be about influencers/authenticity but framed positively.
@@ -343,7 +338,7 @@ async function tryOpenAI(
 }
 
 // Pass 1: Classify comment
-type Classification = 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL' | 'SEXUAL';
+type Classification = 'POSITIVE' | 'NEGATIVE' | 'SEXUAL';
 
 async function classifyComment(commentText: string): Promise<Classification> {
   try {
@@ -357,7 +352,6 @@ async function classifyComment(commentText: string): Promise<Classification> {
     if (trimmed === 'SEXUAL') { console.log('[AI:Classify] SEXUAL - will transform'); return 'SEXUAL'; }
     if (trimmed === 'NEGATIVE') { console.log('[AI:Classify] NEGATIVE - will transform'); return 'NEGATIVE'; }
     if (trimmed === 'POSITIVE') { console.log('[AI:Classify] POSITIVE - skipping transformation'); return 'POSITIVE'; }
-    if (trimmed === 'NEUTRAL') { console.log('[AI:Classify] NEUTRAL - will transform'); return 'NEUTRAL'; }
     
     // Default to NEGATIVE to be safe (will transform)
     console.log(`[AI:Classify] Unclear: "${trimmed}", defaulting to NEGATIVE`);
@@ -405,7 +399,6 @@ export async function generateEmpathicVersionsBatch(
     // Map classification to sentiment type for DB storage
     const classToSentiment = (c: Classification): SentimentType => {
       if (c === 'POSITIVE') return 'positive';
-      if (c === 'NEUTRAL') return 'neutral';
       if (c === 'NEGATIVE') return 'negative';
       return 'negative'; // SEXUAL maps to negative for DB
     };
