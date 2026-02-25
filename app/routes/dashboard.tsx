@@ -7,7 +7,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { Modal } from "~/components/ui/modal";
-import { Youtube, Instagram, RefreshCw, Sparkles, Info } from "lucide-react";
+import { Youtube, Instagram, RefreshCw, Sparkles, Info, ChevronDown, ChevronRight } from "lucide-react";
 import { getSession } from "~/sessions.server";
 import { getCommentsWithReplies } from "~/utils/comments.server";
 import { db } from "~/db/config";
@@ -15,6 +15,9 @@ import { providers, users } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { CommentThread } from "~/components/CommentThread";
 import { ChatPanel } from "~/components/ChatPanel";
+import { VideoGroup } from "~/components/VideoGroup";
+import { getRandomQuote } from "~/lib/creator-quotes";
+import type { CommentWithReplies } from "~/utils/comments.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('Cookie'));
@@ -56,8 +59,49 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Comments failed but we still show the dashboard with provider info
   }
 
+  // Group comments by videoId for the "By Video" tab
+  const videoGroupsMap = new Map<string, {
+    videoId: string;
+    videoTitle: string;
+    videoThumbnail: string | null;
+    videoPermalink: string | null;
+    platform: 'youtube' | 'instagram';
+    comments: typeof commentsWithReplies;
+    totalComments: number;
+    latestCommentDate: string;
+  }>();
+
+  for (const item of commentsWithReplies) {
+    const vid = item.comment.videoId || 'unknown';
+    if (!videoGroupsMap.has(vid)) {
+      videoGroupsMap.set(vid, {
+        videoId: vid,
+        videoTitle: item.comment.videoTitle || 'Untitled',
+        videoThumbnail: item.comment.videoThumbnail,
+        videoPermalink: item.comment.videoPermalink,
+        platform: item.comment.platform as 'youtube' | 'instagram',
+        comments: [],
+        totalComments: 0,
+        latestCommentDate: item.comment.createdAt as unknown as string,
+      });
+    }
+    const group = videoGroupsMap.get(vid)!;
+    group.comments.push(item);
+    group.totalComments++;
+    // Track latest comment date for sorting
+    if (new Date(item.comment.createdAt) > new Date(group.latestCommentDate)) {
+      group.latestCommentDate = item.comment.createdAt as unknown as string;
+    }
+  }
+
+  // Sort video groups by most recent comment first
+  const commentsByVideo = Array.from(videoGroupsMap.values()).sort(
+    (a, b) => new Date(b.latestCommentDate).getTime() - new Date(a.latestCommentDate).getTime()
+  );
+
   return {
     commentsWithReplies,
+    commentsByVideo,
     hasYouTubeConnection: !!youtubeProvider,
     hasInstagramConnection: !!instagramProvider,
     youtubeProvider,
@@ -69,9 +113,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { commentsWithReplies, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl, hideOriginalToggle } = loaderData;
+  const { commentsWithReplies, commentsByVideo, hasYouTubeConnection, hasInstagramConnection, youtubeProvider, instagramProvider, userId, instagramOAuthUrl, hideOriginalToggle } = loaderData;
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
+  const [activeTab, setActiveTab] = useState<'all' | 'by-video'>('all');
+  const [quote] = useState(() => getRandomQuote());
   const [commentEmpathMode, setCommentEmpathMode] = useState<Record<number, boolean>>({});
   const youtubeFetcher = useFetcher();
   const instagramFetcher = useFetcher();
@@ -455,9 +501,36 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
 
-      {/* Filters Placeholder */}
-      <div className="px-4 pt-4 pb-2 bg-oasis-50/50">
-        <p className="text-sm text-warm-400">Filters coming soon...</p>
+      {/* Creator Quote */}
+      <div className="px-4 py-3 bg-oasis-50/80 border-b border-oasis-100">
+        <p className="text-sm text-warm-600 italic text-center">
+          &ldquo;{quote.text}&rdquo;
+          {quote.author && <span className="text-warm-400 not-italic"> — {quote.author}</span>}
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-4 px-4 pt-3 pb-1 bg-oasis-50/50">
+        <button
+          onClick={() => setActiveTab('all')}
+          className={`text-sm pb-2 border-b-2 transition-colors ${
+            activeTab === 'all'
+              ? 'border-oasis-500 text-warm-800 font-medium'
+              : 'border-transparent text-warm-400 hover:text-warm-600'
+          }`}
+        >
+          All Comments
+        </button>
+        <button
+          onClick={() => setActiveTab('by-video')}
+          className={`text-sm pb-2 border-b-2 transition-colors ${
+            activeTab === 'by-video'
+              ? 'border-oasis-500 text-warm-800 font-medium'
+              : 'border-transparent text-warm-400 hover:text-warm-600'
+          }`}
+        >
+          By Video
+        </button>
       </div>
 
       {/* Comments List */}
@@ -469,7 +542,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               <p className="text-sm">Comments from your recent videos will appear here</p>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'all' ? (
           <div className="p-4 divide-y divide-oasis-100">
             {commentsWithReplies.map(({ comment, replies }) => (
               <CommentThread
@@ -477,6 +550,27 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                 comment={comment as any}
                 replies={replies as any}
                 depth={0}
+                globalEmpathMode={globalEmpathMode}
+                commentEmpathMode={commentEmpathMode}
+                onToggleMode={toggleCommentMode}
+                newCommentIds={newCommentIds}
+                fadingCommentIds={fadingCommentIds}
+                hideOriginalToggle={hideOriginalToggle}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 space-y-3">
+            {commentsByVideo.map((group) => (
+              <VideoGroup
+                key={group.videoId}
+                videoId={group.videoId}
+                videoTitle={group.videoTitle}
+                videoThumbnail={group.videoThumbnail}
+                videoPermalink={group.videoPermalink}
+                platform={group.platform}
+                comments={group.comments}
+                totalComments={group.totalComments}
                 globalEmpathMode={globalEmpathMode}
                 commentEmpathMode={commentEmpathMode}
                 onToggleMode={toggleCommentMode}

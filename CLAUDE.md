@@ -6,6 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **At the start of each session**, verify current date/time using `date "+%A, %B %d, %Y"` (bash command) and state the day of week, date, and time clearly to Ava before proceeding. This prevents date confusion. (Note: This bash command is more reliable than the Google Calendar MCP tool for getting the day of week.)
 
+## Working Directory & Files
+- **Parent folder:** `/Users/aventurinaking/Documents/AVA LIFE/✨BUSINESS VISIONS/💻 APPs/OASIFY/`
+- **Codebase:** `Oasify-20251010/` (this folder)
+- **Tasks:** `tasks.csv` (in parent OASIFY folder, NOT inside Oasify-20251010)
+- **Jake sessions:** `jake-sessions.csv` (parent folder)
+- **Sessions log:** `sessions.md` (parent folder)
+
 ## Project Overview
 
 Oasify is a React Router v7 web application that helps content creators manage, analyze, and respond to comments from YouTube and Instagram. Features include YouTube OAuth integration, AI-powered empathetic comment transformation using Claude, and a responsive dashboard.
