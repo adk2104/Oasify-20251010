@@ -1,5 +1,85 @@
 # Sessions Log
 
+## Session: Feb 25, 2026 (Evening) - Solo (Claude Code)
+
+### Focus
+Improve Oasify chatbot: markdown formatting, product knowledge, and open-ended comment analysis
+
+### Completed
+1. **Installed `react-markdown`** — XSS-safe markdown rendering for assistant messages
+2. **Updated `ChatPanel.tsx`** — Assistant messages now render through `<ReactMarkdown>` with Tailwind-styled components (bold, bullets, headers, blockquotes, code). User messages stay plain text.
+3. **Updated suggested questions** — Added open-ended analysis ("Based on my comments, what can I improve?", "What feedback do I get the most?") and product question ("What is Oasify and what can it do?")
+4. **Added `open_analysis` query template** — Fetches 150 recent comments with full text + sentiment breakdown, gives Gemini raw material to answer custom analytical questions
+5. **Rewrote all 3 AI prompts in `prompts.ts`**:
+   - **INTENT_CLASSIFIER_PROMPT**: Added `open_analysis` template + updated `general_chat` to handle product questions
+   - **RESPONSE_FORMATTER_PROMPT**: Added explicit markdown formatting rules + deep analysis instructions for `open_analysis`
+   - **GENERAL_CHAT_PROMPT**: Replaced narrow 13-line prompt with full product-aware version (features, how-to, troubleshooting). No more hard-redirect to "comment-related questions only"
+6. **Typecheck passed** — no new errors (7 pre-existing errors unchanged)
+
+### Git Status ⚠️
+All changes are **uncommitted** on branch `feature/by-video-tab-and-quotes`. This branch has mixed uncommitted work from TWO features:
+- **By-video tab**: `VideoGroup.tsx`, `dashboard.tsx`, `header.tsx`
+- **Chatbot improvements** (this session): `ChatPanel.tsx`, `prompts.ts`, `query-templates.ts`, `package.json`
+
+### Tomorrow: Pick Up Here
+1. **Split into separate branch** (recommended): Create a `feature/chatbot-improvements` branch with just the chatbot files, or commit everything together on current branch — your call
+2. **Test the chatbot changes**: `npm run dev` → open dashboard → click chat bubble → try:
+   - "What's my sentiment breakdown?" — should render with **bold** numbers, bullets
+   - "What is Oasify?" — should give rich formatted product answer (not "I can only help with comments")
+   - "Based on my comments, what can I improve in my videos?" — should read actual comments and give specific insights
+   - "What feedback do I get the most?" — should identify patterns from comment text
+   - Verify user messages still render as plain text
+3. **Iterate on prompts** if Gemini's formatting or analysis depth isn't quite right
+
+### Key Files Modified
+| File | What changed |
+|------|-------------|
+| `package.json` | Added `react-markdown` |
+| `app/components/ChatPanel.tsx` | Markdown rendering + updated suggested questions |
+| `app/lib/chat/query-templates.ts` | New `open_analysis` template (#18) |
+| `app/lib/chat/prompts.ts` | Rewrote all 3 prompts (classifier, formatter, general chat) |
+
+---
+
+## Session: Feb 25, 2026 - Solo (Claude Code)
+
+### Focus
+Fix expiring Instagram thumbnail URLs by persisting them to Supabase Storage
+
+### Completed
+1. **Installed `@supabase/supabase-js`** dependency
+2. **Created `app/utils/supabase-storage.server.ts`** — new utility that:
+   - Downloads Instagram thumbnails from CDN
+   - Uploads to Supabase Storage `thumbnails` bucket
+   - Returns permanent public URL
+   - Includes SSRF protection, content-type validation, 5MB size limit
+   - Gracefully throws on failure (caller falls back to CDN URL)
+3. **Modified `app/utils/instagram.server.ts`** — wraps thumbnail assignment in try/catch calling `persistInstagramThumbnail()`, falls back to original CDN URL on any error
+4. **Typecheck passed** — no new errors introduced (7 pre-existing errors unchanged)
+
+### Before You Can Test (Tomorrow's Setup)
+- [ ] Set `SUPABASE_URL` in `.env` (your Supabase project URL, e.g. `https://xxxx.supabase.co`)
+- [ ] Set `SUPABASE_SERVICE_ROLE_KEY` in `.env` (from Supabase dashboard > Settings > API)
+- [ ] Create a **public** bucket named `thumbnails` in Supabase Storage dashboard
+- [ ] Run `npm run dev` and trigger an Instagram sync
+- [ ] Verify thumbnails now have Supabase URLs (not `scontent.cdninstagram.com`)
+- [ ] Confirm YouTube thumbnails still work (unchanged)
+- [ ] Test fallback: temporarily remove `SUPABASE_URL`, sync should still work with CDN URLs
+
+### Key Files
+| File | Status |
+|------|--------|
+| `app/utils/supabase-storage.server.ts` | **New** |
+| `app/utils/instagram.server.ts` | Modified (import + lines 301-310) |
+| `package.json` | Modified (added `@supabase/supabase-js`) |
+
+### Next Steps
+- Complete the Supabase setup checklist above
+- Test end-to-end with a real Instagram sync
+- Verify thumbnails persist and render in both "All Comments" and "By Video" tabs
+
+---
+
 ## Session: Jan 26, 2026 - Solo (Pip/Claude)
 
 ### Focus

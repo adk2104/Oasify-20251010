@@ -1,2 +1,5 @@
 Task,Status,Priority,Estimate,Created,Completion Date,Notes
+Chatbot: Test & Iterate on Formatting/Analysis,In Progress,High,1 hour,2026-02-25,,Code done. Need to test markdown rendering + open_analysis + product knowledge. Uncommitted on feature/by-video-tab-and-quotes branch.
+Chatbot: Split Branch or Commit Mixed Changes,In Progress,High,15 min,2026-02-25,,Two features mixed on one branch. Decide approach and commit.
+Supabase Thumbnail Setup,In Progress,Medium,30 min,2026-02-25,,Create bucket + add env vars + test Instagram sync. See sessions.md for checklist.
 Bulk Reply to Comments Feature,Backlog,Medium,6-8 hours,2025-02-03,,See docs/FEATURE-bulk-reply.md for full spec. MVP (suggestions only) is 2-3 hours.

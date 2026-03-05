@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Form } from "react-router";
 import { User, Settings, LogOut, Menu, Sun } from "lucide-react";
+import { getRandomQuote } from "~/lib/creator-quotes";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -22,19 +23,23 @@ export function Header({ userEmail }: HeaderProps) {
   const displayName = userEmail?.split("@")[0] || "User";
   const { toggleSidebar } = useSidebar();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [quote] = useState(() => getRandomQuote());
 
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b border-oasis-100 bg-white/80 backdrop-blur-sm px-4 lg:px-6">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 shrink-0"
           onClick={toggleSidebar}
         >
           <Menu className="h-4 w-4" />
         </Button>
-        <div className="font-semibold text-lg bg-gradient-to-r from-oasis-600 to-calm-500 bg-clip-text text-transparent">Oasify</div>
+        <p className="text-sm text-warm-500 italic truncate">
+          &ldquo;{quote.text}&rdquo;
+          {quote.author && <span className="text-warm-400 not-italic"> — {quote.author}</span>}
+        </p>
       </div>
 
       <div className="flex items-center gap-2">

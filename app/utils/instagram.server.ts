@@ -2,6 +2,7 @@ import { db } from '~/db/config';
 import { providers, comments } from '~/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { generateEmpathicVersion } from './empathy.server';
+import { persistInstagramThumbnail } from './supabase-storage.server';
 
 const GRAPH_API_BASE = 'https://graph.instagram.com';
 const INSTAGRAM_API_BASE = 'https://api.instagram.com';
@@ -298,7 +299,18 @@ export async function syncInstagramCommentsToDatabase(
 
   for (const media of mediaPosts) {
     const mediaPermalink = media.permalink || null;
-    const mediaThumbnail = media.thumbnail_url || media.media_url || null;
+    const rawThumbnailUrl = media.thumbnail_url || media.media_url || null;
+    let mediaThumbnail = rawThumbnailUrl;
+    try {
+      if (rawThumbnailUrl) {
+        mediaThumbnail = await persistInstagramThumbnail({
+          sourceUrl: rawThumbnailUrl,
+          mediaId: media.id,
+        });
+      }
+    } catch (error) {
+      console.error(`[INSTAGRAM SYNC] Thumbnail persistence failed for media ${media.id}:`, error);
+    }
     const mediaCaption = media.caption || null;
     const mediaTitle = media.caption ? media.caption.substring(0, 100) + (media.caption.length > 100 ? '...' : '') : null;
 
