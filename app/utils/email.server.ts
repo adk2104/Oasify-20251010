@@ -59,17 +59,17 @@ export function generateVerificationEmail(code: string, magicLinkUrl: string): {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 40px 20px;">
   <div style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <h1 style="font-size: 24px; font-weight: 600; color: #111827; margin: 0 0 8px;">Sign in to Oasify</h1>
-    <p style="font-size: 16px; color: #6b7280; margin: 0 0 32px;">Enter this code to verify your email:</p>
-
-    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 24px;">
-      <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #111827;">${code}</span>
-    </div>
-
-    <p style="font-size: 14px; color: #6b7280; margin: 0 0 24px;">Or click the button below:</p>
+    <p style="font-size: 16px; color: #6b7280; margin: 0 0 32px;">Click the button below to sign in:</p>
 
     <a href="${magicLinkUrl}" style="display: block; background-color: #06b6d4; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 500; padding: 14px 24px; border-radius: 8px; text-align: center; margin-bottom: 24px;">
-      Sign in to Oasify
+      Click to login
     </a>
+
+    <p style="font-size: 14px; color: #6b7280; margin: 0 0 16px;">Or paste this code manually:</p>
+
+    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 24px;">
+      <span style="font-size: 28px; font-weight: 700; letter-spacing: 8px; color: #6b7280;">${code}</span>
+    </div>
 
     <p style="font-size: 12px; color: #9ca3af; margin: 0;">
       This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.
@@ -80,9 +80,9 @@ export function generateVerificationEmail(code: string, magicLinkUrl: string): {
 
   const textContent = `Sign in to Oasify
 
-Your verification code is: ${code}
+Click to login: ${magicLinkUrl}
 
-Or click this link: ${magicLinkUrl}
+Or paste this code manually: ${code}
 
 This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.`;
 
