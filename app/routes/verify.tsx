@@ -146,11 +146,13 @@ export default function VerifyPage({ loaderData }: Route.ComponentProps) {
     }
 
     if (value && index === 5 && newCode.every(d => d !== "")) {
-      const form = inputRefs.current[0]?.closest("form");
-      if (form) {
-        setIsLoading(true);
-        form.requestSubmit();
-      }
+      setTimeout(() => {
+        const form = inputRefs.current[0]?.closest("form");
+        if (form) {
+          setIsLoading(true);
+          form.requestSubmit();
+        }
+      }, 100);
     }
   };
 
