@@ -507,6 +507,48 @@ export const QUERY_TEMPLATES: QueryTemplate[] = [
         .limit(limit);
     },
   },
+
+  // 18. open_analysis
+  {
+    id: 'open_analysis',
+    description: 'Fetch recent comments with full text for open-ended AI analysis',
+    execute: async (userId, params) => {
+      const limit = params.limit ?? 150;
+
+      const [recentComments, sentiments] = await Promise.all([
+        db
+          .select({
+            text: comments.text,
+            sentiment: comments.sentiment,
+            videoTitle: comments.videoTitle,
+            platform: comments.platform,
+            author: comments.author,
+            createdAt: comments.createdAt,
+          })
+          .from(comments)
+          .where(and(
+            eq(comments.userId, userId),
+            eq(comments.isOwner, false),
+          ))
+          .orderBy(desc(comments.createdAt))
+          .limit(limit),
+
+        db
+          .select({
+            sentiment: comments.sentiment,
+            count: count(),
+          })
+          .from(comments)
+          .where(and(
+            eq(comments.userId, userId),
+            isNotNull(comments.sentiment),
+          ))
+          .groupBy(comments.sentiment),
+      ]);
+
+      return { recentComments, sentimentBreakdown: sentiments };
+    },
+  },
 ];
 
 // ── Lookup helper ──────────────────────────────────────────────────────

@@ -16,7 +16,6 @@ import { eq } from "drizzle-orm";
 import { CommentThread } from "~/components/CommentThread";
 import { ChatPanel } from "~/components/ChatPanel";
 import { VideoGroup } from "~/components/VideoGroup";
-import { getRandomQuote } from "~/lib/creator-quotes";
 import type { CommentWithReplies } from "~/utils/comments.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -117,7 +116,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const [globalEmpathMode, setGlobalEmpathMode] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'by-video'>('all');
-  const [quote] = useState(() => getRandomQuote());
   const [commentEmpathMode, setCommentEmpathMode] = useState<Record<number, boolean>>({});
   const youtubeFetcher = useFetcher();
   const instagramFetcher = useFetcher();
@@ -499,14 +497,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </Label>
           </div>
         </div>
-      </div>
-
-      {/* Creator Quote */}
-      <div className="px-4 py-3 bg-oasis-50/80 border-b border-oasis-100">
-        <p className="text-sm text-warm-600 italic text-center">
-          &ldquo;{quote.text}&rdquo;
-          {quote.author && <span className="text-warm-400 not-italic"> — {quote.author}</span>}
-        </p>
       </div>
 
       {/* Tabs */}

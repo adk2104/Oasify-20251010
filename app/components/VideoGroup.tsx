@@ -69,13 +69,16 @@ export function VideoGroup({
 
         {/* Title + meta */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-warm-800 truncate">{videoTitle}</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            <PlatformIcon className="w-3 h-3 text-warm-400" />
-            <span className="text-xs text-warm-400">
-              {totalComments} {totalComments === 1 ? 'comment' : 'comments'}
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <PlatformIcon className="w-3 h-3 text-warm-400 shrink-0" />
+            <span className="text-xs font-medium text-warm-400">
+              {platform === 'youtube' ? 'YouTube' : 'Instagram'}
             </span>
           </div>
+          <p className="text-sm font-medium text-warm-800 truncate">{videoTitle}</p>
+          <span className="text-xs text-warm-400">
+            {totalComments} {totalComments === 1 ? 'comment' : 'comments'}
+          </span>
         </div>
 
         {/* Chevron */}

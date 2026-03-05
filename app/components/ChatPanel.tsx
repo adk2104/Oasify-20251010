@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useFetcher } from 'react-router';
+import ReactMarkdown from 'react-markdown';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
 import { cn } from '~/lib/utils';
@@ -13,11 +14,11 @@ type Message = {
 };
 
 const SUGGESTED_QUESTIONS = [
-  "How can I improve my content based on comments?",
+  "Based on my comments, what can I improve in my videos?",
+  "What feedback do I get the most?",
   "What's the overall sentiment of my comments?",
   "Who are my most active commenters?",
-  "Which videos get the most comments?",
-  "Show me recent negative feedback",
+  "What is Oasify and what can it do?",
   "Compare my YouTube vs Instagram engagement",
 ];
 
@@ -149,7 +150,24 @@ export function ChatPanel() {
                     : 'bg-gray-100 text-warm-800'
                 )}
               >
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                {message.role === 'user' ? (
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                ) : (
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => <p className="text-sm mb-2 last:mb-0">{children}</p>,
+                      strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                      ul: ({ children }) => <ul className="text-sm list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-sm list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                      li: ({ children }) => <li>{children}</li>,
+                      h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 mt-2">{children}</h3>,
+                      blockquote: ({ children }) => <blockquote className="text-sm border-l-2 border-oasis-300 pl-2 my-1 italic opacity-80">{children}</blockquote>,
+                      code: ({ children }) => <code className="text-xs bg-black/5 px-1 rounded">{children}</code>,
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                )}
               </div>
             ))}
             {isLoading && (
