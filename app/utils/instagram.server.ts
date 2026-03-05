@@ -92,7 +92,7 @@ export async function exchangeForLongLivedInstagramToken(
   url.searchParams.set('client_secret', clientSecret);
   url.searchParams.set('access_token', shortLivedToken);
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), { method: 'POST' });
 
   if (!response.ok) {
     const error = await response.text();
