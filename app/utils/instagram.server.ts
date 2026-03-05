@@ -87,7 +87,7 @@ export async function exchangeForLongLivedInstagramToken(
   shortLivedToken: string,
   clientSecret: string
 ): Promise<InstagramLongLivedTokenResponse> {
-  const url = new URL(`${GRAPH_API_BASE}/v21.0/access_token`);
+  const url = new URL(`${GRAPH_API_BASE}/v25.0/access_token`);
   url.searchParams.set('grant_type', 'ig_exchange_token');
   url.searchParams.set('client_secret', clientSecret);
   url.searchParams.set('access_token', shortLivedToken);
@@ -109,7 +109,7 @@ export async function exchangeForLongLivedInstagramToken(
 export async function refreshLongLivedInstagramToken(
   accessToken: string
 ): Promise<InstagramLongLivedTokenResponse> {
-  const url = new URL(`${GRAPH_API_BASE}/v21.0/refresh_access_token`);
+  const url = new URL(`${GRAPH_API_BASE}/v25.0/refresh_access_token`);
   url.searchParams.set('grant_type', 'ig_refresh_token');
   url.searchParams.set('access_token', accessToken);
 
